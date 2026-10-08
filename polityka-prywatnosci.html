@@ -94,7 +94,7 @@
         <table class="tbl">
           <thead><tr><th>Po co</th><th>Jakie dane</th><th>Podstawa prawna</th><th>Jak długo</th></tr></thead>
           <tbody>
-            <tr><td>Wyświetlenie strony i jej bezpieczeństwo (logi serwera u dostawcy hostingu)</td><td>adres IP, data i godzina, adres odwiedzanej podstrony, typ przeglądarki i systemu</td><td>prawnie uzasadniony interes, czyli działanie i ochrona strony (art. 6 ust. 1 lit. f RODO)</td><td><mark>[np. do 30 dni]</mark>, zgodnie z ustawieniami dostawcy hostingu</td></tr>
+            <tr><td>Wyświetlenie strony i jej bezpieczeństwo (logi serwera u dostawcy hostingu)</td><td>adres IP, data i godzina, adres odwiedzanej podstrony, typ przeglądarki i systemu</td><td>prawnie uzasadniony interes, czyli działanie i ochrona strony (art. 6 ust. 1 lit. f RODO)</td><td>do 90 dni, zgodnie z ustawieniami dostawcy hostingu</td></tr>
             <tr><td>Gra bez konta: punkty, zakłady, odznaki, odkryte karty</td><td>stan gry zapisany w Twoim urządzeniu (localStorage); nie trafia do nas</td><td>świadczenie usługi, o którą prosisz (art. 6 ust. 1 lit. b RODO); zapis jest niezbędny do działania gry, więc nie wymaga zgody (art. 399 ustawy Prawo komunikacji elektronicznej)</td><td>do czasu, aż zresetujesz grę albo usuniesz dane przeglądarki</td></tr>
             <tr><td>Konto gracza (opcjonalne): logowanie, zapis stanu gry, ranking globalny</td><td>szczegóły w <a href="#konta">punkcie 3</a></td><td>umowa o prowadzenie konta (art. 6 ust. 1 lit. b RODO); bezpieczeństwo i zapobieganie nadużyciom (art. 6 ust. 1 lit. f RODO)</td><td>do usunięcia konta (szczegóły w punkcie 3)</td></tr>
             <tr><td>Zapamiętanie Twojego wyboru dotyczącego cookies</td><td>wybór zgód i data jego dokonania (localStorage)</td><td>obowiązek wykazania zgody (art. 6 ust. 1 lit. c w zw. z art. 7 ust. 1 RODO)</td><td>12 miesięcy, potem zapytamy ponownie</td></tr>
@@ -122,15 +122,15 @@
             <tr><td>przy logowaniu Google: identyfikator konta Google, adres e-mail, a także imię i nazwisko oraz adres zdjęcia profilowego, jeśli Google je przekaże (nie pokazujemy ich w grze)</td><td>logowanie kontem Google</td><td>umowa (art. 6 ust. 1 lit. b RODO)</td><td>do usunięcia konta</td></tr>
             <tr><td>nick, awatar (ilustracja kota), punkty, zakłady, odznaki, seria wygranych, odkryte karty, historia zmian punktów</td><td>prowadzenie gry na koncie, synchronizacja między urządzeniami, ranking</td><td>umowa (art. 6 ust. 1 lit. b RODO)</td><td>do usunięcia konta</td></tr>
             <tr><td><strong>publicznie w rankingu:</strong> tylko nick, awatar i wynik (bez e-maila)</td><td>ranking globalny, który jest częścią gry</td><td>umowa (art. 6 ust. 1 lit. b RODO)</td><td>do zmiany nicku lub usunięcia konta</td></tr>
-            <tr><td>adres IP, typ przeglądarki, czas i rodzaj zdarzeń logowania (dzienniki usługi Supabase Auth); czasy wywołań wybranych funkcji gry (limity prób)</td><td>bezpieczeństwo, ochrona przed nadużyciami, np. botami i oszukiwaniem w rankingu</td><td>prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO)</td><td>dzienniki logowania: <mark>[zgodnie z planem Supabase, np. do 7 dni]</mark>; limity prób: 2 dni</td></tr>
-            <tr><td>kopie zapasowe bazy danych</td><td>odtworzenie danych po awarii</td><td>prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO)</td><td><mark>[np. do 7 dni]</mark>, potem są nadpisywane</td></tr>
+            <tr><td>adres IP, typ przeglądarki, czas i rodzaj zdarzeń logowania (dzienniki usługi Supabase Auth); czasy wywołań wybranych funkcji gry (limity prób)</td><td>bezpieczeństwo, ochrona przed nadużyciami, np. botami i oszukiwaniem w rankingu</td><td>prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO)</td><td>dzienniki logowania: do 90 dni; limity prób: 2 dni</td></tr>
+            <tr><td>kopie zapasowe bazy danych</td><td>odtworzenie danych po awarii</td><td>prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO)</td><td>do 7 dni, potem są nadpisywane</td></tr>
           </tbody>
         </table>
       </div>
       <ul>
         <li><strong>Przeniesienie postępu.</strong> Przy pierwszym logowaniu przenosimy jednorazowo postęp z trybu gościa zapisany w tej przeglądarce (punkty do ustalonego limitu, odznaki, odkryte karty).</li>
         <li><strong>Pobranie danych.</strong> W menu konta wybierz „Pobierz moje dane (JSON)”. Dostaniesz plik ze wszystkimi danymi konta i gry (art. 15 i 20 RODO).</li>
-        <li><strong>Usunięcie konta.</strong> W menu konta wybierz „Usuń konto”. Usuwamy od razu konto logowania i wszystkie dane gry (art. 17 RODO). Z kopii zapasowych dane znikną najpóźniej po upływie ich okresu przechowywania. Konto nieużywane przez <mark>[24 miesiące]</mark> możemy usunąć po wcześniejszym powiadomieniu e-mailem.</li>
+        <li><strong>Usunięcie konta.</strong> W menu konta wybierz „Usuń konto”. Usuwamy od razu konto logowania i wszystkie dane gry (art. 17 RODO). Z kopii zapasowych dane znikną najpóźniej po upływie ich okresu przechowywania. Konto nieużywane przez 24 miesiące możemy usunąć po wcześniejszym powiadomieniu e-mailem.</li>
         <li><strong>Dobrowolność.</strong> Podanie e-maila jest dobrowolne, ale bez niego nie założysz konta. Grać możesz bez konta.</li>
         <li><strong>Aplikacja na Androida.</strong> W aplikacji logowanie nie jest obecnie dostępne, aplikacja działa w trybie gościa.</li>
       </ul>
@@ -192,7 +192,7 @@
       <h2>8. Odbiorcy danych</h2>
       <p>Dane mogą otrzymać wyłącznie podmioty, które pomagają nam prowadzić serwis, i tylko w niezbędnym zakresie:</p>
       <ul>
-        <li>dostawca hostingu: <mark>[DOSTAWCA HOSTINGU, np. Netlify, Inc. / Cloudflare, Inc. / GitHub, Inc.]</mark>,</li>
+        <li>dostawca hostingu: GitHub, Inc. (GitHub Pages),</li>
         <li>dostawca poczty e-mail: <mark>[DOSTAWCA POCZTY, np. Google Ireland Ltd. (Gmail)]</mark>,</li>
         <li>jeśli masz konto: Supabase, Inc. (logowanie, baza danych, przechowywanie zdjęć kotów) jako podmiot przetwarzający oraz wbudowany serwer pocztowy Supabase (wysyłka e-maili związanych z kontem),</li>
         <li>jeśli logujesz się kontem Google: Google Ireland Limited jako odrębny administrator danych Twojego konta Google,</li>
@@ -231,7 +231,7 @@
       <ul>
         <li><strong>Dobrowolność.</strong> Podanie danych jest dobrowolne. Bez adresu e-mail nie odpiszemy na wiadomość, a bez zgody nie opublikujemy ogłoszenia z Twoimi danymi.</li>
         <li><strong>Profilowanie.</strong> Nie podejmujemy decyzji opartych wyłącznie na zautomatyzowanym przetwarzaniu, które wywoływałyby wobec Ciebie skutki prawne (art. 22 RODO). Google może profilować Cię do celów reklamowych, ale tylko po Twojej zgodzie.</li>
-        <li><strong>Dzieci.</strong> Gra bez konta nie wymaga podawania żadnych danych. Konto mogą założyć osoby, które ukończyły <mark>[16]</mark> lat, młodsze tylko za zgodą rodzica lub opiekuna. Zgodę na cookies marketingowe może samodzielnie wyrazić osoba, która ma co najmniej 16 lat. Jeśli jesteś młodszy, wybierz „Odrzuć wszystkie” albo poproś o pomoc rodzica.</li>
+        <li><strong>Dzieci.</strong> Gra bez konta nie wymaga podawania żadnych danych. Konto mogą założyć osoby, które ukończyły 16 lat, młodsze tylko za zgodą rodzica lub opiekuna. Zgodę na cookies marketingowe może samodzielnie wyrazić osoba, która ma co najmniej 16 lat. Jeśli jesteś młodszy, wybierz „Odrzuć wszystkie” albo poproś o pomoc rodzica.</li>
         <li><strong>Bezpieczeństwo.</strong> Strona działa przez szyfrowane połączenie HTTPS, przetwarzamy jak najmniej danych, a dostęp do korespondencji ma tylko administrator. Dane kont chronią reguły dostępu w bazie (Row Level Security): każdy gracz widzi i zmienia tylko swoje dane, a punkty zmienia wyłącznie serwer.</li>
         <li><strong>Zmiany.</strong> Jeśli zmienimy politykę, np. po dodaniu statystyk, opublikujemy nową wersję na tej stronie z nową datą. W razie potrzeby poprosimy też ponownie o zgodę.</li>
       </ul>
