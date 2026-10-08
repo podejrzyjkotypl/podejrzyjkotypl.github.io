@@ -16,9 +16,9 @@
     { days: 14, base: 1.6 }
   ];
   const RIVALS = [
-    { name: "KociaMama_Łomża", points: 240 },
+    { name: "KociaMama", points: 240 },
     { name: "Pan Filemon", points: 185 },
-    { name: "Ola z Piątnicy", points: 150 },
+    { name: "Ola_Mruczanka", points: 150 },
     { name: "Wąsaty Kibic", points: 120 },
     { name: "Sierściuch92", points: 80 }
   ];

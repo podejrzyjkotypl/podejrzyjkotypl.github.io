@@ -2,7 +2,7 @@
  * podejrzyjkota: REKLAMY (konfiguracja + renderowanie)
  * ------------------------------------------------------------
  * Wszystkie miejsca reklamowe konfigurujesz TUTAJ. Kolejność wyboru treści dla każdego miejsca:
- *   1. sponsorHtml   jeśli niepusty, wstawiamy ten HTML (np. baner lokalnego sklepu zoologicznego)
+ *   1. sponsorHtml   jeśli niepusty, wstawiamy ten HTML (np. baner sklepu zoologicznego)
  *   2. AdSense       jeśli adsense.enabled = true i slot ma adsenseSlot
  *   3. placeholder   jeśli showPlaceholders = true, pusta ramka „Reklama” z rozmiarem (tryb demo)
  *   4. nic           miejsce się chowa
