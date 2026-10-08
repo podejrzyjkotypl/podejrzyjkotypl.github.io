@@ -22,12 +22,19 @@
   }
   function msg(e) {
     const m = String((e && e.message) || e || "");
-    if (/violates foreign key constraint.*bets/i.test(m)) return "Nie można usunąć kota, na którego są zakłady. Oznacz go jako zaadoptowanego albo zostaw.";
+    if (/violates foreign key constraint.*(bets|user_reveals)/i.test(m)) return "Nie można usunąć kota, który ma zakłady albo odkryte karty graczy. Zamiast usuwać, użyj „Ukryj kota”.";
+    if (/cats_listing_url_check/.test(m)) return "Link do ogłoszenia musi zaczynać się od http:// albo https:// (max 500 znaków).";
+    if (/cats_contact_phone_check/.test(m)) return "Telefon może mieć tylko cyfry, spacje, myślniki, nawiasy i + na początku (np. 500 100 200).";
+    if (/cats_contact_email_check/.test(m)) return "Niepoprawny e-mail kontaktowy.";
+    if (/cats_contact_name_check/.test(m)) return "Nazwa kontaktu może mieć maksymalnie 80 znaków.";
     if (/duplicate key.*cats_pkey/i.test(m)) return "Kot o takim identyfikatorze już istnieje.";
     if (/row-level security|permission denied|42501/i.test(m)) return "Brak uprawnień (RLS). Czy na pewno jesteś adminem?";
     if (/check constraint/i.test(m)) return "Niepoprawne dane w formularzu (" + m.replace(/.*constraint "([^"]+)".*/, "$1") + ").";
     return m || "Coś poszło nie tak.";
   }
+  const URL_RE = /^https?:\/\/\S+$/i;
+  const PHONE_RE = /^\+?[0-9][0-9 ()-]{5,22}[0-9]$/;
+  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   const slug = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/g, "l").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
   function art(c, cls) {
     const look = c.look || {};
@@ -81,35 +88,20 @@
   }
 
   function renderDashboard() {
-    const av = cats.filter((c) => c.status === "available").length;
-    const shName = (id) => { const s = shelters.find((x) => x.id === id); return s ? s.name : "—"; };
+    const visible = cats.filter((c) => !c.hidden), hidden = cats.filter((c) => c.hidden);
+    const av = visible.filter((c) => c.status === "available").length;
     body.innerHTML = `
       <div class="admin-stats">
         <div class="stat"><span class="stat__label">Gracze</span><span class="stat__value">${stats.players}</span></div>
         <div class="stat"><span class="stat__label">Aktywne zakłady</span><span class="stat__value">${stats.active_bets}</span></div>
-        <div class="stat"><span class="stat__label">Koty czekające</span><span class="stat__value">${av}<small>/ ${cats.length}</small></span></div>
+        <div class="stat"><span class="stat__label">Koty czekające</span><span class="stat__value">${av}<small>/ ${visible.length}</small></span></div>
         <div class="stat"><span class="stat__label">Runda gry</span><span class="stat__value">${stats.round}</span></div>
       </div>
       <div class="admin-bar"><h2>Koty</h2><button class="btn btn--primary btn--sm" type="button" data-new>＋ Dodaj kota</button></div>
-      <div class="admin-cats">
-        ${cats.map((c) => {
-          const pc = stats.per_cat[c.id];
-          return `<article class="acat ${c.status === "adopted" ? "is-adopted" : ""}">
-            ${art(c, "acat__art")}
-            <div class="acat__info">
-              <h3>${esc(c.name)} <span class="chip ${c.status === "adopted" ? "chip--ok" : "chip--wait"}">${c.status === "adopted" ? "🏠 ma dom" : "czeka"}</span></h3>
-              <p>${esc(c.age)} · ${esc(c.sex)} · ${esc(shName(c.shelter_id))}</p>
-              <p class="acat__bets">${pc ? `🎲 ${pc.bets} ${pc.bets === 1 ? "aktywny zakład" : "aktywne zakłady"} · ${pc.stake} pkt` : "brak aktywnych zakładów"}${c.photo_url ? " · 📷 zdjęcie" : ""}</p>
-            </div>
-            <div class="acat__act">
-              <button class="btn btn--soft btn--sm" type="button" data-edit="${esc(c.id)}">Edytuj</button>
-              ${c.status === "available"
-                ? `<button class="btn btn--primary btn--sm" type="button" data-adopt="${esc(c.id)}">🏠 Oznacz adopcję</button>`
-                : `<button class="btn btn--ghost btn--sm" type="button" data-unadopt="${esc(c.id)}">↩ Przywróć</button>`}
-            </div>
-          </article>`;
-        }).join("")}
-      </div>
+      <div class="admin-cats">${visible.map(catRow).join("") || `<p class="auth__hint">Brak widocznych kotów.</p>`}</div>
+      ${hidden.length ? `<div class="admin-bar admin-bar--hidden"><h2>Ukryte koty <span class="chip chip--hidden">${hidden.length}</span></h2></div>
+      <p class="auth__hint">Tych kotów nie widać na stronie ani w grze. Zostają w bazie, możesz je w każdej chwili pokazać z powrotem.</p>
+      <div class="admin-cats">${hidden.map(catRow).join("")}</div>` : ""}
       <div class="admin-grid">
         <section class="admin-card">
           <h2>Ostatnie rozliczenia</h2>
@@ -122,6 +114,34 @@
           <ul class="admin-list">${shelters.map((s) => `<li><div><strong>${esc(s.name)}</strong><span>${esc(s.city)} · ${esc(s.email || "brak e-maila")}</span></div><button class="link-btn link-btn--inline" type="button" data-edit-shelter="${esc(s.id)}">Edytuj</button></li>`).join("")}</ul>
         </section>
       </div>`;
+  }
+
+  function catRow(c) {
+    const shName = (id) => { const s = shelters.find((x) => x.id === id); return s ? s.name : "brak schroniska"; };
+    const pc = stats.per_cat[c.id];
+    const rf = (stats.refunds || {})[c.id];
+    const status = c.hidden ? `<span class="chip chip--hidden">🙈 ukryty</span>` : "";
+    const adoptChip = `<span class="chip ${c.status === "adopted" ? "chip--ok" : "chip--wait"}">${c.status === "adopted" ? "🏠 ma dom" : "czeka"}</span>`;
+    const extras = [c.photo_url ? "📷 zdjęcie" : "", c.listing_url ? "🔗 ogłoszenie" : "", (c.contact_phone || c.contact_email) ? "📞 własny kontakt" : ""].filter(Boolean).join(" · ");
+    const actions = c.hidden
+      ? `<button class="btn btn--primary btn--sm" type="button" data-unhide="${esc(c.id)}">👁 Pokaż kota</button>`
+      : `${c.status === "available"
+          ? `<button class="btn btn--primary btn--sm" type="button" data-adopt="${esc(c.id)}">🏠 Oznacz adopcję</button>`
+          : `<button class="btn btn--ghost btn--sm" type="button" data-unadopt="${esc(c.id)}">↩ Przywróć</button>`}
+         <button class="btn btn--ghost btn--sm" type="button" data-hide="${esc(c.id)}">🙈 Ukryj kota</button>`;
+    return `<article class="acat ${c.status === "adopted" ? "is-adopted" : ""} ${c.hidden ? "is-hidden" : ""}">
+      ${art(c, "acat__art")}
+      <div class="acat__info">
+        <h3>${esc(c.name)} ${adoptChip} ${status}</h3>
+        <p>${esc(c.age)} · ${esc(c.sex)} · ${esc(shName(c.shelter_id))}</p>
+        <p class="acat__bets">${pc ? `🎲 ${pc.bets} ${pc.bets === 1 ? "aktywny zakład" : "aktywne zakłady"} · ${pc.stake} pkt` : "brak aktywnych zakładów"}${extras ? " · " + extras : ""}</p>
+        ${c.hidden ? `<p class="acat__bets">Ukryty ${c.hidden_at ? new Date(c.hidden_at).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" }) : ""}${c.hidden_note ? `: ${esc(c.hidden_note)}` : ""}${rf ? ` · zwrócono ${rf.bets} ${rf.bets === 1 ? "stawkę" : "stawki"} (${rf.points} pkt)` : ""}</p>` : ""}
+      </div>
+      <div class="acat__act">
+        <button class="btn btn--soft btn--sm" type="button" data-edit="${esc(c.id)}">Edytuj</button>
+        ${actions}
+      </div>
+    </article>`;
   }
 
   /* ---------- formularz kota ---------- */
@@ -153,6 +173,13 @@
             <label class="field"><span>Popularność 1–5 (niższa = wyższe kursy)</span><input type="number" name="popularity" min="1" max="5" value="${c.popularity}"></label>
           </div>
         </div>
+        <fieldset class="admin-look admin-contact"><legend>Ogłoszenie i kontakt do adopcji</legend>
+          <label class="field field--wide"><span>Link do oryginalnego ogłoszenia (OLX, Facebook…)</span><input type="url" name="listing_url" maxlength="500" inputmode="url" placeholder="https://www.olx.pl/d/oferta/…" value="${esc(c.listing_url || "")}"></label>
+          <label class="field"><span>Kontakt: imię lub nazwa</span><input name="contact_name" maxlength="80" placeholder="np. Pani Ania, Fundacja Kocia Łapka" value="${esc(c.contact_name || "")}"></label>
+          <label class="field"><span>Telefon (opcjonalnie)</span><input type="tel" name="contact_phone" maxlength="24" inputmode="tel" placeholder="np. 500 100 200" value="${esc(c.contact_phone || "")}"></label>
+          <label class="field"><span>E-mail (opcjonalnie)</span><input type="email" name="contact_email" maxlength="120" placeholder="np. ania@poczta.pl" value="${esc(c.contact_email || "")}"></label>
+          <p class="auth__hint field--wide">Gdy wpiszesz telefon albo e-mail, przycisk „Chcę adoptować” połączy z tym kontaktem zamiast ze schroniskiem. Pokazujemy tylko wypełnione pola. Publikuj kontakt wyłącznie za zgodą ogłoszeniodawcy.</p>
+        </fieldset>
         <fieldset class="admin-look"><legend>Ilustracja</legend>
           <label class="field"><span>Umaszczenie</span><select name="pattern">${PATTERNS.map(([v, l]) => `<option value="${v}" ${L.pattern === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>
           <label class="field"><span>Dodatek</span><select name="extra">${EXTRAS.map(([v, l]) => `<option value="${v}" ${L.extra === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>
@@ -197,12 +224,19 @@
           if (up.error) throw up.error;
           photo_url = sb.storage.from("cat-photos").getPublicUrl(path).data.publicUrl;
         }
+        const listing_url = f.elements.listing_url.value.trim() || null;
+        const contact_name = f.elements.contact_name.value.trim() || null;
+        const contact_phone = f.elements.contact_phone.value.trim().replace(/\s+/g, " ") || null;
+        const contact_email = f.elements.contact_email.value.trim() || null;
+        if (listing_url && (!URL_RE.test(listing_url) || listing_url.length > 500)) throw new Error("Link do ogłoszenia musi zaczynać się od http:// albo https://.");
+        if (contact_phone && !PHONE_RE.test(contact_phone)) throw new Error("Telefon może mieć tylko cyfry, spacje, myślniki, nawiasy i + na początku (np. 500 100 200).");
+        if (contact_email && !EMAIL_RE.test(contact_email)) throw new Error("Niepoprawny e-mail kontaktowy.");
         const row = {
           id, name: f.elements.name.value.trim(), name_acc: f.elements.name_acc.value.trim() || null, age: f.elements.age.value.trim(),
           sex: f.elements.sex.value, shelter_id: f.elements.shelter_id.value || null,
           traits: f.elements.traits.value.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6),
           story: f.elements.story.value.trim(), popularity: Math.min(5, Math.max(1, Number(f.elements.popularity.value) || 3)),
-          look: look(), photo_url
+          look: look(), photo_url, listing_url, contact_name, contact_phone, contact_email
         };
         const q = isNew ? sb.from("cats").insert({ ...row, sort_order: c.sort_order }).select() : sb.from("cats").update(row).eq("id", c.id).select();
         const { data, error } = await q;
@@ -253,6 +287,38 @@
     toast(`↩ ${esc(c.name)} znowu czeka na dom.`); loadAll();
   }
 
+  /* ---------- ukrywanie kota (zwraca stawki) ---------- */
+  function hideDialog(c) {
+    const pc = stats.per_cat[c.id];
+    const d = dialog(`
+      <button class="sheet__close" type="button" data-close aria-label="Zamknij">×</button>
+      <form class="profile" data-hide-form>
+        <div class="admin-adopt__art">${art(c, "mini--lg")}</div>
+        <h2>Ukryć ${esc(c.name_acc || c.name)}?</h2>
+        <p>Kot <strong>zniknie ze strony i z gry</strong> (lista kotów, karty, zakłady), ale <strong>nie zostanie usunięty</strong>. Możesz go później pokazać z powrotem.</p>
+        <p>${pc ? `Na tego kota jest <strong>${pc.bets} ${pc.bets === 1 ? "aktywny zakład" : "aktywnych zakładów"} (${pc.stake} pkt)</strong>. Zakłady zostaną anulowane, a gracze <strong>dostaną zwrot stawek</strong>. Zwrotu nie da się cofnąć, także po ponownym pokazaniu kota.` : "Na tego kota nie ma aktywnych zakładów."}</p>
+        <p class="auth__hint">Jeśli ogłoszeniodawca wycofał zgodę, usuń też jego kontakt i link do ogłoszenia (Edytuj, wyczyść pola, Zapisz).</p>
+        <label class="field"><span>Powód (widoczny tylko w panelu, opcjonalnie)</span><input name="note" maxlength="200" placeholder="np. prośba ogłoszeniodawcy o usunięcie"></label>
+        <p class="auth__err" data-err role="alert" hidden></p>
+        <div class="auth__row"><button class="btn btn--primary" type="submit">🙈 Tak, ukryj kota</button><button class="btn btn--ghost" type="button" data-close>Anuluj</button></div>
+      </form>`, "sheet--admin-sm");
+    $("[data-hide-form]", d).addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = $("button[type=submit]", e.target); btn.disabled = true;
+      const { data, error } = await sb.rpc("admin_set_cat_hidden", { p_cat_id: c.id, p_hidden: true, p_note: e.target.elements.note.value });
+      if (error) { $("[data-err]", d).textContent = msg(error); $("[data-err]", d).hidden = false; btn.disabled = false; return; }
+      d.close();
+      toast(data.bets_refunded ? `🙈 Ukryto: <strong>${esc(c.name)}</strong>. Zwrócono ${data.bets_refunded} ${data.bets_refunded === 1 ? "stawkę" : "stawki"} (${data.points_refunded} pkt).` : `🙈 Ukryto: <strong>${esc(c.name)}</strong>.`);
+      loadAll();
+    });
+  }
+  async function unhide(c) {
+    if (!confirm(`Pokazać ${c.name_acc || c.name} z powrotem na stronie? Kot wróci do gry. Zwrócone wcześniej stawki zostają u graczy.`)) return;
+    const { error } = await sb.rpc("admin_set_cat_hidden", { p_cat_id: c.id, p_hidden: false, p_note: null });
+    if (error) return toast(esc(msg(error)));
+    toast(`👁 ${esc(c.name)} znowu jest widoczny na stronie.`); loadAll();
+  }
+
   /* ---------- schroniska ---------- */
   function shelterForm(s) {
     const isNew = !s; s = s || { id: "", name: "", city: "", email: "" };
@@ -286,6 +352,8 @@
     else if (t.dataset.edit) catForm(find(t.dataset.edit));
     else if (t.dataset.adopt) adoptDialog(find(t.dataset.adopt));
     else if (t.dataset.unadopt) unadopt(find(t.dataset.unadopt));
+    else if (t.dataset.hide) hideDialog(find(t.dataset.hide));
+    else if (t.dataset.unhide) unhide(find(t.dataset.unhide));
     else if (t.dataset.newShelter != null) shelterForm(null);
     else if (t.dataset.editShelter) shelterForm(shelters.find((s) => s.id === t.dataset.editShelter));
     else if (t.dataset.copy) navigator.clipboard.writeText(t.dataset.copy).then(() => toast("Skopiowano."), () => {});

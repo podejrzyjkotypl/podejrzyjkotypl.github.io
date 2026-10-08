@@ -95,7 +95,8 @@
     return {
       id: r.id, name: r.name, nameAcc: r.name_acc || r.name, age: r.age || "", sex: r.sex, traits: r.traits || [],
       shelter: r.shelter_id, story: r.story || "", status: r.status, adoptedNote: r.adopted_note || "",
-      adoptedAt: r.adopted_at, popularity: r.popularity || 3, look: r.look || {}, photo: r.photo_url || null
+      adoptedAt: r.adopted_at, popularity: r.popularity || 3, look: r.look || {}, photo: r.photo_url || null,
+      listingUrl: r.listing_url || "", contactName: r.contact_name || "", contactPhone: r.contact_phone || "", contactEmail: r.contact_email || ""
     };
   }
   API.mapCat = mapCat;

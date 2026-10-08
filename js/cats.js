@@ -16,6 +16,11 @@
  *   status      "available" (szuka domu) albo "adopted" (ma dom)
  *   adoptedNote (opcjonalnie) tekst przy kocie z domem, np. "Znalazł dom 3 dni temu"
  *   popularity  1–5, wpływa na kursy w grze (5 = faworyt, 1 = czarny koń)
+ *   listingUrl  (opcjonalnie) link do oryginalnego ogłoszenia (tylko http/https), np. z OLX
+ *   contactName (opcjonalnie) kontakt do adopcji: imię osoby albo nazwa fundacji
+ *   contactPhone, contactEmail (opcjonalnie) telefon / e-mail do adopcji. Gdy jest którykolwiek,
+ *               przycisk „Chcę adoptować” używa ich zamiast kontaktu schroniska.
+ *   hidden      (opcjonalnie) true = kot ukryty, nie pokazuje się na stronie
  *   photo       (opcjonalnie) ścieżka do zdjęcia, np. "img/pierniczek.jpg".
  *               Gdy jest, zastępuje ilustrację. Używaj tylko zdjęć, do których
  *               schronisko ma prawa!

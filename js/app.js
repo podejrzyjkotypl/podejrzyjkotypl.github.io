@@ -3,7 +3,8 @@
   "use strict";
 
   const DATA = window.PODEJRZYJKOTA_DATA;
-  const CATS = DATA.cats;
+  // koty ukryte (hidden: true) nie pokazują się w grze; z bazą filtruje je już serwer (RLS)
+  const CATS = DATA.cats.filter((c) => !c.hidden);
   const STORE_KEY = "podejrzyjkota:v1";
   const START_POINTS = 100;
   const MIN_STAKE = 5;
@@ -35,7 +36,7 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const byId = Object.fromEntries(CATS.map((c) => [c.id, c]));
   // awatary graczy = 9 ilustracji kotów z js/cats.js (niezależnie od kotów w bazie)
-  const AVATAR_CATS = Object.fromEntries(CATS.map((c) => [c.id, { ...c }]));
+  const AVATAR_CATS = Object.fromEntries(DATA.cats.map((c) => [c.id, { ...c }]));
   function reindex() {
     Object.keys(byId).forEach((k) => delete byId[k]);
     CATS.forEach((c) => { byId[c.id] = c; });
@@ -131,8 +132,7 @@
   }
 
   function adoptMailto(cat) {
-    const sh = shelterOf(cat);
-    const email = sh.email || DATA.contactEmail;
+    const email = contactOf(cat).email;
     const subject = isAdopted(cat)
       ? `Pytanie o koty do adopcji (po ${cat.name}) – podejrzyjkota`
       : `Adopcja: ${cat.name} (podejrzyjkota)`;
@@ -141,6 +141,52 @@
       : `Dzień dobry,\n\nchciał(a)bym poznać ${g(cat, "kota", "kotkę")} ${cat.nameAcc || cat.name} i zapytać o adopcję.\n\nPozdrawiam`;
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
+
+  // kontakt do adopcji: własny kontakt kota (z ogłoszenia), a gdy go brak, schronisko
+  function contactOf(cat) {
+    const sh = shelterOf(cat);
+    const own = !!(cat.contactPhone || cat.contactEmail);
+    return {
+      own,
+      name: own ? (cat.contactName || "") : sh.name,
+      phone: own ? (cat.contactPhone || "") : "",
+      email: own ? (cat.contactEmail || "") : (sh.email || DATA.contactEmail)
+    };
+  }
+  const phoneDigits = (p) => String(p || "").replace(/[^0-9+]/g, "");
+  function telHref(p) {
+    let d = phoneDigits(p);
+    if (/^[0-9]{9}$/.test(d)) d = "+48" + d;
+    else if (/^0048[0-9]{9}$/.test(d)) d = "+" + d.slice(2);
+    return "tel:" + d;
+  }
+  function fmtPhone(p) {
+    const d = phoneDigits(p);
+    let m = d.match(/^(?:\+48|0048)?([0-9]{3})([0-9]{3})([0-9]{3})$/);
+    if (m) return (/^(\+48|0048)/.test(d) ? "+48 " : "") + m.slice(1).join(" ");
+    return String(p).trim();
+  }
+  // główny przycisk „Chcę adoptować”: e-mail kota albo schroniska, a gdy jest tylko telefon, tel:
+  function adoptHref(cat) {
+    const ct = contactOf(cat);
+    if (ct.email) return adoptMailto(cat);
+    if (ct.phone) return telHref(ct.phone);
+    return adoptMailto(cat);
+  }
+  const safeUrl = (u) => (/^https?:\/\/\S+$/i.test(String(u || "")) ? String(u) : "");
+  function listingLink(cat, cls) {
+    const u = safeUrl(cat.listingUrl);
+    return u ? `<a class="${cls}" href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow">Zobacz ogłoszenie <span aria-hidden="true">↗</span></a>` : "";
+  }
+  function contactBox(cat) {
+    const ct = contactOf(cat);
+    if (!ct.own) return "";
+    const rows = [];
+    if (ct.phone) rows.push(`<li><span aria-hidden="true">📞</span> <a href="${esc(telHref(ct.phone))}" data-adopt>${esc(fmtPhone(ct.phone))}</a></li>`);
+    if (ct.email) rows.push(`<li><span aria-hidden="true">✉️</span> <a href="${esc(adoptMailto(cat))}" data-adopt>${esc(ct.email)}</a></li>`);
+    return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul></div>`;
+  }
+  const isExampleEmail = (e) => /@przyklad\.example$/i.test(String(e || ""));
 
   function award(id) {
     if (state.badges.includes(id)) return false;
@@ -384,8 +430,9 @@
         <p class="card__meta">${esc(cat.age)} · ${esc(cat.sex)}</p>
         <ul class="traits">${cat.traits.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
         <p class="card__shelter" title="${esc(sh.name)}, ${esc(sh.city)}"><span aria-hidden="true">📍</span> ${esc(shortShelter(sh))}, ${esc(sh.city)}</p>
+        ${adopted ? "" : listingLink(cat, "card__listing")}
         <div class="card__actions">
-          <a class="btn btn--primary btn--sm btn--block" href="${adoptMailto(cat)}" data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
+          <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
           <div class="card__row">
             ${adopted ? "" : `<button class="btn btn--soft btn--sm" type="button" data-open="bet">🎲 Obstaw</button>`}
             <button class="btn btn--soft btn--sm" type="button" data-open="info">Więcej</button>
@@ -587,8 +634,10 @@
           <p class="sheet__story">${esc(cat.story)}</p>
           ${adopted && cat.adoptedNote ? `<p class="sheet__adopted">🏠 ${esc(cat.adoptedNote)}</p>` : ""}
           ${adopted && !cat.adoptedNote ? `<p class="sheet__adopted">🏠 Znalazł${g(cat, "", "a")} dom${state.adoptions[cat.id] ? ` w ${state.adoptions[cat.id]}. dniu symulacji` : cat.adoptedAt ? " " + fmtDate(cat.adoptedAt) : ""}</p>` : ""}
-          <a class="btn btn--primary btn--block" href="${adoptMailto(cat)}" data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
-          <p class="placeholder-note">Adres e-mail jest przykładowy (${esc(sh.email || DATA.contactEmail)}), do podmiany na prawdziwy kontakt schroniska.</p>
+          ${adopted ? "" : contactBox(cat)}
+          <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
+          ${adopted ? "" : listingLink(cat, "btn btn--soft btn--block sheet__listing")}
+          ${isExampleEmail(contactOf(cat).email) ? `<p class="placeholder-note">Adres e-mail jest przykładowy (${esc(contactOf(cat).email)}), do podmiany na prawdziwy kontakt.</p>` : ""}
         </div>
       </div>
       ${adopted ? `<div class="betbox betbox--closed"><p>Ten kot ma już dom, więc zakłady są zamknięte. Najlepsza możliwa wygrana! 🎉</p></div>` : `
