@@ -51,7 +51,7 @@
     <p class="legal-note" role="note"><span aria-hidden="true">✍️</span> Wzór, przed publikacją uzupełnij dane i skonsultuj z prawnikiem.</p>
     <p class="eyebrow">Prywatność</p>
     <h1>Polityka prywatności</h1>
-    <p class="legal__meta">Obowiązuje od: 8 października 2026 r. · Wersja 1.1 (dodano opcjonalne konta graczy)</p>
+    <p class="legal__meta">Obowiązuje od: 8 października 2026 r. · Wersja 1.2 (dodano opcjonalne konta graczy i zgłoszenia kotów przez formularz)</p>
     <p>Tu wyjaśniamy, jakie dane przetwarzamy, po co, na jakiej podstawie i jakie masz prawa. Dokument spełnia obowiązki informacyjne z art. 13 i 14 RODO, czyli rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679.</p>
 
     <div class="info-card info-card--plum">
@@ -60,7 +60,7 @@
         <li>Konto jest <strong>opcjonalne</strong>. Bez niego punkty i zakłady zostają <strong>tylko w Twojej przeglądarce</strong> lub telefonie.</li>
         <li>Jeśli założysz konto, zapisujemy Twój e-mail i stan gry na serwerze (Supabase), dopóki go nie usuniesz. Konto usuniesz, a dane pobierzesz, jednym kliknięciem w menu konta. Publiczny jest tylko nick, awatar i wynik w rankingu.</li>
         <li>Reklamy Google ładujemy <strong>dopiero po Twojej zgodzie</strong> na cookies marketingowe. Statystyk obecnie nie mamy.</li>
-        <li>Dane ogłoszeniodawców publikujemy tylko za ich zgodą, a zgodę można wycofać w każdej chwili.</li>
+        <li>Dane ogłoszeniodawców publikujemy tylko za ich zgodą, a zgodę można wycofać w każdej chwili. Kota dodanego przez formularz zdejmiesz sam jednym przyciskiem w „Moich zgłoszeniach”.</li>
         <li>Zgodę na cookies zmienisz w każdej chwili: <button type="button" class="link-btn link-btn--inline link-btn--light" data-cookie-settings>Ustawienia cookies</button>.</li>
       </ul>
     </div>
@@ -129,8 +129,8 @@
       </div>
       <ul>
         <li><strong>Przeniesienie postępu.</strong> Przy pierwszym logowaniu przenosimy jednorazowo postęp z trybu gościa zapisany w tej przeglądarce (punkty do ustalonego limitu, odznaki, odkryte karty).</li>
-        <li><strong>Pobranie danych.</strong> W menu konta wybierz „Pobierz moje dane (JSON)”. Dostaniesz plik ze wszystkimi danymi konta i gry (art. 15 i 20 RODO).</li>
-        <li><strong>Usunięcie konta.</strong> W menu konta wybierz „Usuń konto”. Usuwamy od razu konto logowania i wszystkie dane gry (art. 17 RODO). Z kopii zapasowych dane znikną najpóźniej po upływie ich okresu przechowywania. Konto nieużywane przez 24 miesiące możemy usunąć po wcześniejszym powiadomieniu e-mailem.</li>
+        <li><strong>Pobranie danych.</strong> W menu konta wybierz „Pobierz moje dane (JSON)”. Dostaniesz plik ze wszystkimi danymi konta, gry i zgłoszeń kotów (art. 15 i 20 RODO).</li>
+        <li><strong>Usunięcie konta.</strong> W menu konta wybierz „Usuń konto”. Usuwamy od razu konto logowania, wszystkie dane gry oraz Twoje zgłoszenia kotów razem ze zdjęciami, a koty dodane z tych zgłoszeń znikają ze strony (art. 17 RODO). Z kopii zapasowych dane znikną najpóźniej po upływie ich okresu przechowywania. Konto nieużywane przez 24 miesiące możemy usunąć po wcześniejszym powiadomieniu e-mailem.</li>
         <li><strong>Dobrowolność.</strong> Podanie e-maila jest dobrowolne, ale bez niego nie założysz konta. Grać możesz bez konta.</li>
         <li><strong>Aplikacja na Androida.</strong> W aplikacji logowanie nie jest obecnie dostępne, aplikacja działa w trybie gościa.</li>
       </ul>
@@ -178,6 +178,24 @@
       <h3>Ogłoszeniodawcy (schroniska, fundacje, osoby prywatne)</h3>
       <p>Jeśli zgłaszasz kota albo zgadzasz się na publikację swojego ogłoszenia, przetwarzamy dane, które nam podasz: imię lub nazwę, adres e-mail, numer telefonu, miejscowość, zdjęcia i opis kota. W ogłoszeniu publikujemy tylko te dane kontaktowe, na których publikację się zgodzisz. Przy kocie możemy pokazać imię lub nazwę osoby do kontaktu, numer telefonu, adres e-mail oraz link do Twojego oryginalnego ogłoszenia (np. w serwisie OLX lub na Facebooku). Podstawą prawną jest Twoja zgoda (art. 6 ust. 1 lit. a RODO).</p>
       <p>Jeśli ogłoszenie pochodzi z innego serwisu, a my piszemy do Ciebie z prośbą o zgodę, Twoje dane kontaktowe mamy z tamtego ogłoszenia. Używamy ich wyłącznie po to, żeby zapytać o zgodę. Jeśli się nie zgodzisz albo nie odpowiesz, niczego nie publikujemy, a korespondencję usuwamy po <mark>[np. 3 miesiącach]</mark>.</p>
+      <h3 id="zgloszenia">Zgłoszenia przez formularz „Dodaj kota do adopcji”</h3>
+      <p>Zalogowani użytkownicy mogą zgłosić kota przez <a href="dodaj-kota.html">formularz</a>. Zgłoszenie najpierw sprawdzamy (moderacja). Dopóki go nie zaakceptujemy, zgłoszenie i zdjęcia są przechowywane w niepublicznej części bazy i w prywatnym folderze na zdjęcia: widzi je tylko autor zgłoszenia i administrator.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Jakie dane</th><th>Po co</th><th>Podstawa prawna</th><th>Jak długo</th></tr></thead>
+          <tbody>
+            <tr><td>dane kota (imię, wiek, płeć, cechy, opis, miejscowość, województwo), od 1 do 3 zdjęć, imię lub nazwa do kontaktu, telefon i/lub e-mail, link do ogłoszenia w innym serwisie, informacja, kto zgłasza kota, identyfikator konta</td><td>sprawdzenie zgłoszenia i publikacja kota w serwisie</td><td>zgoda (art. 6 ust. 1 lit. a RODO)</td><td>zgłoszenie czekające: do sprawdzenia albo do usunięcia przez Ciebie; odrzucone: 30 dni od odrzucenia; opublikowane: do wycofania zgody, usunięcia kota przez nas albo usunięcia konta</td></tr>
+            <tr><td><strong>publicznie, po akceptacji:</strong> kot z jednym zdjęciem, imię lub nazwa do kontaktu, telefon i/lub e-mail, miejscowość i link do ogłoszenia (tylko pola, które wypełnisz)</td><td>umożliwienie kontaktu w sprawie adopcji</td><td>zgoda (art. 6 ust. 1 lit. a RODO)</td><td>do wycofania zgody, usunięcia kota przez nas albo usunięcia konta</td></tr>
+            <tr><td>dowód zgody: treść i wersja zaznaczonych oświadczeń, data i godzina ich złożenia, identyfikator konta, status zgłoszenia</td><td>wykazanie, że mieliśmy Twoją zgodę (rozliczalność), obrona przed roszczeniami</td><td>obowiązek prawny i prawnie uzasadniony interes (art. 6 ust. 1 lit. c i f w związku z art. 7 ust. 1 RODO)</td><td>przez czas publikacji, a po wycofaniu zgody 3 lata (już bez danych kontaktowych, linku i zdjęć)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Zdjęcia.</strong> Przed wysłaniem zdjęcia są zmniejszane w Twojej przeglądarce. Usuwa to z nich ukryte metadane, np. lokalizację GPS. Po akceptacji jedno wybrane zdjęcie kopiujemy do publicznego folderu ze zdjęciami kotów, a pozostałe zdjęcia zgłoszenia usuwamy. Na zdjęciach nie powinno być ludzi ani danych, które pozwalają kogoś zidentyfikować.</li>
+        <li><strong>Wycofanie zgody.</strong> W zakładce <a href="dodaj-kota.html#moje">„Moje zgłoszenia”</a> możesz w każdej chwili usunąć zgłoszenie albo wycofać zgodę dla opublikowanego kota. Kot od razu znika ze strony, a dane kontaktowe i link usuwamy z bazy natychmiast. Pliki zdjęć usuwamy niezwłocznie, najpóźniej w ciągu 7 dni.</li>
+        <li><strong>Powiadomienia.</strong> Na razie nie wysyłamy e-maili o zmianie statusu zgłoszenia. Status widzisz w „Moich zgłoszeniach”.</li>
+        <li><strong>Dobrowolność.</strong> Podanie danych jest dobrowolne, ale bez danych kontaktowych i zgody nie opublikujemy kota.</li>
+      </ul>
       <p>Zgodę na publikację danych możesz wycofać w każdej chwili, pisząc na <a href="mailto:podlasie.studio.mail@gmail.com">podlasie.studio.mail@gmail.com</a>. Kota ukryjemy wtedy na stronie, a Twoje dane kontaktowe i link do ogłoszenia usuniemy z naszej bazy niezwłocznie, nie później niż w ciągu 7 dni. Wycofanie zgody nie wpływa na zgodność z prawem publikacji przed jej wycofaniem.</p>
       <h3>Adoptujący</h3>
       <p>Przycisk „Chcę adoptować” otwiera Twój program pocztowy z wiadomością do schroniska lub autora ogłoszenia (albo połączenie telefoniczne, jeśli autor podał tylko numer telefonu). Taka wiadomość trafia bezpośrednio do niego, a my jej nie otrzymujemy ani nie przetwarzamy. Administratorem danych z tej korespondencji jest ogłoszeniodawca. Jeśli napiszesz do nas, traktujemy to jak zwykłą wiadomość (patrz tabela w punkcie 2).</p>
@@ -194,7 +212,7 @@
       <ul>
         <li>dostawca hostingu: GitHub, Inc. (GitHub Pages),</li>
         <li>dostawca poczty e-mail: <mark>[DOSTAWCA POCZTY, np. Google Ireland Ltd. (Gmail)]</mark>,</li>
-        <li>jeśli masz konto: Supabase, Inc. (logowanie, baza danych, przechowywanie zdjęć kotów) jako podmiot przetwarzający oraz wbudowany serwer pocztowy Supabase (wysyłka e-maili związanych z kontem),</li>
+        <li>jeśli masz konto: Supabase, Inc. (logowanie, baza danych, przechowywanie zdjęć kotów i zgłoszeń) jako podmiot przetwarzający oraz wbudowany serwer pocztowy Supabase (wysyłka e-maili związanych z kontem),</li>
         <li>jeśli logujesz się kontem Google: Google Ireland Limited jako odrębny administrator danych Twojego konta Google,</li>
         <li>Google Ireland Limited jako odrębny administrator w zakresie reklam AdSense (tylko po Twojej zgodzie),</li>
         <li>operatorzy portali społecznościowych, jeśli kontaktujesz się z nami przez nasze profile,</li>
@@ -272,7 +290,7 @@
       </div>
       <div class="footer__fine">
         <p><strong>Zakłady bez pieniędzy.</strong> Punkty są wirtualne, nie można ich kupić ani wypłacić. To nie jest hazard.</p>
-        <p>Koty i schroniska w grze to na razie przykładowe dane demonstracyjne. Fonty: Fraunces i Nunito (SIL Open Font License).</p>
+        <p>Koty oznaczone „przykład” to dane demonstracyjne. Fonty: Fraunces i Nunito (SIL Open Font License).</p>
         <p>© 2026 podejrzyjkota · Łomża</p>
       </div>
     </div>

@@ -96,7 +96,8 @@
       id: r.id, name: r.name, nameAcc: r.name_acc || r.name, age: r.age || "", sex: r.sex, traits: r.traits || [],
       shelter: r.shelter_id, story: r.story || "", status: r.status, adoptedNote: r.adopted_note || "",
       adoptedAt: r.adopted_at, popularity: r.popularity || 3, look: r.look || {}, photo: r.photo_url || null,
-      listingUrl: r.listing_url || "", contactName: r.contact_name || "", contactPhone: r.contact_phone || "", contactEmail: r.contact_email || ""
+      listingUrl: r.listing_url || "", contactName: r.contact_name || "", contactPhone: r.contact_phone || "", contactEmail: r.contact_email || "",
+      city: r.city || "", voivodeship: r.voivodeship || ""
     };
   }
   API.mapCat = mapCat;
@@ -131,6 +132,8 @@
         <div class="account__head">${avatarHtml(p.avatar)}<div><strong>${esc(p.nickname)}</strong><span>${esc(u.email || "")}</span></div></div>
         <button role="menuitem" type="button" data-acc="profile">✏️ Nick i awatar</button>
         ${Game() ? `<button role="menuitem" type="button" data-acc="leaderboard">🏆 Ranking globalny</button>` : `<a role="menuitem" href="index.html#gra">🐾 Wróć do gry</a>`}
+        <a role="menuitem" href="dodaj-kota.html">➕ Dodaj kota do adopcji</a>
+        <a role="menuitem" href="dodaj-kota.html#moje">📋 Moje zgłoszenia</a>
         ${API.snap.is_admin && !isAdminPage ? `<a role="menuitem" href="admin.html">🛠️ Panel administratora</a>` : ""}
         <button role="menuitem" type="button" data-acc="export">⬇️ Pobierz moje dane (JSON)</button>
         <button role="menuitem" type="button" data-acc="logout">🚪 Wyloguj</button>
@@ -329,7 +332,7 @@
       <button class="sheet__close" type="button" data-close aria-label="Zamknij">×</button>
       <form class="profile" data-del>
         <h2>Usunąć konto?</h2>
-        <p>Usuniemy <strong>na zawsze</strong>: konto logowania (e-mail), profil (nick, awatar), punkty, zakłady, odznaki, odkryte karty i historię punktów. Znikniesz z rankingu. Tego nie da się cofnąć.</p>
+        <p>Usuniemy <strong>na zawsze</strong>: konto logowania (e-mail), profil (nick, awatar), punkty, zakłady, odznaki, odkryte karty, historię punktów i Twoje zgłoszenia kotów razem ze zdjęciami (koty dodane z Twoich zgłoszeń znikną ze strony). Znikniesz z rankingu. Tego nie da się cofnąć.</p>
         <p class="auth__hint">Chcesz zachować kopię? <button class="link-btn link-btn--inline" type="button" data-export>Pobierz najpierw swoje dane (JSON)</button>.</p>
         <label class="field"><span>Wpisz <strong>USUŃ</strong>, żeby potwierdzić</span><input name="confirm" autocomplete="off" spellcheck="false"></label>
         <p class="auth__err" data-err role="alert" hidden></p>
@@ -341,6 +344,12 @@
     f.addEventListener("submit", async (e) => {
       e.preventDefault(); btn.disabled = true;
       try {
+        // najpierw własne zdjęcia ze zgłoszeń (prywatny bucket), resztę posprząta kolejka w panelu admina
+        try {
+          const ls = await sb.storage.from("submissions").list(API.user.id, { limit: 100 });
+          const paths = (ls.data || []).filter((x) => x.id).map((x) => `${API.user.id}/${x.name}`);
+          if (paths.length) await sb.storage.from("submissions").remove(paths);
+        } catch (x) { /* ignore */ }
         await rpc("delete_my_account");
         try { localStorage.removeItem("podejrzyjkota:acct-seen:" + API.user.id); } catch (x) { /* ignore */ }
         await sb.auth.signOut({ scope: "local" });

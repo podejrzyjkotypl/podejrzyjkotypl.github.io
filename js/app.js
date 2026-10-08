@@ -113,8 +113,11 @@
   const isAdopted = (cat) => cat.status === "adopted" || (!remote && state.adoptions[cat.id] != null);
   const available = () => CATS.filter((c) => !isAdopted(c));
   const activeBets = () => state.bets.filter((b) => b.status === "active");
-  const shelterOf = (cat) => DATA.shelters[cat.shelter] || { name: "Schronisko", city: "", email: DATA.contactEmail };
+  // Koty ze zgłoszeń użytkowników nie mają schroniska: pokazujemy kontakt i miejscowość z ogłoszenia
+  const shelterOf = (cat) => DATA.shelters[cat.shelter]
+    || { name: cat.contactName || (cat.city ? "Ogłoszenie prywatne" : "Schronisko"), city: cat.city || "", email: cat.contactEmail || DATA.contactEmail };
   const shortShelter = (sh) => { const m = sh.name.match(/„(.+?)”/); return m ? m[1] : sh.name; };
+  const placeOf = (sh, short) => [short ? shortShelter(sh) : sh.name, sh.city].filter(Boolean).join(", ");
 
   function oddsFirst(cat) {
     const av = available();
@@ -421,7 +424,7 @@
     front.innerHTML = `
       <div class="card__art" style="--bg:${esc((cat.look && cat.look.bg) || "#F3E9DC")}">
         ${art}
-        <span class="chip chip--demo">przykład</span>
+        ${isExampleEmail(contactOf(cat).email) ? `<span class="chip chip--demo">przykład</span>` : ""}
         ${myBet ? `<span class="chip chip--bet" title="Twoja stawka na tego kota">🎲 ${myBet}</span>` : ""}
         ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
       </div>
@@ -429,7 +432,7 @@
         <h3 class="card__name">${esc(cat.name)} <span class="sex sex--${isFemale(cat) ? "f" : "m"}" title="${esc(cat.sex)}">${isFemale(cat) ? "♀" : "♂"}</span></h3>
         <p class="card__meta">${esc(cat.age)} · ${esc(cat.sex)}</p>
         <ul class="traits">${cat.traits.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-        <p class="card__shelter" title="${esc(sh.name)}, ${esc(sh.city)}"><span aria-hidden="true">📍</span> ${esc(shortShelter(sh))}, ${esc(sh.city)}</p>
+        <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${esc(placeOf(sh, true))}</p>
         ${adopted ? "" : listingLink(cat, "card__listing")}
         <div class="card__actions">
           <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
@@ -624,12 +627,12 @@
       <div class="sheet__grid">
         <div class="sheet__art" style="--bg:${esc((cat.look && cat.look.bg) || "#F3E9DC")}">
           ${cat.photo ? `<img class="cat-photo" src="${esc(cat.photo)}" alt="Zdjęcie: ${esc(cat.name)}">` : CatArt.catSvg(cat)}
-          <span class="chip chip--demo">przykład</span>
+          ${isExampleEmail(contactOf(cat).email) ? `<span class="chip chip--demo">przykład</span>` : ""}
           ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
         </div>
         <div class="sheet__info">
           <h2 id="sheet-title">${esc(cat.name)} <span class="sex sex--${isFemale(cat) ? "f" : "m"}">${isFemale(cat) ? "♀" : "♂"}</span></h2>
-          <p class="card__meta">${esc(cat.age)} · ${esc(cat.sex)} · ${esc(sh.name)}, ${esc(sh.city)}</p>
+          <p class="card__meta">${esc([cat.age, cat.sex, placeOf(sh)].filter(Boolean).join(" · "))}</p>
           <ul class="traits traits--big">${cat.traits.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
           <p class="sheet__story">${esc(cat.story)}</p>
           ${adopted && cat.adoptedNote ? `<p class="sheet__adopted">🏠 ${esc(cat.adoptedNote)}</p>` : ""}
@@ -710,7 +713,7 @@
     const head = cat
       ? `<div class="result__art" style="--bg:${esc((cat.look && cat.look.bg) || "#eee")}">${CatArt.catSvg(cat, { title: false })}<span class="ribbon">🎉 Ma dom!</span></div>
          <h2 id="result-title">${esc(cat.name)} ${g(cat, "znalazł", "znalazła")} dom!</h2>
-         <p class="result__sub">${sub ? esc(sub) : `Dzień ${state.day} symulacji`} · ${esc(shelterOf(cat).city)}</p>`
+         <p class="result__sub">${sub ? esc(sub) : `Dzień ${state.day} symulacji`}${shelterOf(cat).city ? ` · ${esc(shelterOf(cat).city)}` : ""}</p>`
       : remote
         ? `<h2 id="result-title">Rozliczenie zakładów</h2><p class="result__sub">${esc(sub || "Od Twojej ostatniej wizyty")}</p>`
         : `<h2 id="result-title">Dzień ${state.day}</h2><p class="result__sub">Minął termin niektórych zakładów.</p>`;

@@ -848,3 +848,58 @@ pre { max-width: 100%; }
 }
 @media (max-width: 359px) { .topbar__in:has(.account:not([hidden])) .brand span { display: none; } }
 .toc li.toc__sub { list-style: none; font-size: .86rem; margin-left: .4em; }
+
+/* ---------- dodaj-kota.html: formularz zgłoszenia i „Moje zgłoszenia” ---------- */
+.submit { display: grid; gap: 22px; }
+.submit__card h2 { font-size: 1.45rem; }
+.submit-form { display: grid; gap: 14px; }
+.submit__set { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 0; display: grid; gap: 12px; min-width: 0; }
+.submit__set legend { font-weight: 800; font-size: .9rem; padding: 0 6px; }
+.submit__grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.submit__set .field small { font-weight: 700; color: var(--ink-soft); }
+.submit__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.submit__thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
+.submit__thumbs:empty { display: none; }
+.submit__thumb { position: relative; width: 112px; height: 112px; margin: 0; }
+.submit__thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
+.submit__thumb figcaption { position: absolute; left: 6px; bottom: 6px; background: var(--plum); color: #fff; font-size: .68rem; font-weight: 800; padding: 1px 7px; border-radius: 999px; }
+.submit__rm { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(43,29,46,.8); color: #fff; font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.submit__rm:hover, .submit__rm:focus-visible { background: var(--terra-d); }
+.submit__check { align-items: flex-start; font-weight: 600; line-height: 1.45; font-size: .9rem; }
+.submit__check input { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--terra); }
+.submit__more { margin-top: 18px; }
+.sub-list { display: grid; gap: 10px; margin-top: 12px; }
+.sub-item { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: #FBF4EC; border-radius: 14px; padding: 10px; min-width: 0; }
+.sub-item__img { width: 64px; height: 64px; border-radius: 12px; overflow: hidden; background: #F3E9DC; display: grid; place-items: center; font-size: 1.8rem; }
+.sub-item__img img { width: 100%; height: 100%; object-fit: cover; }
+.sub-item__info { min-width: 0; }
+.sub-item__info h3 { margin: 0 0 2px; font-size: 1.05rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sub-item__info p { margin: 0; font-size: .84rem; color: var(--ink-soft); }
+.sub-item__act { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+@media (min-width: 560px) { .sub-item { grid-template-columns: 64px 1fr auto; } .sub-item__act { grid-column: auto; } }
+.chip--rej { background: #FBE4E1; color: #9A2A1E; font-size: .7rem; padding: 2px 8px; border-radius: 999px; font-family: var(--font-body); font-weight: 800; }
+
+/* ---------- panel admina: zgłoszenia ---------- */
+.count-badge { display: inline-grid; place-items: center; min-width: 1.7em; height: 1.7em; padding: 0 .45em; border-radius: 999px; background: var(--terra); color: #fff; font-family: var(--font-body); font-size: .8rem; font-weight: 800; vertical-align: middle; }
+.count-badge--zero { background: #EEE3D6; color: var(--ink-soft); }
+.admin-subs { margin: 6px 0 24px; }
+.admin-subs__list { display: grid; gap: 12px; margin-top: 10px; }
+.sub-card { display: grid; gap: 12px; background: var(--paper); border: 2px solid #F6D6B8; border-radius: 16px; padding: 14px; box-shadow: var(--shadow-sm); min-width: 0; }
+@media (min-width: 820px) { .sub-card { grid-template-columns: 230px 1fr auto; align-items: start; } .sub-card .acat__act { grid-column: auto; flex-direction: column; align-items: stretch; } }
+.sub-card__photos { display: flex; gap: 6px; flex-wrap: wrap; }
+.sub-card__photos img { width: 108px; height: 108px; object-fit: cover; border-radius: 10px; display: block; }
+.sub-card__photos a:first-child img { width: 230px; height: 180px; }
+.sub-card__nophoto { width: 108px; height: 108px; display: grid; place-items: center; background: #F6ECE1; border-radius: 10px; font-size: .75rem; color: var(--ink-soft); }
+.sub-card__info { min-width: 0; }
+.sub-card__info h3 { margin: 0 0 4px; font-size: 1.2rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sub-card__info p { margin: 4px 0; font-size: .88rem; overflow-wrap: anywhere; }
+.sub-card__story { white-space: pre-line; max-height: 10em; overflow: auto; background: #FBF4EC; padding: 8px 10px; border-radius: 10px; }
+.admin-pick { border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.admin-pick legend { font-weight: 800; font-size: .85rem; padding: 0 6px; }
+.admin-pick__opt { position: relative; cursor: pointer; }
+.admin-pick__opt input { position: absolute; opacity: 0; }
+.admin-pick__opt img, .admin-pick__opt span { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 3px solid transparent; display: grid; place-items: center; text-align: center; font-size: .72rem; font-weight: 700; background: #F6ECE1; }
+.admin-pick__opt input:checked + img, .admin-pick__opt input:checked + span { border-color: var(--terra); }
+.admin-pick__opt input:focus-visible + img, .admin-pick__opt input:focus-visible + span { outline: 3px solid var(--mustard); }
+.admin-history { margin-top: 20px; }
+.admin-history summary { cursor: pointer; }
