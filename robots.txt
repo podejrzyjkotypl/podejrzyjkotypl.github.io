@@ -1,0 +1,8 @@
+# podejrzyjkota: robots.txt
+# Po zmianie domeny popraw adres mapy strony poniżej.
+User-agent: *
+Allow: /
+Disallow: /404.html
+Disallow: /admin.html
+
+Sitemap: https://podejrzyjkota.pl/sitemap.xml

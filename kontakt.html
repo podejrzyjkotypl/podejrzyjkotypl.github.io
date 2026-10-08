@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kontakt | podejrzyjkota</title>
+  <meta name="description" content="Skontaktuj się z podejrzyjkota: pytania, dodanie kota, zgłoszenie treści, reklamacje, dane osobowe i współpraca ze sponsorami.">
+  <meta name="theme-color" content="#3B2340">
+  <link rel="canonical" href="https://podejrzyjkota.pl/kontakt.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="podejrzyjkota">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:title" content="Kontakt | podejrzyjkota">
+  <meta property="og:description" content="Skontaktuj się z podejrzyjkota: pytania, dodanie kota, zgłoszenie treści, reklamacje, dane osobowe i współpraca ze sponsorami.">
+  <meta property="og:url" content="https://podejrzyjkota.pl/kontakt.html">
+  <meta property="og:image" content="https://podejrzyjkota.pl/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="podejrzyjkota: odkryj karty, poznaj koty do adopcji">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>html{overflow-x:hidden;overflow-x:clip}body{overflow-x:clip}code{overflow-wrap:anywhere}</style>
+  <script src="js/consent.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#tresc">Przejdź do treści</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a class="brand" href="index.html" aria-label="podejrzyjkota: strona główna">
+        <img src="favicon.svg" alt="" width="34" height="34">
+        <span>podejrzyj<b>kota</b></span>
+      </a>
+      <nav class="nav" aria-label="Główna nawigacja">
+        <a href="index.html#gra">Gra</a>
+        <a href="jak-grac.html">Jak grać</a>
+        <a href="faq.html">FAQ</a>
+        <a href="dla-ogloszeniodawcow.html">Dodaj kota</a>
+        <a href="o-nas.html">O nas</a>
+      </nav>
+      <a class="btn btn--primary btn--sm topbar__cta" href="index.html#gra">🐾 Graj</a>
+    </div>
+  </header>
+
+  <main id="tresc">
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Kontakt</p>
+    <h1>Napisz do nas</h1>
+    <p class="page-lead">Masz pytanie, chcesz dodać kota, zgłosić błąd albo zostać sponsorem? Odpisujemy zwykle w ciągu kilku dni.</p>
+  </div>
+</section>
+
+<div class="page">
+  <div class="wrap">
+    <div class="cards cards--2">
+      <div class="info-card">
+        <span class="info-card__icon" aria-hidden="true">✉️</span>
+        <h3>E-mail</h3>
+        <p><a href="mailto:kontakt@przyklad.example" data-placeholder><strong>kontakt@przyklad.example</strong></a></p>
+        <p class="placeholder-note">Adres przykładowy, do podmiany na [E-MAIL KONTAKTOWY].</p>
+      </div>
+      <div class="info-card">
+        <span class="info-card__icon" aria-hidden="true">📍</span>
+        <h3>Kto prowadzi podejrzyjkota</h3>
+        <p><mark>[IMIĘ I NAZWISKO / NAZWA]</mark><br><mark>[ADRES]</mark><br>Łomża, Podlasie</p>
+      </div>
+    </div>
+
+    <h2>Formularz kontaktowy</h2>
+    <p>Formularz nie wysyła niczego na nasz serwer. Po kliknięciu „Otwórz wiadomość” uruchomi się Twój program pocztowy z gotowym e-mailem, który wystarczy wysłać.</p>
+    <form class="form" data-contact-form novalidate>
+      <div class="form__row">
+        <div class="field">
+          <label for="k-imie">Imię <span class="field__hint">(opcjonalnie)</span></label>
+          <input id="k-imie" name="imie" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="k-email">Twój e-mail <span class="field__hint">(żebyśmy mogli odpisać)</span></label>
+          <input id="k-email" name="email" type="email" autocomplete="email" inputmode="email">
+        </div>
+      </div>
+      <div class="field">
+        <label for="k-temat">Temat</label>
+        <select id="k-temat" name="temat" required>
+          <option>Pytanie</option>
+          <option>Dodanie kota</option>
+          <option>Zgłoszenie treści / naruszenia</option>
+          <option>Reklamacja</option>
+          <option>Dane osobowe (RODO)</option>
+          <option>Współpraca / reklama sponsora</option>
+          <option>Błąd na stronie</option>
+          <option>Inne</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="k-wiadomosc">Wiadomość</label>
+        <textarea id="k-wiadomosc" name="wiadomosc" required minlength="5"></textarea>
+        <p class="field__hint">Zgłaszasz treść? Podaj adres strony albo imię kota i powód zgłoszenia.</p>
+      </div>
+      <p class="field__hint">Twoje dane wykorzystamy tylko po to, żeby odpowiedzieć. Szczegóły są w <a href="polityka-prywatnosci.html">polityce prywatności</a>.</p>
+      <div><button class="btn btn--primary" type="submit">Otwórz wiadomość ✉️</button></div>
+      <p class="form__status" data-form-status role="status" aria-live="polite"></p>
+    </form>
+
+    <h2>Najczęstsze sprawy</h2>
+    <div class="cards cards--3">
+      <div class="info-card"><h3>🐱 Chcę dodać kota</h3><p>Wymagania i gotowy wzór zgłoszenia są na stronie <a href="dla-ogloszeniodawcow.html">Dla ogłoszeniodawców</a>.</p></div>
+      <div class="info-card"><h3>🏠 Chcę adoptować</h3><p>Pisz bezpośrednio do schroniska przyciskiem „Chcę adoptować” na karcie kota. My nie prowadzimy adopcji.</p></div>
+      <div class="info-card"><h3>🚩 Zgłoszenie treści</h3><p>Wybierz temat „Zgłoszenie treści”. Procedura jest opisana w <a href="regulamin.html#r9">regulaminie (§ 9)</a>.</p></div>
+      <div class="info-card"><h3>🧾 Reklamacja</h3><p>Odpowiemy w ciągu 14 dni. Zasady są w <a href="regulamin.html#r10">regulaminie (§ 10)</a>.</p></div>
+      <div class="info-card"><h3>🔒 Twoje dane</h3><p>Dostęp, usunięcie, sprzeciw: wybierz temat „Dane osobowe (RODO)”. Więcej w <a href="polityka-prywatnosci.html#p9">polityce prywatności</a>.</p></div>
+      <div class="info-card"><h3>🤝 Sponsoring</h3><p>Sklep zoologiczny, weterynarz, hotel dla zwierząt? Baner na podejrzyjkota pomaga kotom i Twojej firmie.</p></div>
+    </div>
+    <p class="field__hint">Jeśli zwierzę jest w niebezpieczeństwie, dzwoń pod 112, na policję albo do straży miejskiej. Nie czekaj na naszą odpowiedź.</p>
+  </div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="footer__brand">
+        <a class="brand brand--light" href="index.html"><img src="favicon.svg" alt="" width="34" height="34"><span>podejrzyj<b>kota</b></span></a>
+        <p>Gra, w której wygrywają koty. Zrobione z myślą o kotach z Łomży i okolic.</p>
+      </div>
+      <div class="footer__cols">
+        <nav class="footer__col" aria-label="Stopka: serwis">
+          <p class="footer__h">Serwis</p>
+          <div class="footer__nav">
+            <a href="index.html#gra">Gra</a>
+            <a href="jak-grac.html">Jak grać</a>
+            <a href="faq.html">FAQ</a>
+            <a href="index.html#aplikacja">Pobierz aplikację</a>
+            <a href="dla-ogloszeniodawcow.html">Dla ogłoszeniodawców</a>
+            <a href="o-nas.html">O nas</a>
+            <a href="kontakt.html">Kontakt</a>
+          </div>
+        </nav>
+        <nav class="footer__col" aria-label="Stopka: informacje prawne">
+          <p class="footer__h">Informacje</p>
+          <div class="footer__nav">
+            <a href="regulamin.html">Regulamin</a>
+            <a href="polityka-prywatnosci.html">Polityka prywatności</a>
+            <button type="button" class="footer__link" data-cookie-settings>Ustawienia cookies</button>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__fine">
+        <p><strong>Zakłady bez pieniędzy.</strong> Punkty są wirtualne, nie można ich kupić ani wypłacić. To nie jest hazard.</p>
+        <p>Koty, schroniska i adresy e-mail w grze to na razie przykładowe dane demonstracyjne. Fonty: Fraunces i Nunito (SIL Open Font License).</p>
+        <p>© 2026 podejrzyjkota · Łomża</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/pwa.js"></script>
+  <script src="js/pages.js"></script>
+</body>
+</html>

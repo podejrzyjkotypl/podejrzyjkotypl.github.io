@@ -1,0 +1,4 @@
+# ads.txt dla podejrzyjkota (https://iabtechlab.com/ads-txt/)
+# Po akceptacji konta Google AdSense usuń znak # z linijki poniżej
+# i wpisz swój identyfikator wydawcy (pub-…), który znajdziesz w AdSense: Konto > Informacje o koncie.
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

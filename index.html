@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>podejrzyjkota: odkryj karty, poznaj koty do adopcji</title>
+  <meta name="description" content="podejrzyjkota to gra, w której odkrywasz karty z kotami do adopcji i obstawiasz za wirtualne punkty (bez pieniędzy), który kot pierwszy znajdzie dom.">
+  <meta name="theme-color" content="#3B2340">
+  <link rel="canonical" href="https://podejrzyjkota.pl/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="podejrzyjkota">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:url" content="https://podejrzyjkota.pl/">
+  <meta property="og:title" content="podejrzyjkota">
+  <meta property="og:description" content="Odkryj karty, poznaj koty, które szukają domu. Obstawiaj za punkty, bez pieniędzy.">
+  <meta property="og:image" content="https://podejrzyjkota.pl/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="podejrzyjkota: odkryj karty, poznaj koty do adopcji">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <style>html{overflow-x:hidden;overflow-x:clip}body{overflow-x:clip}code{overflow-wrap:anywhere}</style>
+  <script src="js/consent.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#gra">Przejdź do gry</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a class="brand" href="#top" aria-label="podejrzyjkota: strona główna">
+        <img src="favicon.svg" alt="" width="34" height="34">
+        <span>podejrzyj<b>kota</b></span>
+      </a>
+      <nav class="nav" aria-label="Główna nawigacja">
+        <a href="#gra">Gra</a>
+        <a href="#jak-to-dziala">Jak to działa</a>
+        <a href="#aplikacja">Aplikacja</a>
+        <a href="#dla-schronisk">Dla schronisk</a>
+        <a class="nav__more" href="jak-grac.html">Jak grać</a>
+        <a class="nav__more" href="faq.html">FAQ</a>
+      </nav>
+      <a class="points-pill" href="#stolik" title="Twoje punkty (wirtualne, bez wartości pieniężnej)">
+        <span aria-hidden="true">🐾</span> <strong data-points>100</strong>&nbsp;pkt
+      </a>
+      <!-- konto (Supabase): pojawia się tylko, gdy js/config.js ma ustawiony backend -->
+      <div class="account" data-account hidden></div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero__in">
+        <div class="hero__copy">
+          <p class="eyebrow">Gra adopcyjna z Łomży i okolic</p>
+          <h1 class="hero__title">podejrzyj<span>kota</span></h1>
+          <p class="hero__lead">Odkrywaj karty, poznawaj koty, które szukają domu, i obstawiaj, który pierwszy zamieni schronisko na własną kanapę.</p>
+          <div class="nomoney" role="note">
+            <span class="nomoney__icon" aria-hidden="true">🪙<s></s></span>
+            <p><strong>Zakłady są tylko dla zabawy.</strong> Grasz wirtualnymi punktami, bez prawdziwych pieniędzy. Nic nie wpłacasz, niczego nie wypłacasz i nie da się kupić punktów.</p>
+          </div>
+          <div class="hero__cta">
+            <a class="btn btn--primary btn--lg" href="#gra">Odkrywaj karty</a>
+            <a class="btn btn--ghost btn--lg" href="#jak-to-dziala">Jak to działa?</a>
+          </div>
+        </div>
+        <div class="hero__art" aria-hidden="true">
+          <div class="fan">
+            <div class="fan__card fan__card--1"><div class="fan__back"></div></div>
+            <div class="fan__card fan__card--2"><div class="fan__back"></div></div>
+            <div class="fan__card fan__card--3" data-hero-cat></div>
+          </div>
+          <div class="hero__bubble">Mrrr… wybierzesz mnie?</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="demo-strip" role="note">
+      <div class="wrap"><span class="demo-dot" aria-hidden="true"></span> <strong>Przykładowe koty, dane demonstracyjne.</strong> Koty, schroniska i adresy na tej stronie są fikcyjne. Prawdziwe ogłoszenia pojawią się po dołączeniu schronisk.</div>
+    </div>
+
+    <div class="ad-band ad-band--top">
+      <div class="wrap">
+        <div class="ad ad--top" data-ad="top" role="complementary" aria-label="Reklama">
+          <span class="ad__label">Reklama</span>
+          <div class="ad-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRA -->
+    <section class="section game" id="gra">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">Gra</p>
+            <h2>Która karta skrywa Twojego kota?</h2>
+            <p class="section__lead">Kliknij kartę, żeby ją odkryć. Za każdą pierwszy raz odkrytą kartę dostajesz +2 pkt. Odkryj kota, a potem obstaw albo od razu napisz do schroniska.</p>
+          </div>
+          <button class="btn btn--ghost" type="button" data-action="shuffle">🔀 Potasuj i zakryj</button>
+        </div>
+
+        <div class="stats" aria-label="Twoje statystyki">
+          <div class="stat stat--points"><span class="stat__label">Punkty</span><span class="stat__value"><span data-points>100</span><small>pkt</small></span></div>
+          <div class="stat"><span class="stat__label">Seria wygranych</span><span class="stat__value"><span data-streak>0</span><small>🔥</small></span></div>
+          <div class="stat"><span class="stat__label">Odkryte karty</span><span class="stat__value"><span data-revealed>0</span><small>/ <span data-total>0</span></small></span></div>
+          <div class="stat" data-stat-day><span class="stat__label">Dzień symulacji</span><span class="stat__value"><span data-day>1</span><small>runda <span data-round>1</span></small></span></div>
+        </div>
+        <div class="refill" data-refill hidden>
+          <p>Skończyły Ci się punkty? Spokojnie, to tylko zabawa.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-action="refill">Odbierz kocią zapomogę (+30 pkt)</button>
+        </div>
+
+        <div class="game__layout">
+          <div class="board" data-board aria-label="Karty z kotami"></div>
+
+          <aside class="table" id="stolik" aria-label="Twój stolik">
+            <div class="panel">
+              <h3 class="panel__title">Aktywne zakłady</h3>
+              <ul class="bets" data-bets></ul>
+            </div>
+
+            <div class="panel panel--demo">
+              <div class="panel__tag">Tryb demo</div>
+              <h3 class="panel__title">Przyspiesz czas</h3>
+              <p class="panel__text">Prawdziwe adopcje trwają dni lub tygodnie. Żeby przetestować grę, zasymuluj adopcję losowego kota (popularniejsze koty mają większą szansę) albo przewiń dzień.</p>
+              <div class="demo-actions">
+                <button class="btn btn--primary" type="button" data-action="simulate">🏠 Symuluj adopcję</button>
+                <button class="btn btn--ghost" type="button" data-action="nextday">+1 dzień</button>
+              </div>
+              <button class="link-btn" type="button" data-action="reset">Zresetuj grę (punkty, zakłady, karty)</button>
+            </div>
+
+            <div class="panel panel--live" data-live-panel hidden>
+              <div class="panel__tag panel__tag--live">Na żywo</div>
+              <h3 class="panel__title">Grasz na koncie</h3>
+              <p class="panel__text">Zakłady rozliczają się same, gdy schronisko oznaczy adopcję kota. Zakłady „w ciągu N dni” liczą prawdziwe dni od momentu postawienia. Punkty, odznaki i serie są zapisane na Twoim koncie.</p>
+            </div>
+
+            <div class="panel">
+              <h3 class="panel__title">Ranking</h3>
+              <ol class="ranking" data-ranking></ol>
+              <p class="panel__note" data-ranking-note>Rywale są przykładowi. Ranking jest lokalny, liczony tylko w Twojej przeglądarce.</p>
+            </div>
+
+            <div class="ad ad--sidebar" data-ad="sidebar" role="complementary" aria-label="Reklama">
+              <span class="ad__label">Reklama</span>
+              <div class="ad-box"></div>
+            </div>
+
+            <div class="panel">
+              <h3 class="panel__title">Odznaki</h3>
+              <ul class="badges" data-badges></ul>
+            </div>
+
+            <div class="panel" data-history-panel hidden>
+              <h3 class="panel__title">Rozliczone zakłady</h3>
+              <ul class="bets bets--history" data-history></ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- JAK TO DZIAŁA -->
+    <section class="section how" id="jak-to-dziala">
+      <div class="wrap">
+        <p class="eyebrow">Jak to działa</p>
+        <h2>Gra, w której wygrywają koty</h2>
+        <ol class="steps">
+          <li class="step"><span class="step__n">1</span><h3>Odkryj karty</h3><p>Każda karta skrywa kota, który czeka na dom. Kliknij, podejrzyj, poznaj imię, wiek i charakter.</p></li>
+          <li class="step"><span class="step__n">2</span><h3>Obstaw za punkty</h3><p>Na start masz 100 pkt. Postaw je na kota, który Twoim zdaniem pierwszy znajdzie dom albo trafi do domu w ciągu 3, 7 lub 14 dni.</p></li>
+          <li class="step"><span class="step__n">3</span><h3>Kibicuj i udostępniaj</h3><p>Im szybciej kot znajdzie dom, tym lepiej dla wszystkich. Pokaż go znajomym, może ktoś szuka właśnie takiego mruczka.</p></li>
+          <li class="step"><span class="step__n">4</span><h3>Adoptuj!</h3><p>Najlepsza wygrana to kot na kanapie. Każda karta ma przycisk „Chcę adoptować”, który prowadzi prosto do schroniska.</p></li>
+        </ol>
+
+        <div class="rules">
+          <div class="rules__box">
+            <h3>Zasady punktów</h3>
+            <table class="odds">
+              <thead><tr><th>Zakład</th><th>Kiedy wygrywasz</th><th>Mnożnik</th></tr></thead>
+              <tbody>
+                <tr><td>„Pierwszy w&nbsp;domu”</td><td>Twój kot zostanie zaadoptowany jako pierwszy z kotów czekających w danej rundzie (mnożnik zależy od popularności kota)</td><td>×1,2–12</td></tr>
+                <tr><td>„W&nbsp;ciągu 3&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 3 dni po zakładzie</td><td>ok. ×3,2–4,8</td></tr>
+                <tr><td>„W&nbsp;ciągu 7&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 7 dni po zakładzie</td><td>ok. ×2–3</td></tr>
+                <tr><td>„W&nbsp;ciągu 14&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 14 dni po zakładzie</td><td>ok. ×1,3–1,9</td></tr>
+              </tbody>
+            </table>
+            <p class="rules__small">Wygrana = stawka × mnożnik (zaokrąglone). Mniej znane koty, np. seniorzy, mają wyższe mnożniki, żeby warto było o nich mówić. Bonusy: +2 pkt za każdą nową odkrytą kartę, +20 pkt za odkrycie wszystkich.</p>
+          </div>
+          <div class="rules__box rules__box--warm">
+            <h3>Czy to hazard?</h3>
+            <p><strong>Nie.</strong> Punkty nie mają żadnej wartości. Nie można ich kupić, wymienić ani wypłacić. Nikt niczego nie wpłaca, a wygrana to tylko liczba w grze i odznaka.</p>
+            <h3>Gdzie są moje dane?</h3>
+            <p>Bez logowania punkty, zakłady i odkryte karty zapisują się tylko w Twojej przeglądarce (localStorage) i nic nie trafia na serwer.</p>
+            <p data-accounts-only hidden>Konto jest opcjonalne. Jeśli się zalogujesz, punkty, zakłady i odznaki zapiszemy na serwerze, żeby działały na każdym urządzeniu i w rankingu globalnym. Szczegóły: <a href="polityka-prywatnosci.html#konta">polityka prywatności</a>. Konto usuniesz jednym kliknięciem.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APLIKACJA -->
+    <section class="section app" id="aplikacja">
+      <div class="wrap">
+        <div class="app__top">
+          <div class="app__copy">
+            <p class="eyebrow">Aplikacja na Androida</p>
+            <h2>Pobierz aplikację</h2>
+            <p class="section__lead">Miej koty zawsze pod ręką. Aplikacja działa bez internetu, a punkty i zakłady zostają w telefonie.</p>
+
+            <div class="app__native-note" role="status">🎉 Korzystasz już z aplikacji podejrzyjkota. Dzięki!</div>
+
+            <div class="dl-actions">
+              <div class="dl-card dl-card--apk">
+                <span class="dl-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.87 3.22A11.5 11.5 0 0 0 12 8.15c-1.75 0-3.4.37-4.9 1L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+                </span>
+                <div class="dl-card__txt">
+                  <strong>Aplikacja Android (APK)</strong>
+                  <span>wersja 1.0.0 · Android 7.0+ · <span data-apk-size>3,6 MB</span></span>
+                </div>
+                <a class="btn btn--primary btn--lg" href="download/podejrzyjkota.apk" download="podejrzyjkota.apk" type="application/vnd.android.package-archive">⬇ Pobierz APK</a>
+              </div>
+              <div class="dl-card">
+                <span class="dl-card__icon dl-card__icon--pwa" aria-hidden="true">📲</span>
+                <div class="dl-card__txt">
+                  <strong>Zainstaluj jako aplikację</strong>
+                  <span data-pwa-status>Bez pobierania pliku, prosto z przeglądarki (PWA).</span>
+                </div>
+                <button class="btn btn--ghost btn--lg" type="button" data-pwa-install>Zainstaluj</button>
+              </div>
+            </div>
+            <p class="app__soon"><span class="soon-badge">Wkrótce</span> Wersja w Google Play jest w przygotowaniu. Na razie aplikacja jest tylko na Androida.</p>
+          </div>
+
+          <div class="phone" aria-hidden="true">
+            <div class="phone__screen">
+              <div class="phone__bar"><span>21:37</span><span>▲ ▮</span></div>
+              <img src="favicon.svg" alt="" class="phone__logo">
+              <div class="phone__name">podejrzyj<b>kota</b></div>
+              <div class="phone__cards"><span></span><span></span><span></span></div>
+              <div class="phone__btn">Odkrywaj karty</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guides">
+          <div class="guide">
+            <h3>Instalacja APK na Androidzie, krok po kroku</h3>
+            <ol class="guide__steps">
+              <li><strong>Pobierz plik.</strong> Na telefonie kliknij „Pobierz APK”. Chrome może zapytać, czy na pewno pobrać plik. Wybierz <em>„Pobierz mimo to”</em>.</li>
+              <li><strong>Zezwól przeglądarce na instalację.</strong> Przy pierwszej instalacji Android pokaże komunikat o nieznanych aplikacjach. Kliknij <em>„Ustawienia”</em> i włącz <em>„Zezwalaj z tego źródła”</em>. Możesz to też zrobić ręcznie: <span class="path">Ustawienia › Bezpieczeństwo (albo Aplikacje) › Instalowanie nieznanych aplikacji › Chrome › Zezwalaj z tego źródła</span>. Nazwy menu różnią się trochę między telefonami. Na Samsungu: <span class="path">Ustawienia › Aplikacje › ⋮ › Specjalny dostęp › Instalowanie nieznanych aplikacji</span>.</li>
+              <li><strong>Otwórz plik.</strong> Stuknij powiadomienie o pobraniu albo otwórz aplikację <em>Pliki › Pobrane › podejrzyjkota.apk</em>.</li>
+              <li><strong>Zainstaluj.</strong> Kliknij <em>„Zainstaluj”</em>, a po chwili <em>„Otwórz”</em>. Ikona z kotem pojawi się na ekranie głównym.</li>
+              <li><strong>Ostrzeżenie Play Protect.</strong> Jeśli pojawi się okno „Nieznana aplikacja” lub „Zablokowano przez Play Protect”, wybierz <em>„Więcej szczegółów” › „Zainstaluj mimo to”</em>. Google może też zaproponować przeskanowanie aplikacji. Możesz się zgodzić.</li>
+              <li><strong>Gotowe!</strong> Dla bezpieczeństwa możesz teraz wyłączyć zgodę z kroku 2.</li>
+            </ol>
+            <div class="callout">
+              <strong>Dlaczego Play Protect ostrzega?</strong>
+              <p>Aplikacja nie pochodzi jeszcze ze sklepu Google Play i jest nowa, więc Google jej „nie zna”. Takie ostrzeżenie pojawia się przy każdej aplikacji instalowanej spoza sklepu i nie oznacza, że jest szkodliwa. podejrzyjkota <span data-perm-note>nie prosi o kontakty, zdjęcia, lokalizację, aparat ani SMS-y. Jedyne uprawnienie to standardowy dostęp do internetu, który nie wymaga Twojej zgody</span>. Instaluj tylko plik pobrany z tej strony.</p>
+            </div>
+            <p class="guide__small">Aktualizacja: pobierz nowszy plik APK i zainstaluj go „na” starą wersję. Punkty i zakłady zostaną.</p>
+            <p class="guide__small guide__cert">Odcisk certyfikatu (SHA-256): <code style="word-break:break-all;overflow-wrap:anywhere">64:D6:2F:27:05:9A:E5:85:E2:DE:38:02:DC:DE:20:FB:CA:63:A6:2E:94:23:54:80:2C:7D:EC:7A:D7:D2:98:1E</code></p>
+          </div>
+
+          <details class="guide guide--pwa" id="instrukcja-pwa" open>
+            <summary><h3>Alternatywa: aplikacja z przeglądarki (PWA)</h3></summary>
+            <p>Nie chcesz pobierać pliku? Dodaj stronę do ekranu głównego. Otworzy się w osobnym oknie jak aplikacja i zadziała też bez internetu.</p>
+            <ol class="guide__steps">
+              <li>Otwórz tę stronę w <strong>Chrome</strong> na Androidzie.</li>
+              <li>Kliknij przycisk <em>„Zainstaluj”</em> wyżej albo otwórz menu <span class="path">⋮</span> w prawym górnym rogu.</li>
+              <li>Wybierz <span class="path">Zainstaluj aplikację</span> lub <span class="path">Dodaj do ekranu głównego</span>.</li>
+              <li>Potwierdź. Ikona podejrzyjkota pojawi się na ekranie głównym.</li>
+            </ol>
+            <p class="guide__small">Na iPhonie: w Safari stuknij <span class="path">Udostępnij</span> › <span class="path">Do ekranu początkowego</span>.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- DLA SCHRONISK -->
+    <section class="section shelters" id="dla-schronisk">
+      <div class="wrap shelters__in">
+        <div>
+          <p class="eyebrow">Dla schronisk i fundacji</p>
+          <h2>Twoje koty w grze, za darmo</h2>
+          <p class="section__lead">podejrzyjkota pomaga pokazać koty ludziom, którzy nie przeglądają ogłoszeń adopcyjnych. Zabawa przyciąga uwagę, a każda karta prowadzi prosto do Was.</p>
+          <ol class="checklist">
+            <li><strong>Prześlij dane kota:</strong> imię, wiek, płeć, 2–3 cechy charakteru, krótki opis i kontakt.</li>
+            <li><strong>Dodaj zdjęcie</strong>, do którego macie prawa (albo zostawimy ilustrację).</li>
+            <li><strong>Dajcie znać po adopcji</strong>, a karta dostanie odznakę „Zaadoptowany” i zakłady się rozliczą.</li>
+          </ol>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="mailto:schroniska@przyklad.example?subject=Chcemy%20dołączyć%20do%20podejrzyjkota" data-placeholder>Zgłoś schronisko</a>
+            <a class="btn btn--ghost" href="dla-ogloszeniodawcow.html">Wymagania i wzór zgody</a>
+            <span class="placeholder-note">Adres przykładowy, do podmiany.</span>
+          </div>
+        </div>
+        <div class="codecard" aria-label="Przykładowy wpis kota w pliku js/cats.js">
+          <div class="codecard__bar"><span></span><span></span><span></span> js/cats.js</div>
+<pre><code>{
+  id: "pierniczek",
+  name: "Pierniczek",
+  age: "2 lata",
+  sex: "kocur",
+  traits: ["przytulas", "gaduła", "lubi dzieci"],
+  shelter: "koci-wasik",
+  story: "Rudy dżentelmen…",
+  status: "available",   // albo "adopted"
+  popularity: 5,         // 1–5, wpływa na kursy
+  photo: "img/pierniczek.jpg" // opcjonalnie
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="ad-band ad-band--footer">
+    <div class="wrap">
+      <div class="ad ad--footer" data-ad="footer" role="complementary" aria-label="Reklama">
+        <span class="ad__label">Reklama</span>
+        <div class="ad-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="footer__brand">
+        <a class="brand brand--light" href="#top"><img src="favicon.svg" alt="" width="34" height="34"><span>podejrzyj<b>kota</b></span></a>
+        <p>Gra, w której wygrywają koty. Zrobione z myślą o kotach z Łomży i okolic.</p>
+      </div>
+      <div class="footer__cols">
+        <nav class="footer__col" aria-label="Stopka: serwis">
+          <p class="footer__h">Serwis</p>
+          <div class="footer__nav">
+            <a href="#gra">Gra</a>
+            <a href="jak-grac.html">Jak grać</a>
+            <a href="faq.html">FAQ</a>
+            <a href="#aplikacja">Pobierz aplikację</a>
+            <a href="dla-ogloszeniodawcow.html">Dla ogłoszeniodawców</a>
+            <a href="o-nas.html">O nas</a>
+            <a href="kontakt.html">Kontakt</a>
+          </div>
+        </nav>
+        <nav class="footer__col" aria-label="Stopka: informacje prawne">
+          <p class="footer__h">Informacje</p>
+          <div class="footer__nav">
+            <a href="regulamin.html">Regulamin</a>
+            <a href="polityka-prywatnosci.html">Polityka prywatności</a>
+            <button type="button" class="footer__link" data-cookie-settings>Ustawienia cookies</button>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__fine">
+        <p><strong>Zakłady bez pieniędzy.</strong> Punkty są wirtualne, nie można ich kupić ani wypłacić.</p>
+        <p>Wszystkie koty, schroniska i adresy e-mail na tej stronie to przykładowe dane demonstracyjne. Ilustracje kotów są generowane w kodzie (SVG). Fonty: Fraunces i Nunito (SIL Open Font License).</p>
+        <p>© 2026 podejrzyjkota · Łomża</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Karta kota / zakład -->
+  <dialog class="sheet" data-sheet aria-labelledby="sheet-title">
+    <div class="sheet__in" data-sheet-body></div>
+  </dialog>
+
+  <!-- Wynik symulacji -->
+  <dialog class="sheet sheet--result" data-result aria-labelledby="result-title">
+    <div class="sheet__in" data-result-body></div>
+  </dialog>
+
+  <div class="toasts" data-toasts aria-live="polite" aria-atomic="false"></div>
+  <canvas class="confetti" data-confetti aria-hidden="true"></canvas>
+
+  <script src="js/config.js"></script>
+  <script src="js/cats.js"></script>
+  <script src="js/catart.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>

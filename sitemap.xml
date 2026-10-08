@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- podejrzyjkota: mapa strony. Po zmianie domeny zamień https://podejrzyjkota.pl/ na swoją. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://podejrzyjkota.pl/</loc><lastmod>2026-10-06</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://podejrzyjkota.pl/jak-grac.html</loc><lastmod>2026-10-06</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://podejrzyjkota.pl/faq.html</loc><lastmod>2026-10-06</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://podejrzyjkota.pl/dla-ogloszeniodawcow.html</loc><lastmod>2026-10-06</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://podejrzyjkota.pl/o-nas.html</loc><lastmod>2026-10-06</lastmod><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://podejrzyjkota.pl/kontakt.html</loc><lastmod>2026-10-06</lastmod><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://podejrzyjkota.pl/regulamin.html</loc><lastmod>2026-10-06</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://podejrzyjkota.pl/polityka-prywatnosci.html</loc><lastmod>2026-10-06</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

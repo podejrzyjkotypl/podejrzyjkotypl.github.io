@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Panel administratora | podejrzyjkota</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#3B2340">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>html{overflow-x:hidden;overflow-x:clip}body{overflow-x:clip}code{overflow-wrap:anywhere}</style>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-page">
+  <a class="skip" href="#tresc">Przejdź do treści</a>
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a class="brand" href="index.html" aria-label="podejrzyjkota: strona główna">
+        <img src="favicon.svg" alt="" width="34" height="34">
+        <span>podejrzyj<b>kota</b></span>
+      </a>
+      <span class="admin-tag">admin</span>
+      <a class="btn btn--ghost btn--sm topbar__cta" href="index.html#gra">← Gra</a>
+      <div class="account" data-account hidden></div>
+    </div>
+  </header>
+
+  <main id="tresc" data-admin-root>
+    <section class="page-head page-head--admin">
+      <div class="wrap">
+        <p class="eyebrow">Panel administratora</p>
+        <h1>Koty i adopcje</h1>
+        <p class="page-lead">Dodawaj i edytuj koty, wgrywaj zdjęcia i oznaczaj adopcje. Oznaczenie adopcji od razu rozlicza zakłady graczy (po stronie serwera).</p>
+      </div>
+    </section>
+    <div class="wrap admin" data-admin-body>
+      <div class="admin-card"><p>Ładuję…</p></div>
+    </div>
+  </main>
+
+  <div class="toasts" data-toasts aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/cats.js"></script>
+  <script src="js/catart.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
