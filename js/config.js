@@ -5,7 +5,9 @@
  * Wklej tu WYŁĄCZNIE klucz anon/public (publishable). Nigdy service_role / secret.
  */
 window.PODEJRZYJKOTA_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: "",
-  auth: { google: true, magicLink: true, password: true }
+  supabaseUrl: "https://hlinnwyepdjnlzyalmhn.supabase.co",
+  supabaseAnonKey: "sb_publishable_vkYV_UL5Ppb2iybee0X2LA_jzxXOfa3",
+  // google: wylaczone, dopoki nie ma klienta OAuth w Google Cloud (README, krok 5).
+  // magicLink: wylaczone, dopoki nie ma wlasnego SMTP (wbudowana poczta Supabase wysyla tylko do zespolu, 2 maile/h).
+  auth: { google: false, magicLink: false, password: true }
 };
