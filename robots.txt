@@ -5,4 +5,4 @@ Allow: /
 Disallow: /404.html
 Disallow: /admin.html
 
-Sitemap: https://podejrzyjkota.pl/sitemap.xml
+Sitemap: https://podejrzyjkotypl.github.io/sitemap.xml
