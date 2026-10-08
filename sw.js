@@ -1,5 +1,5 @@
 /* podejrzyjkota: service worker (offline). Po każdej zmianie plików podbij CACHE_VERSION. */
-const CACHE_VERSION = "v1.5.0";
+const CACHE_VERSION = "v1.6.0";
 const CACHE = "podejrzyjkota-" + CACHE_VERSION;
 const ASSETS = [
   "./",
@@ -25,6 +25,7 @@ const ASSETS = [
   "./js/config.js",
   "./js/account.js",
   "./js/submit.js",
+  "./js/anim.js",
   "./fonts/fraunces-latin-soft-normal.woff2",
   "./fonts/fraunces-latin-ext-soft-normal.woff2",
   "./fonts/nunito-latin-wght-normal.woff2",

@@ -9,8 +9,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#3B2340",
-  "theme_color": "#3B2340",
+  "background_color": "#17121F",
+  "theme_color": "#17121F",
   "categories": ["games", "lifestyle"],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
