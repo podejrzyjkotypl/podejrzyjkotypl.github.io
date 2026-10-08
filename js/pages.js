@@ -1,8 +1,8 @@
 /* podejrzyjkota: drobne skrypty podstron (kopiowanie wzorów, formularz kontaktowy) */
 (function () {
   "use strict";
-  // DO PODMIANY: adres, na który formularz kontaktowy otwiera wiadomość (ten sam co na stronie Kontakt)
-  var CONTACT_EMAIL = "kontakt@przyklad.example";
+  // adres, na który formularz kontaktowy otwiera wiadomość (ten sam co na stronie Kontakt)
+  var CONTACT_EMAIL = "podlasie.studio.mail@gmail.com";
 
   function copyText(txt) {
     if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
