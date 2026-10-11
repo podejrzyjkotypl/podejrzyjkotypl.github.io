@@ -122,6 +122,8 @@
           </div>
 
           <aside class="table" id="stolik" aria-label="Twój stolik">
+            <div class="panel panel--path" data-path aria-label="Kocia ścieżka: poziom, zadania dnia i odznaki"></div>
+
             <div class="panel">
               <h3 class="panel__title">Aktywne zakłady</h3>
               <ul class="bets" data-bets></ul>
@@ -146,6 +148,7 @@
 
             <div class="panel">
               <h3 class="panel__title">Ranking</h3>
+              <div data-ranking-tabs hidden></div>
               <ol class="ranking" data-ranking></ol>
               <p class="panel__note" data-ranking-note>Rywale są przykładowi. Ranking jest lokalny, liczony tylko w Twojej przeglądarce.</p>
             </div>
@@ -153,11 +156,6 @@
             <div class="ad ad--sidebar" data-ad="sidebar" role="complementary" aria-label="Reklama">
               <span class="ad__label">Reklama</span>
               <div class="ad-box"></div>
-            </div>
-
-            <div class="panel">
-              <h3 class="panel__title">Odznaki</h3>
-              <ul class="badges" data-badges></ul>
             </div>
 
             <div class="panel" data-history-panel hidden>
@@ -384,6 +382,7 @@
   <script src="js/catart.js"></script>
   <script src="js/pwa.js"></script>
   <script src="js/ads.js"></script>
+  <script src="js/progress.js"></script>
   <script src="js/app.js"></script>
   <script src="js/places.js"></script>
   <script src="js/filters.js"></script>

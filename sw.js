@@ -1,5 +1,5 @@
 /* podejrzyjkota: service worker (offline). Po każdej zmianie plików podbij CACHE_VERSION. */
-const CACHE_VERSION = "v1.7.0";
+const CACHE_VERSION = "v1.8.0";
 const CACHE = "podejrzyjkota-" + CACHE_VERSION;
 const ASSETS = [
   "./",
@@ -21,6 +21,7 @@ const ASSETS = [
   "./js/ads.js",
   "./js/pages.js",
   "./js/pwa.js",
+  "./js/progress.js",
   "./js/app.js",
   "./js/config.js",
   "./js/account.js",

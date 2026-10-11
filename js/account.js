@@ -130,6 +130,7 @@
       </button>
       <div class="account__menu" role="menu" data-account-menu hidden>
         <div class="account__head">${avatarHtml(p.avatar)}<div><strong>${esc(p.nickname)}</strong><span>${esc(u.email || "")}</span></div></div>
+        ${Game() && window.PodejrzyjkotaProgress ? `<button role="menuitem" type="button" data-acc="player">🐾 Profil gracza</button>` : `<a role="menuitem" href="index.html#profil">🐾 Profil gracza</a>`}
         <button role="menuitem" type="button" data-acc="profile">✏️ Nick i awatar</button>
         ${Game() ? `<button role="menuitem" type="button" data-acc="leaderboard">🏆 Ranking globalny</button>` : `<a role="menuitem" href="index.html#gra">🐾 Wróć do gry</a>`}
         <a role="menuitem" href="dodaj-kota.html">➕ Dodaj kota do adopcji</a>
@@ -158,7 +159,7 @@
     if (a) {
       closeMenu();
       ({ profile: openProfile, export: exportData, logout, delete: openDelete,
-         leaderboard: () => Game().openLeaderboard() })[a.dataset.acc]();
+         leaderboard: () => Game().openLeaderboard(), player: () => window.PodejrzyjkotaProgress.openProfile() })[a.dataset.acc]();
     }
     if (e.target.closest('[data-action="login"]')) { e.preventDefault(); openLogin(); }
   });
@@ -374,10 +375,10 @@
       if (!snap.profile.migrated_at && Game()) {
         const gp = Game().getGuestProgress();
         const r = await rpc("import_guest_progress", gp
-          ? { p_points: gp.points, p_badges: gp.badges, p_seen: gp.seen, p_best_streak: gp.bestStreak }
-          : { p_points: 0, p_badges: [], p_seen: [], p_best_streak: 0 });
+          ? { p_points: gp.points, p_badges: gp.badges, p_seen: gp.seen, p_best_streak: gp.bestStreak, p_xp: gp.xp || 0, p_best_visit: gp.bestVisit || 0 }
+          : { p_points: 0, p_badges: [], p_seen: [], p_best_streak: 0, p_xp: 0, p_best_visit: 0 });
         if (gp && r.imported) {
-          toast(`📦 Przenieśliśmy postęp z tej przeglądarki${r.points_added ? `: <strong>+${r.points_added} pkt</strong>` : ""}, odznaki i odkryte karty.${gp.bets ? " Zakłady demo zostają w trybie gościa." : ""}`);
+          toast(`📦 Przenieśliśmy postęp z tej przeglądarki${r.points_added ? `: <strong>+${r.points_added} pkt</strong>` : ""}${r.xp_added ? `, ${r.xp_added} XP` : ""}, odznaki i odkryte karty.${gp.bets ? " Zakłady demo zostają w trybie gościa." : ""}`);
         }
         snap = await rpc("get_my_state");
       }

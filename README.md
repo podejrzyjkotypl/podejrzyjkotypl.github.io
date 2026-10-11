@@ -12,6 +12,7 @@ css/style.css     style (mobile-first)
 js/cats.js        DANE KOTÓW I SCHRONISK: tu podmieniasz koty
 js/catart.js      generator ilustracji kotów (SVG z kodu)
 js/app.js         logika gry: karty, punkty, zakłady, ranking, odznaki
+js/progress.js    KOCIA ŚCIEŻKA: XP, 10 poziomów, 21 odznak, 3 zadania dnia, seria wizyt z „Mroźną łapką”, profil gracza, udostępnianie kota (?kot=ID&ref=KOD); gość: localStorage, konto: wszystko liczy serwer (migracja 11)
 js/pwa.js         PWA: rejestracja service workera + przycisk „Zainstaluj”
 sw.js             service worker (cache offline, wersjonowany: CACHE_VERSION)
 manifest.webmanifest  manifest PWA (nazwa, kolory, ikony)
@@ -40,7 +41,7 @@ js/filters.js     FILTR KOTÓW: województwo, miejscowość z podpowiedziami, �
 js/places.js      miejscowości: podpowiedzi (też w panelu admina i „Dodaj kota”), województwo z miejscowości, odległości
 data/miejscowosci.json  ok. 3600 miejscowości PL ze współrzędnymi (GeoNames cities500, CC BY 4.0), ładowane w tle
 admin.html, js/admin.js  panel administratora: koty, zdjęcia, oznaczanie adopcji (rozlicza zakłady)
-supabase/migrations/  schemat bazy, RLS, funkcje RPC, Storage, dane przykładowe (kolejno 1 → 5)
+supabase/migrations/  schemat bazy, RLS, funkcje RPC, Storage, dane przykładowe, gra i Kocia ścieżka (kolejno 1 → 11)
 supabase/setup-all.sql  to samo w jednym pliku, do wklejenia w SQL Editor
 supabase/tests/rls_smoke_test.sql  test zabezpieczeń do uruchomienia w SQL Editor (wszystko cofa)
 ```
@@ -63,7 +64,18 @@ supabase/tests/rls_smoke_test.sql  test zabezpieczeń do uruchomienia w SQL Edit
 - **Tryb demo:** „Symuluj adopcję” przesuwa czas o 1–2 dni i losuje adopcję kota (ważoną popularnością), a potem rozlicza zakłady. „+1 dzień” rozlicza przeterminowane zakłady. Z prawdziwymi danymi adopcje rozliczałby status `adopted` z danych albo z backendu.
 - Przy 0 pkt i braku aktywnych zakładów można odebrać „kocią zapomogę” (+30 pkt).
 - **Z kontem (Supabase)** te same zasady liczy serwer: kursy, saldo i rozliczenia są w funkcjach SQL, „Symuluj adopcję” znika, a zakłady rozlicza administrator, oznaczając adopcję w `admin.html`. Zakłady „w ciągu N dni” liczą prawdziwe dni. Zapomoga: raz na 24 godziny.
-- Bez konta ranking jest lokalny i ma przykładowych rywali (z kontem: ranking globalny, top 50 i Twoja pozycja). Odznaki: Podglądacz, Kocie oko, Pierwszy zakład, Szczęśliwa łapa, Seria ×3, Ambasador adopcji.
+- Bez konta ranking jest lokalny i ma przykładowych rywali (z kontem: ranking globalny „Od początku” i „Ten tydzień”, top 50 i Twoja pozycja).
+
+## Kocia ścieżka (poziomy, odznaki, zadania)
+
+- **XP** za: nowego kota +10, historię kota („Więcej”, pierwszy raz) +3, zakład +5 (5 dziennie), wygraną +20 (senior +30), codzienną wizytę 10 + 2 × seria (maks. 24), zadanie dnia +25 (komplet +20), udostępnienie +8 (3 dziennie), polecenie +60.
+- **Poziomy** (progi XP 0, 60, 150, 300, 500, 750, 1100, 1550, 2100, 2800): Kociak, Ciekawski Nos, Tropiciel, Mruczący Kibic, Kocia Intuicja, Opiekun Parapetu, Strażnik Misek, Przyjaciel Schroniska, Kocia Wyrocznia, Legenda Schroniska. Awans: premia poziom × 10 pkt, ramka/ozdoba awatara, tytuł w rankingu.
+- **Zadania dnia**: 3 dziennie, rotacja deterministyczna wg daty (ta sama w `js/progress.js` i `private.quests_for`), reset o północy czasu polskiego; +15 pkt i +25 XP za każde.
+- **Seria wizyt**: 5 × min(seria, 7) pkt dziennie; „Mroźna łapka” raz w tygodniu ratuje jeden opuszczony dzień.
+- **Odznaki** (21): grupy „Dla kotów”, „Gra”, „Wytrwałość”, „Wspólnie”. Lista i opisy: `BADGES` w `js/progress.js` (dozwolone id także w ograniczeniu `user_badges_badge_check`).
+- **Ranking tygodnia**: XP od poniedziałku 00:00, top 3 dostaje odznakę „Podium tygodnia” (liczone leniwie przy pierwszym odczycie w nowym tygodniu).
+- **Polecenia**: `?ref=KOD` zapisuje się w localStorage; po założeniu konta (do 3 dni) obie osoby dostają +50 pkt i +60 XP; limity 5 dziennie i 50 łącznie na polecającego.
+- **Anty-oszustwa**: w trybie konta klient nie może zapisać XP, odznak ani punktów. Wszystko liczą funkcje SECURITY DEFINER i wyzwalacze (odkrycia, zakłady, wygrane, adopcje), a działania zgłaszane przez przeglądarkę (`track_action`) mają dzienne limity. Testy: `supabase/tests/rls_smoke_test.sql` (sekcja „KOCIA ŚCIEŻKA”).
 
 ## Reklamy
 
@@ -107,7 +119,7 @@ Konta są **opcjonalne**. Dopóki `js/config.js` ma puste wartości, strona dzia
 
 - logowanie: **Google**, **link e-mail** (bez hasła) i opcjonalnie **e-mail + hasło**,
 - profil: unikalny nick i awatar (jeden z 9 kotów),
-- punkty, zakłady, odznaki i serie zapisane na koncie; przy pierwszym logowaniu postęp gościa z tej przeglądarki przenosi się jednorazowo (punkty maks. 300, bez zakładów demo),
+- punkty, XP, zakłady, odznaki i serie zapisane na koncie; przy pierwszym logowaniu postęp gościa z tej przeglądarki przenosi się jednorazowo (punkty maks. 300, XP maks. 750, bez zakładów demo),
 - **ranking globalny** (top 50 + Twoja pozycja),
 - zakłady sprawdzane **po stronie serwera** (funkcja `place_bet`: blokada wiersza, saldo, kot nie może być zaadoptowany, limit 30 zakładów na godzinę i 20 aktywnych),
 - `admin.html`: dodawanie i edycja kotów, zdjęcia (Supabase Storage), oznaczenie adopcji, które **od razu rozlicza zakłady**,

@@ -191,9 +191,14 @@
   }
   const isExampleEmail = (e) => /@przyklad\.example$/i.test(String(e || ""));
 
+  const Progress = () => window.PodejrzyjkotaProgress;
+  const progress = (type, cat, extra) => { const P = Progress(); if (P) P.event(type, cat, extra); };
   function award(id) {
-    if (state.badges.includes(id)) return false;
-    state.badges.push(id);
+    const P = Progress();
+    const had = state.badges.includes(id);
+    if (!had) state.badges.push(id);
+    if (P) return P.giveBadge(id);
+    if (had) return false;
     const b = BADGES.find((x) => x.id === id);
     if (b) toast(`${b.icon} Nowa odznaka: <strong>${b.name}</strong>`);
     return true;
@@ -203,10 +208,12 @@
     if (remote) return remoteReveal(catId);
     if (state.revealed.includes(catId)) return;
     state.revealed.push(catId);
+    progress("flip", byId[catId]);
     if (!state.seen.includes(catId)) {
       state.seen.push(catId);
       addPoints(REVEAL_BONUS);
       award("peek");
+      progress("reveal_new", byId[catId]);
       if (state.seen.length === CATS.length && award("allcards")) {
         addPoints(ALL_CARDS_BONUS);
         confetti(90);
@@ -239,6 +246,7 @@
     save();
     renderAll();
     toast(`🎲 Postawione: <strong>${pts(stake)}</strong> na ${esc(cat.nameAcc || cat.name)} (${betLabel(state.bets[state.bets.length - 1])}).`);
+    progress("bet", cat, { days: type !== "first" });
   }
 
   /* ---------- tryb konta: wywołania RPC (walidacja i punkty po stronie serwera) ---------- */
@@ -260,6 +268,7 @@
     if (state.revealed.includes(catId)) return;
     state.revealed.push(catId);
     syncCards(); renderStats();
+    progress("flip", byId[catId]);
     if (state.seen.includes(catId)) return;
     state.seen.push(catId);
     try {
@@ -268,6 +277,7 @@
       newBadges(r.new_badges);
       if ((r.new_badges || []).includes("allcards")) confetti(90);
       renderAll();
+      progress("reveal_new", byId[catId]);
     } catch (e) { toast(errMsg(e)); }
   }
   async function remotePlaceBet(catId, type, days, stake) {
@@ -281,6 +291,7 @@
       newBadges(r.new_badges);
       renderAll();
       toast(`🎲 Postawione: <strong>${pts(bet.stake)}</strong> na ${esc(cat.nameAcc || cat.name)} (${betLabel(bet)}, kurs ${fmtOdds(bet.odds)}).`);
+      progress("bet", cat, { days: type !== "first" });
       refreshLeaderboard();
     } catch (e) { toast(errMsg(e)); }
   }
@@ -295,11 +306,13 @@
     award("ambassador"); save(); renderBadges();
     if (remote) remote.rpc("claim_badge", { p_badge: "ambassador" }).catch(() => {});
   }
+  let weekBoard = null, lbTab = "all";
   function refreshLeaderboard() {
     if (!remote) return Promise.resolve();
-    return remote.rpc("get_leaderboard", { p_limit: 50 })
-      .then((d) => { leaderboard = d; renderRanking(); })
-      .catch(() => {});
+    return Promise.all([
+      remote.rpc("get_leaderboard", { p_limit: 50 }).then((d) => { leaderboard = d; }).catch(() => {}),
+      remote.rpc("get_leaderboard_week", { p_limit: 50 }).then((d) => { weekBoard = d; }).catch(() => {})
+    ]).then(renderRanking);
   }
   const fmtDate = (d) => new Date(d).toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
 
@@ -313,6 +326,7 @@
       state.bestStreak = Math.max(state.bestStreak, state.streak);
       award("firstwin");
       if (state.streak >= 3) award("streak3");
+      progress("win", byId[bet.catId]);
     } else {
       bet.payout = 0;
       state.streak = 0;
@@ -340,6 +354,7 @@
     let r = Math.random() * total, chosen = av[0];
     for (const c of av) { r -= weight(c); if (r <= 0) { chosen = c; break; } }
     state.adoptions[chosen.id] = state.day;
+    const cheered = state.seen.includes(chosen.id) || state.bets.some((b) => b.catId === chosen.id);
 
     const results = [];
     activeBets().forEach((b) => {
@@ -354,6 +369,7 @@
     renderAll();
     highlightCard(chosen.id);
     showResult(chosen, results, state.points - before);
+    if (cheered) progress("witness", chosen);
   }
 
   function nextDay() {
@@ -572,41 +588,75 @@
     return `<span class="mini mini--sm" style="--bg:${esc((cat.look && cat.look.bg) || "#eee")}">${CatArt.catSvg(cat, { title: false })}</span>`;
   }
   const medals = ["🥇", "🥈", "🥉"];
-  function lbRow(r) {
+  function avatarRingMini(id, level) {
+    const P = Progress();
+    if (!P || !level) return avatarMini(id);
+    const L = P.LEVELS[level - 1] || P.LEVELS[0];
+    return `<span class="ring ring--sm${L.color === "rainbow" ? " ring--rainbow" : ""}" style="--ring:${P.ringCss(level)}">${avatarMini(id)}</span>`;
+  }
+  function lbRow(r, weekly) {
+    const P = Progress();
+    const title = P && r.level ? `<small class="who__lvl">${r.level}. ${esc(P.levelName(r.level))}</small>` : "";
     return `<li class="${r.is_me ? "is-me" : ""}">
         <span class="rank">${medals[r.rank - 1] || r.rank}</span>
-        <span class="who who--av">${avatarMini(r.avatar)}<span class="who__n">${esc(r.nickname)}${r.is_me ? " <em>(Ty)</em>" : ""}</span></span>
-        <span class="score">${r.score}</span>
+        <span class="who who--av">${avatarRingMini(r.avatar, r.level)}<span class="who__n">${esc(r.nickname)}${r.is_me ? " <em>(Ty)</em>" : ""}${title}</span></span>
+        <span class="score">${r.score}${weekly ? "<small> XP</small>" : ""}</span>
       </li>`;
+  }
+  const lbTabs = () => `<div class="lbtabs" role="group" aria-label="Rodzaj rankingu">
+      <button type="button" class="lbtab" data-lbtab="all" aria-pressed="${lbTab === "all"}">Od początku</button>
+      <button type="button" class="lbtab" data-lbtab="week" aria-pressed="${lbTab === "week"}">Ten tydzień</button></div>`;
+  function lastWeekLine(b) {
+    const lw = (b && b.last_week) || [];
+    return lw.length ? `<p class="lb__last">Podium zeszłego tygodnia: ${lw.map((x, i) => `${medals[i]} ${esc(x.nickname)}`).join(" · ")}</p>` : "";
+  }
+  function rowsHtml(b, weekly, limit) {
+    const top = limit ? b.top.slice(0, limit) : b.top;
+    let html = top.map((r) => lbRow(r, weekly)).join("");
+    if (b.me && !top.some((r) => r.is_me)) html += `<li class="ranking__gap" aria-hidden="true">⋯</li>` + lbRow({ ...b.me, is_me: true }, weekly);
+    return html;
   }
   function renderGlobalRanking() {
     const el = $("[data-ranking]"), note = $("[data-ranking-note]");
-    if (!leaderboard) { el.innerHTML = `<li class="empty">Ładuję ranking…</li>`; return; }
-    const top = leaderboard.top.slice(0, 10);
-    let html = top.map(lbRow).join("");
-    if (leaderboard.me && !top.some((r) => r.is_me)) html += `<li class="ranking__gap" aria-hidden="true">⋯</li>` + lbRow({ ...leaderboard.me, is_me: true });
-    el.innerHTML = html || `<li class="empty">Jeszcze nikt nie gra. Bądź pierwszy!</li>`;
-    if (note) note.innerHTML = `Ranking globalny: ${leaderboard.players} ${plural(leaderboard.players, "gracz", "graczy", "graczy")}. Wynik = punkty + stawki w grze. <button class="link-btn link-btn--inline" type="button" data-action="leaderboard">Pokaż top 50</button>`;
+    const weekly = lbTab === "week", b = weekly ? weekBoard : leaderboard;
+    const tabsHost = $("[data-ranking-tabs]");
+    if (tabsHost) { tabsHost.hidden = false; tabsHost.innerHTML = lbTabs(); }
+    if (!b) { el.innerHTML = `<li class="empty">Ładuję ranking…</li>`; return; }
+    el.innerHTML = rowsHtml(b, weekly, 10) || `<li class="empty">${weekly ? "W tym tygodniu nikt jeszcze nie zdobył XP. Możesz być pierwszy!" : "Jeszcze nikt nie gra. Bądź pierwszy!"}</li>`;
+    if (note) note.innerHTML = (weekly
+      ? `Ranking tygodnia: XP zdobyte od poniedziałku (reset w poniedziałek o 00:00). Top 3 dostaje odznakę „Podium tygodnia”.${lastWeekLine(b)}`
+      : `Ranking globalny: ${b.players} ${plural(b.players, "gracz", "graczy", "graczy")}. Wynik = punkty + stawki w grze.`) +
+      ` <button class="link-btn link-btn--inline" type="button" data-action="leaderboard">Pokaż top 50</button>`;
   }
   function openLeaderboard() {
-    if (!leaderboard) return;
-    const meIn = leaderboard.top.some((r) => r.is_me);
+    const weekly = lbTab === "week", b = weekly ? weekBoard : leaderboard;
+    if (!b) return;
     sheetBody.innerHTML = `
       <button class="sheet__close" type="button" data-close aria-label="Zamknij">×</button>
       <div class="lb">
-        <p class="eyebrow">Ranking globalny</p>
-        <h2 id="sheet-title">Top ${leaderboard.top.length} graczy</h2>
-        <p class="lb__sub">${leaderboard.players} ${plural(leaderboard.players, "gracz", "graczy", "graczy")} · wynik = punkty + stawki w aktywnych zakładach</p>
-        <ol class="ranking ranking--full">${leaderboard.top.map(lbRow).join("")}
-          ${leaderboard.me && !meIn ? `<li class="ranking__gap" aria-hidden="true">⋯</li>${lbRow({ ...leaderboard.me, is_me: true })}` : ""}</ol>
-        <p class="panel__note">Publicznie widać tylko nick, awatar i wynik. Nick zmienisz w menu konta.</p>
+        <p class="eyebrow">${weekly ? "Ranking tygodnia" : "Ranking globalny"}</p>
+        <h2 id="sheet-title">Top ${b.top.length} graczy</h2>
+        ${lbTabs()}
+        <p class="lb__sub">${b.players} ${plural(b.players, "gracz", "graczy", "graczy")} · ${weekly ? "XP zdobyte od poniedziałku, reset w poniedziałek o 00:00" : "wynik = punkty + stawki w aktywnych zakładach"}</p>
+        ${weekly ? lastWeekLine(b) : ""}
+        <ol class="ranking ranking--full">${rowsHtml(b, weekly)}</ol>
+        <p class="panel__note">Publicznie widać tylko nick, awatar, poziom i wynik. Nick zmienisz w menu konta.</p>
       </div>`;
     if (!sheet.open) sheet.showModal();
     sheetBody.scrollTop = 0;
   }
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-lbtab]");
+    if (!t) return;
+    lbTab = t.dataset.lbtab;
+    renderRanking();
+    if (sheet.open && t.closest(".lb")) openLeaderboard();
+  });
 
   function renderRanking() {
     if (remote) return renderGlobalRanking();
+    const tabsHost = $("[data-ranking-tabs]");
+    if (tabsHost) tabsHost.hidden = true;
     const note = $("[data-ranking-note]");
     if (note) note.innerHTML = "Rywale są przykładowi. Ranking jest lokalny, liczony tylko w Twojej przeglądarce." +
       (accountsAvailable ? ` <button class="link-btn link-btn--inline" type="button" data-action="login">Zaloguj się</button>, żeby grać w rankingu globalnym.` : "");
@@ -622,7 +672,10 @@
   }
 
   function renderBadges() {
-    $("[data-badges]").innerHTML = BADGES.map((b) => {
+    if (Progress()) return Progress().render();
+    const el = $("[data-badges]");
+    if (!el) return;
+    el.innerHTML = BADGES.map((b) => {
       const has = state.badges.includes(b.id);
       return `<li class="badge ${has ? "is-on" : ""}" title="${esc(b.desc)}">
         <span class="badge__icon" aria-hidden="true">${b.icon}</span>
@@ -667,6 +720,7 @@
           ${adopted ? "" : contactBox(cat)}
           <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
           ${adopted ? "" : listingLink(cat, "btn btn--soft btn--block sheet__listing")}
+          ${adopted ? "" : `<button class="btn btn--soft btn--block sheet__share" type="button" data-share="${esc(cat.id)}"><span aria-hidden="true">📣</span> Udostępnij kota</button>`}
           ${isExampleEmail(contactOf(cat).email) ? `<p class="placeholder-note">Adres e-mail jest przykładowy (${esc(contactOf(cat).email)}), do podmiany na prawdziwy kontakt.</p>` : ""}
         </div>
       </div>
@@ -699,6 +753,7 @@
       </form>`}`;
     if (!sheet.open) sheet.showModal();
     sheetBody.scrollTop = 0;
+    progress("details", cat);
     const form = $("[data-betform]", sheetBody);
     if (form) {
       wireBetForm(form, cat);
@@ -776,6 +831,8 @@
     d.addEventListener("click", (e) => {
       if (e.target === d || e.target.closest("[data-close]")) d.close();
       if (e.target.closest("[data-adopt]")) ambassador();
+      const sh = e.target.closest("[data-share]");
+      if (sh && Progress() && byId[sh.dataset.share]) Progress().share(byId[sh.dataset.share]);
     });
   });
 
@@ -800,8 +857,8 @@
         if (state.points < MIN_STAKE && !activeBets().length) { addPoints(REFILL); save(); renderAll(); toast(`🐾 +${REFILL} pkt kociej zapomogi. Powodzenia!`); }
         break;
       case "reset":
-        if (confirm("Zresetować grę? Punkty, zakłady, odznaki i odkryte karty wrócą do stanu początkowego.")) {
-          state = freshState(); save(); buildBoard(); renderAll(); toast("Gra zresetowana. Masz 100 pkt na start.");
+        if (confirm("Zresetować grę? Punkty, zakłady i odkryte karty wrócą do stanu początkowego. Poziom, XP i odznaki zostają.")) {
+          state = freshState(); save(); buildBoard(); renderAll(); toast("Gra zresetowana. Masz 100 pkt na start, poziom i odznaki zostały.");
         }
         break;
     }
@@ -945,6 +1002,7 @@
       renderAll();
       showFreshSettlements();
       refreshLeaderboard();
+      if (Progress()) Progress().sync();
     },
     leaveAccount() {
       remote = null; leaderboard = null;
@@ -957,17 +1015,40 @@
     getGuestProgress() {
       let s = null;
       try { s = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { s = null; }
-      if (!s || s.v !== 1) return null;
+      if (!s || s.v !== 1) s = { v: 1, points: START_POINTS, badges: [], seen: [], bets: [] };
       const has = (s.seen || []).length || (s.bets || []).length || (s.badges || []).length || s.points !== START_POINTS;
-      return has ? { points: s.points, badges: s.badges || [], seen: s.seen || [], bestStreak: s.bestStreak || 0, bets: (s.bets || []).length } : null;
+      const P = Progress(), pe = P ? P.guestExport() : { xp: 0, badges: [], bestVisit: 0 };
+      const badges = Array.from(new Set([...(s.badges || []), ...pe.badges]));
+      const has2 = has || pe.xp > 0 || badges.length;
+      return has2 ? { points: s.points, badges, seen: s.seen || [], bestStreak: s.bestStreak || 0, bets: (s.bets || []).length, xp: pe.xp, bestVisit: pe.bestVisit } : null;
     },
     refreshLeaderboard,
-    openLeaderboard() { return refreshLeaderboard().then(openLeaderboard); }
+    openLeaderboard() { return refreshLeaderboard().then(openLeaderboard); },
+    // Kocia ścieżka (js/progress.js)
+    addPoints(n) { if (remote || !(n > 0)) return; addPoints(n); save(); renderAll(); },
+    setPoints(n) { if (!remote || typeof n !== "number" || n === state.points) return; const d = n - state.points; state.points = n; bumpPoints(d); renderStats(); },
+    confetti,
+    openCat(id) { if (byId[id]) openSheet(id); }
   };
   window.PodejrzyjkotaGame = Game;
 
   /* ---------- start ---------- */
   buildBoard();
+  if (Progress()) Progress().attach(Game);
   renderAll();
   board.classList.add("is-dealing");
+  // link z udostępnienia: ?kot=ID otwiera kartę kota
+  (function deepLink() {
+    const u = new URL(location.href), id = u.searchParams.get("kot");
+    if (!id) return;
+    u.searchParams.delete("kot");
+    history.replaceState(history.state, "", u.pathname + u.search + u.hash);
+    let tries = 0;
+    (function open() {
+      if (byId[id]) { openSheet(id); highlightCard(id); return; }
+      if (++tries < 12) setTimeout(open, 500);
+    })();
+  })();
+  // #profil (np. z menu konta na innych stronach)
+  if (location.hash === "#profil" && Progress()) setTimeout(() => Progress().openProfile(), 400);
 })();
