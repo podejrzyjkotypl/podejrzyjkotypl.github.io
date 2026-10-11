@@ -371,18 +371,38 @@
   /* ---------- render: karty ---------- */
   const board = $("[data-board]");
 
+  // Widok planszy (js/filters.js): które koty pokazać i w jakiej kolejności. Filtr zmienia tylko to, co widać:
+  // punkty, zakłady, kursy i ranking liczą się zawsze ze wszystkich kotów.
+  let view = { match: null, dist: null, empty: "" };
+  function displayOrder() {
+    let ids = state.order.filter((id) => byId[id] && (!view.match || view.match(byId[id])));
+    if (view.dist) {
+      const d = (id) => (view.dist[id] == null ? Infinity : view.dist[id]);
+      ids = ids.map((id, k) => [id, k]).sort((a, b) => (d(a[0]) - d(b[0])) || (a[1] - b[1])).map((x) => x[0]);
+    }
+    return ids;
+  }
+  const distLabel = (id) => {
+    const km = view.dist && view.dist[id];
+    if (km == null) return "";
+    return km < 1 ? "< 1 km" : "~" + (km < 10 ? Math.round(km * 10) / 10 : Math.round(km)).toLocaleString("pl-PL") + " km";
+  };
+
   function buildBoard() {
     board.innerHTML = "";
-    state.order.forEach((id, i) => {
+    const ids = displayOrder();
+    ids.forEach((id, i) => {
       const cat = byId[id];
       const el = document.createElement("div");
       el.className = "card";
       el.dataset.id = id;
       el.style.setProperty("--i", i);
+      const dl = distLabel(id);
       el.innerHTML = `
         <div class="card__inner">
-          <button class="card__back" type="button" aria-label="Odkryj kartę numer ${i + 1}">
+          <button class="card__back" type="button" aria-label="Odkryj kartę numer ${i + 1}${dl ? `, odległość ${dl.replace("~", "około ")}` : ""}">
             <span class="card__num">№ ${String(i + 1).padStart(2, "0")}</span>
+            ${dl ? `<span class="card__dist" aria-hidden="true">📍 ${esc(dl)}</span>` : ""}
             <span class="card__peek">${CatArt.peekEyesSvg()}</span>
             <span class="card__cta">Podejrzyj</span>
             <span class="card__hint">kliknij, żeby odkryć</span>
@@ -392,8 +412,15 @@
         </div>`;
       board.appendChild(el);
       fillFront(el, cat);
-      maybeAdCard(i, state.order.length);
+      maybeAdCard(i, ids.length);
     });
+    if (!ids.length && CATS.length && view.empty) {
+      const em = document.createElement("div");
+      em.className = "board__empty";
+      em.setAttribute("role", "status");
+      em.innerHTML = view.empty;
+      board.appendChild(em);
+    }
     if (window.PodejrzyjkotaAds) window.PodejrzyjkotaAds.renderAll(board);
     syncCards();
   }
@@ -432,7 +459,7 @@
         <h3 class="card__name">${esc(cat.name)} <span class="sex sex--${isFemale(cat) ? "f" : "m"}" title="${esc(cat.sex)}">${isFemale(cat) ? "♀" : "♂"}</span></h3>
         <p class="card__meta">${esc(cat.age)} · ${esc(cat.sex)}</p>
         <ul class="traits">${cat.traits.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-        <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${esc(placeOf(sh, true))}</p>
+        <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${distLabel(cat.id) ? `<span class="card__km">${esc(distLabel(cat.id))}</span> · ` : ""}${esc(placeOf(sh, true))}</p>
         ${adopted ? "" : listingLink(cat, "card__listing")}
         <div class="card__actions">
           <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
@@ -898,7 +925,13 @@
       if (remote) { state.order = normalizeOrder(state.order); state.bets = state.bets.filter((b) => byId[b.catId]); }
       else state = loadState();
       buildBoard(); renderAll();
+      document.dispatchEvent(new CustomEvent("podejrzyjkota:cats"));
     },
+    // filtr lokalizacji (js/filters.js)
+    getCats: () => CATS.slice(),
+    locationOf(cat) { const sh = shelterOf(cat); return { city: cat.city || sh.city || "", voivodeship: cat.voivodeship || "" }; },
+    setView(v) { view = Object.assign({ match: null, dist: null, empty: "" }, v || {}); buildBoard(); },
+    visibleCount: () => displayOrder().length,
     enterAccount(api, snap) {
       remote = api; leaderboard = null;
       state = stateFromSnapshot(snap, null);

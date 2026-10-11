@@ -299,6 +299,7 @@
         </div>
       </form>`, "sheet--admin");
     const f = $("[data-cat-form]", d), err = $("[data-err]", d);
+    if (window.PodejrzyjkotaPlaces) window.PodejrzyjkotaPlaces.cityField(f.elements.city, f.elements.voivodeship);
     let fileUrl = null;
     const look = () => ({ pattern: f.elements.pattern.value, extra: f.elements.extra.value, base: f.elements.base.value, accent: f.elements.accent.value, white: f.elements.white.value, eyes: f.elements.eyes.value, bg: f.elements.bg.value });
     function preview() {

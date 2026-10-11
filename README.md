@@ -36,6 +36,9 @@ js/config.js      KONTA: adres Supabase + klucz anon (puste = tryb gościa, bez 
 js/config.example.js  wzór konfiguracji z opisem
 js/account.js     konta: logowanie (Google, link e-mail, hasło), menu konta, profil, eksport, usuwanie
 js/vendor/supabase.js  biblioteka supabase-js 2.x (UMD, ładowana tylko gdy konta są włączone)
+js/filters.js     FILTR KOTÓW: województwo, miejscowość z podpowiedziami, „Blisko mnie”, zapis w adresie (?woj=…&miasto=…) i localStorage
+js/places.js      miejscowości: podpowiedzi (też w panelu admina i „Dodaj kota”), województwo z miejscowości, odległości
+data/miejscowosci.json  ok. 3600 miejscowości PL ze współrzędnymi (GeoNames cities500, CC BY 4.0), ładowane w tle
 admin.html, js/admin.js  panel administratora: koty, zdjęcia, oznaczanie adopcji (rozlicza zakłady)
 supabase/migrations/  schemat bazy, RLS, funkcje RPC, Storage, dane przykładowe (kolejno 1 → 5)
 supabase/setup-all.sql  to samo w jednym pliku, do wklejenia w SQL Editor

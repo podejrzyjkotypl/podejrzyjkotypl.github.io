@@ -965,3 +965,61 @@ pre { max-width: 100%; }
 .admin-pick__opt input:focus-visible + img, .admin-pick__opt input:focus-visible + span { outline: 3px solid var(--mustard); }
 .admin-history { margin-top: 20px; }
 .admin-history summary { cursor: pointer; }
+
+/* ==========================================================
+   FILTR KOTÓW PO LOKALIZACJI (js/filters.js, js/places.js)
+   ========================================================== */
+.board-col { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.filters { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; box-shadow: var(--shadow-sm); }
+.filters__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.filters__count { margin: 0; font-size: .9rem; color: var(--ink-soft); font-weight: 600; }
+.filters__count strong { color: var(--ink); font-weight: 900; }
+.filters__where { color: var(--ink); }
+.filters__toggle { flex: none; }
+.filters__badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; border-radius: 999px; background: var(--terra); color: var(--on-primary); font-size: .72rem; font-weight: 900; padding: 0 5px; }
+.filters__body { margin-top: 10px; }
+.filters__row { display: grid; gap: 10px; grid-template-columns: 1fr; align-items: end; }
+.filters__field { display: grid; gap: 4px; min-width: 0; }
+.filters__field > span { font-weight: 800; font-size: .8rem; color: var(--ink); }
+.filters__field select, .filters__field input {
+  width: 100%; font: inherit; font-size: .92rem; color: var(--ink); background: var(--paper-2);
+  border: 2px solid var(--field-line); border-radius: 12px; padding: 8px 10px; min-height: 44px;
+}
+.filters__field select option:disabled { color: #8C7F9A; }
+.filters__field select:focus-visible, .filters__field input:focus-visible { border-color: var(--terra); outline: none; box-shadow: 0 0 0 3px rgba(255,138,92,.3); }
+.filters__btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.filters__btns .btn { min-height: 44px; }
+.filters__near.is-on { background: var(--plum-2); border-color: var(--terra); color: var(--ink); }
+.filters__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.fchip { font: inherit; font-size: .8rem; font-weight: 800; color: var(--ink); background: var(--paper-2); border: 1.5px solid var(--line-2); border-radius: 999px; padding: 6px 12px; min-height: 34px; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.fchip:hover { background: var(--paper-3); transform: translateY(-1px); }
+.fchip:focus-visible { outline: 3px solid var(--terra); outline-offset: 2px; }
+.fchip[aria-pressed="true"] { background: var(--terra); border-color: var(--terra); color: var(--on-primary); }
+.fchip__n { display: inline-block; margin-left: 4px; font-size: .72rem; opacity: .85; }
+.filters__msg { margin: 10px 0 0; font-size: .84rem; color: var(--ink-soft); }
+@media (min-width: 640px) {
+  .filters { padding: 14px 18px; }
+  .filters__toggle { display: none; }
+  .filters__row { grid-template-columns: minmax(150px, 1fr) minmax(170px, 1.2fr) auto; }
+}
+.filters.is-collapsed .filters__body { display: none; }
+/* karta: odległość */
+.card__dist { position: absolute; top: 14px; right: 16px; font-size: .74rem; font-weight: 800; color: var(--ink); background: rgba(23,18,31,.55); padding: 3px 8px; border-radius: 999px; }
+.card__km { color: var(--ink); font-weight: 800; }
+/* pusty wynik filtra */
+.board__empty { grid-column: 1 / -1; text-align: center; background: var(--paper); border: 1.5px dashed var(--line-2); border-radius: var(--r); padding: 28px 18px; color: var(--ink-soft); }
+.board__empty p { margin: 4px 0; }
+.board__empty-t { font-family: var(--font-display); font-size: 1.25rem; color: var(--ink) !important; }
+.board__empty .link-btn { font-size: inherit; color: var(--link); margin: 0; font-weight: 800; }
+/* zmiana filtra: karty łagodnie się pojawiają */
+.board.is-filtered .card, .board.is-filtered .board__empty { animation: fadeUp .35s ease both; animation-delay: calc(min(var(--i, 0), 8) * 30ms); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } }
+/* podpowiedzi pod polem (filtr, panel admina, „Dodaj kota”) */
+.ac { position: relative; display: block; }
+.ac__list { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none; background: var(--paper); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: var(--shadow); max-height: 260px; overflow-y: auto; }
+.ac__list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: .9rem; color: var(--ink); }
+.ac__list li[aria-selected="true"], .ac__list li[role="option"]:hover { background: var(--paper-3); }
+.ac__list li[aria-selected="true"] { outline: 2px solid var(--terra); outline-offset: -2px; }
+.ac__h { color: var(--ink-soft); font-size: .78rem; white-space: nowrap; }
+.ac__empty { color: var(--ink-soft); cursor: default !important; }
+.ac__list { font-weight: 600; }

@@ -51,7 +51,7 @@
     <p class="legal-note" role="note"><span aria-hidden="true">✍️</span> Wzór, przed publikacją uzupełnij dane i skonsultuj z prawnikiem.</p>
     <p class="eyebrow">Prywatność</p>
     <h1>Polityka prywatności</h1>
-    <p class="legal__meta">Obowiązuje od: 8 października 2026 r. · Wersja 1.2 (dodano opcjonalne konta graczy i zgłoszenia kotów przez formularz)</p>
+    <p class="legal__meta">Obowiązuje od: 8 października 2026 r. · Wersja 1.3 z 11 października 2026 r. (dodano filtr kotów po lokalizacji i przycisk „Blisko mnie”)</p>
     <p>Tu wyjaśniamy, jakie dane przetwarzamy, po co, na jakiej podstawie i jakie masz prawa. Dokument spełnia obowiązki informacyjne z art. 13 i 14 RODO, czyli rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679.</p>
 
     <div class="info-card info-card--plum">
@@ -96,6 +96,7 @@
           <tbody>
             <tr><td>Wyświetlenie strony i jej bezpieczeństwo (logi serwera u dostawcy hostingu)</td><td>adres IP, data i godzina, adres odwiedzanej podstrony, typ przeglądarki i systemu</td><td>prawnie uzasadniony interes, czyli działanie i ochrona strony (art. 6 ust. 1 lit. f RODO)</td><td>do 90 dni, zgodnie z ustawieniami dostawcy hostingu</td></tr>
             <tr><td>Gra bez konta: punkty, zakłady, odznaki, odkryte karty</td><td>stan gry zapisany w Twoim urządzeniu (localStorage); nie trafia do nas</td><td>świadczenie usługi, o którą prosisz (art. 6 ust. 1 lit. b RODO); zapis jest niezbędny do działania gry, więc nie wymaga zgody (art. 399 ustawy Prawo komunikacji elektronicznej)</td><td>do czasu, aż zresetujesz grę albo usuniesz dane przeglądarki</td></tr>
+            <tr><td>Filtr kotów po lokalizacji i przycisk „Blisko mnie”</td><td>wybrane województwo i miejscowość (localStorage i adres strony); Twoja lokalizacja z przeglądarki, tylko po kliknięciu „Blisko mnie”, używana wyłącznie w Twoim urządzeniu i nigdzie niezapisywana; nie trafia do nas</td><td>świadczenie usługi, o którą prosisz (art. 6 ust. 1 lit. b RODO); dostęp do lokalizacji wymaga Twojej zgody w przeglądarce</td><td>wybór filtra: do wyczyszczenia filtra lub usunięcia danych przeglądarki; lokalizacja: tylko do zamknięcia lub odświeżenia strony</td></tr>
             <tr><td>Konto gracza (opcjonalne): logowanie, zapis stanu gry, ranking globalny</td><td>szczegóły w <a href="#konta">punkcie 3</a></td><td>umowa o prowadzenie konta (art. 6 ust. 1 lit. b RODO); bezpieczeństwo i zapobieganie nadużyciom (art. 6 ust. 1 lit. f RODO)</td><td>do usunięcia konta (szczegóły w punkcie 3)</td></tr>
             <tr><td>Zapamiętanie Twojego wyboru dotyczącego cookies</td><td>wybór zgód i data jego dokonania (localStorage)</td><td>obowiązek wykazania zgody (art. 6 ust. 1 lit. c w zw. z art. 7 ust. 1 RODO)</td><td>12 miesięcy, potem zapytamy ponownie</td></tr>
             <tr><td>Reklamy Google AdSense, także spersonalizowane</td><td>identyfikatory z plików cookies, adres IP, informacje o urządzeniu i interakcjach z reklamami</td><td>Twoja zgoda (art. 6 ust. 1 lit. a RODO i art. 399 ustawy Prawo komunikacji elektronicznej)</td><td>do wycofania zgody; pliki cookies Google działają zwykle do 13 miesięcy</td></tr>
@@ -108,6 +109,7 @@
           </tbody>
         </table>
       </div>
+      <p id="lokalizacja"><strong>Filtr i „Blisko mnie”.</strong> Filtr po województwie i miejscowości działa w całości w Twojej przeglądarce. Wybór zapamiętujemy w pamięci przeglądarki i w adresie strony, żeby można było wysłać komuś link z tym samym filtrem. Przeglądarka zapyta o dostęp do lokalizacji dopiero wtedy, gdy klikniesz „Blisko mnie”. Odpowiedź możesz zmienić w każdej chwili w ustawieniach przeglądarki. Lokalizacja zostaje w przeglądarce: na jej podstawie Twoje urządzenie liczy przybliżoną odległość do miejscowości kotów. Nie wysyłamy jej na nasz serwer ani do nikogo innego, nie zapisujemy jej i nie łączymy z kontem. Po odświeżeniu strony przestajemy z niej korzystać. Listę miejscowości ze współrzędnymi pobieramy z naszej strony (dane GeoNames, licencja CC BY 4.0).</p>
       <p>W przypadku Facebooka i Instagrama za statystyki profilu odpowiadamy wspólnie z Meta Platforms Ireland Ltd. Na portalach społecznościowych obowiązują też polityki prywatności ich operatorów.</p>
     </section>
 
@@ -151,6 +153,7 @@
             <tr><td><code>podejrzyjkota:v1</code></td><td>localStorage</td><td>niezbędne</td><td>punkty, zakłady, odznaki, odkryte karty</td><td>do resetu gry lub usunięcia danych</td></tr>
             <tr><td><code>podejrzyjkota-auth</code></td><td>localStorage</td><td>niezbędne (tylko z kontem)</td><td>sesja logowania (token), żeby nie logować się przy każdej wizycie</td><td>do wylogowania lub usunięcia konta</td></tr>
             <tr><td><code>podejrzyjkota:acct-seen:…</code>, <code>podejrzyjkota:welcomed:…</code></td><td>localStorage</td><td>niezbędne (tylko z kontem)</td><td>które rozliczenia zakładów już widziałeś(-aś), czy pokazaliśmy powitanie</td><td>do usunięcia danych przeglądarki</td></tr>
+            <tr><td><code>podejrzyjkota:filtry</code></td><td>localStorage</td><td>niezbędne</td><td>ostatnio wybrany filtr kotów (województwo i miejscowość); bez Twojej lokalizacji</td><td>do wyczyszczenia filtra lub usunięcia danych przeglądarki</td></tr>
             <tr><td><code>podejrzyjkota:consent</code></td><td>localStorage</td><td>niezbędne</td><td>Twój wybór dotyczący cookies</td><td>12 miesięcy</td></tr>
             <tr><td><code>podejrzyjkota-…</code></td><td>pamięć podręczna (Cache Storage)</td><td>niezbędne</td><td>pliki strony do działania offline (PWA)</td><td>do aktualizacji strony lub usunięcia danych</td></tr>
             <tr><td><code>__gads</code>, <code>__gpi</code>, <code>__eoi</code>, <code>IDE</code>, <code>DSID</code> i podobne</td><td>cookies Google</td><td>marketing</td><td>wyświetlanie i personalizacja reklam, mierzenie ich skuteczności, ograniczanie powtórzeń</td><td>zwykle do 13 miesięcy</td></tr>

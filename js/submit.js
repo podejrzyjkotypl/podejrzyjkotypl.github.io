@@ -162,6 +162,7 @@
         <div data-mine><p class="auth__hint">Ładuję…</p></div>
       </section>`;
     const f = $("[data-sub-form]", root);
+    if (window.PodejrzyjkotaPlaces) window.PodejrzyjkotaPlaces.cityField(f.elements.city, f.elements.voivodeship);
     f.elements.story.addEventListener("input", () => { $("[data-count]", f).textContent = `${f.elements.story.value.length} / 1000`; });
     $("[data-photos]", f).addEventListener("change", onPhotos);
     $("[data-thumbs]", f).addEventListener("click", (e) => {
