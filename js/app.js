@@ -215,6 +215,7 @@
     if (state.revealed.includes(catId)) return;
     state.revealed.push(catId);
     progress("flip", byId[catId]);
+    gcEvent(catId, "odkryty");
     if (!state.seen.includes(catId)) {
       state.seen.push(catId);
       addPoints(REVEAL_BONUS);
@@ -275,6 +276,7 @@
     state.revealed.push(catId);
     syncCards(); renderStats();
     progress("flip", byId[catId]);
+    gcEvent(catId, "odkryty");
     if (state.seen.includes(catId)) return;
     state.seen.push(catId);
     try {
@@ -1058,3 +1060,15 @@
   // #profil (np. z menu konta na innych stronach)
   if (location.hash === "#profil" && Progress()) setTimeout(() => Progress().openProfile(), 400);
 })();
+
+/* GoatCounter: zdarzenia (bez danych osobowych); ciche, gdy skrypt zablokowany */
+function gcEvent(id, what) {
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "kot/" + id + "/" + what, event: true }); } catch (_) {}
+}
+document.addEventListener("click", function (e) {
+  try {
+    const a = e.target.closest && e.target.closest("a[href^='http']"); if (!a) return;
+    const card = a.closest("[data-id]"); if (!card || new URL(a.href).origin === location.origin) return;
+    gcEvent(card.dataset.id, "link");
+  } catch (_) {}
+}, true);
