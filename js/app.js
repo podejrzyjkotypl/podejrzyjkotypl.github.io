@@ -148,12 +148,15 @@
   // kontakt do adopcji: własny kontakt kota (z ogłoszenia), a gdy go brak, schronisko
   function contactOf(cat) {
     const sh = shelterOf(cat);
-    const own = !!(cat.contactPhone || cat.contactEmail);
+    // kontakt = to, co jest dostępne: telefon, e-mail albo link do ogłoszenia (czat np. OLX)
+    const listing = /^https?:\/\/\S+$/i.test(String(cat.listingUrl || "")) ? String(cat.listingUrl) : "";
+    const viaListing = !cat.contactPhone && !cat.contactEmail && !DATA.shelters[cat.shelter] && !!listing;
+    const own = !!(cat.contactPhone || cat.contactEmail) || viaListing;
     return {
-      own,
+      own, viaListing, listing,
       name: own ? (cat.contactName || "") : sh.name,
       phone: own ? (cat.contactPhone || "") : "",
-      email: own ? (cat.contactEmail || "") : (sh.email || DATA.contactEmail)
+      email: viaListing ? "" : own ? (cat.contactEmail || "") : (sh.email || DATA.contactEmail)
     };
   }
   const phoneDigits = (p) => String(p || "").replace(/[^0-9+]/g, "");
@@ -174,6 +177,7 @@
     const ct = contactOf(cat);
     if (ct.email) return adoptMailto(cat);
     if (ct.phone) return telHref(ct.phone);
+    if (ct.viaListing) return ct.listing;
     return adoptMailto(cat);
   }
   const safeUrl = (u) => (/^https?:\/\/\S+$/i.test(String(u || "")) ? String(u) : "");
@@ -187,6 +191,7 @@
     const rows = [];
     if (ct.phone) rows.push(`<li><span aria-hidden="true">📞</span> <a href="${esc(telHref(ct.phone))}" data-adopt>${esc(fmtPhone(ct.phone))}</a></li>`);
     if (ct.email) rows.push(`<li><span aria-hidden="true">✉️</span> <a href="${esc(adoptMailto(cat))}" data-adopt>${esc(ct.email)}</a></li>`);
+    if (ct.viaListing) rows.push(`<li><span aria-hidden="true">💬</span> <a href="${esc(ct.listing)}" target="_blank" rel="noopener noreferrer nofollow" data-adopt>przez czat w ogłoszeniu${/olx\./i.test(ct.listing) ? " na OLX" : ""} ↗</a></li>`);
     return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul></div>`;
   }
   const isExampleEmail = (e) => /@przyklad\.example$/i.test(String(e || ""));
@@ -478,7 +483,7 @@
         <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${distLabel(cat.id) ? `<span class="card__km">${esc(distLabel(cat.id))}</span> · ` : ""}${esc(placeOf(sh, true))}</p>
         ${adopted ? "" : listingLink(cat, "card__listing")}
         <div class="card__actions">
-          <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
+          <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
           <div class="card__row">
             ${adopted ? "" : `<button class="btn btn--soft btn--sm" type="button" data-open="bet">🎲 Obstaw</button>`}
             <button class="btn btn--soft btn--sm" type="button" data-open="info">Więcej</button>
@@ -718,10 +723,10 @@
           ${adopted && cat.adoptedNote ? `<p class="sheet__adopted">🏠 ${esc(cat.adoptedNote)}</p>` : ""}
           ${adopted && !cat.adoptedNote ? `<p class="sheet__adopted">🏠 Znalazł${g(cat, "", "a")} dom${state.adoptions[cat.id] ? ` w ${state.adoptions[cat.id]}. dniu symulacji` : cat.adoptedAt ? " " + fmtDate(cat.adoptedAt) : ""}</p>` : ""}
           ${adopted ? "" : contactBox(cat)}
-          <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}" data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
+          <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
           ${adopted ? "" : listingLink(cat, "btn btn--soft btn--block sheet__listing")}
           ${adopted ? "" : `<button class="btn btn--soft btn--block sheet__share" type="button" data-share="${esc(cat.id)}"><span aria-hidden="true">📣</span> Udostępnij kota</button>`}
-          ${isExampleEmail(contactOf(cat).email) ? `<p class="placeholder-note">Adres e-mail jest przykładowy (${esc(contactOf(cat).email)}), do podmiany na prawdziwy kontakt.</p>` : ""}
+          ${isExampleEmail(contactOf(cat).email) ? `<p class="placeholder-note">Kontakt przykładowy (${esc(contactOf(cat).email)}). W kontakcie wpisujemy to, co jest dostępne: telefon, e-mail albo link do ogłoszenia.</p>` : ""}
         </div>
       </div>
       ${adopted ? `<div class="betbox betbox--closed"><p>Ten kot ma już dom, więc zakłady są zamknięte. Najlepsza możliwa wygrana! 🎉</p></div>` : `
