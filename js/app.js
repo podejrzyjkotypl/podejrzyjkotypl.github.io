@@ -478,7 +478,7 @@
         ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
       </div>
       <div class="card__body">
-        <h3 class="card__name">${esc(cat.name)} <span class="sex sex--${isFemale(cat) ? "f" : "m"}" title="${esc(cat.sex)}">${isFemale(cat) ? "♀" : "♂"}</span></h3>
+        <h3 class="card__name"><span class="card__name-t">${esc(cat.name)}</span> <span class="sex sex--${isFemale(cat) ? "f" : "m"}" title="${esc(cat.sex)}">${isFemale(cat) ? "♀" : "♂"}</span></h3>
         <p class="card__meta">${esc(cat.age)} · ${esc(cat.sex)}</p>
         <ul class="traits">${cat.traits.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
         <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${distLabel(cat.id) ? `<span class="card__km">${esc(distLabel(cat.id))}</span> · ` : ""}${esc(placeOf(sh, true))}</p>

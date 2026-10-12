@@ -62,7 +62,7 @@
   --r-sm: 12px;
   --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-body: "Nunito", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --card-h: 344px;
+  --card-h: 396px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -232,9 +232,9 @@ p { margin: 0 0 1em; }
 .card__front { transform: rotateY(180deg); background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); display: flex; flex-direction: column; }
 .card__art { position: relative; height: 40%; min-height: 0; background: var(--bg); flex: none; display: grid; place-items: center; overflow: hidden; }
 .card__art .cat-svg { height: 112%; width: auto; margin-top: 8%; }
-.cat-photo { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.cat-photo { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 .cat-photo-bg { position: absolute; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); object-fit: cover; filter: blur(14px) brightness(.55) saturate(1.1); }
-.card__art:has(.cat-photo) { height: 46%; background: #17121F; }
+.card__art:has(.cat-photo) { height: 38%; background: #17121F; }
 .sheet__art:has(.cat-photo) { background: #17121F; height: auto; aspect-ratio: 4 / 3; }
 .chip, .ribbon { z-index: 2; }
 .chip { position: absolute; top: 8px; font-size: .66rem; font-weight: 800; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px; }
@@ -245,16 +245,19 @@ p { margin: 0 0 1em; }
 
 .card__body { padding: 10px 12px 12px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .card__body > * { flex-shrink: 0; }
-.card__name { font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 6px; }
+.card__name { font-size: 1.2rem; line-height: 1.15; margin: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; min-width: 0; min-height: 2.3em; }
+.card__name-t { min-width: 0; flex: 1 1 auto; overflow-wrap: anywhere; hyphens: auto; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.card__name .sex { flex: 0 0 20px; margin-top: .1em; }
 .sex { font-family: var(--font-body); font-size: .8rem; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; }
 .sex--f { background: #E07A9A; } .sex--m { background: #5F8FD0; }
 .card__meta { font-size: .82rem; color: var(--ink-soft); margin: 1px 0 6px; font-weight: 600; }
 .traits { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px; max-height: 24px; overflow: hidden; }
+.card .traits { height: 22px; max-height: 22px; }
 .traits li { font-size: .72rem; font-weight: 700; background: var(--paper-2); color: #F2CBA9; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 .traits--big { max-height: none; gap: 6px; margin: 10px 0 12px; }
 .traits--big li { font-size: .85rem; padding: 4px 11px; }
 .card__shelter { font-size: .78rem; color: var(--ink-soft); margin: 0 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card__listing { display: inline-block; font-size: .78rem; font-weight: 800; color: var(--link); margin: -4px 0 8px; text-decoration: none; }
+.card__listing { display: block; min-height: 1.2em; font-size: .78rem; font-weight: 800; color: var(--link); margin: -4px 0 8px; text-decoration: none; }
 .card__listing:hover, .card__listing:focus-visible { text-decoration: underline; }
 .card__actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
 .card__actions .btn--primary { box-shadow: 0 3px 0 var(--terra-d); }
@@ -264,7 +267,6 @@ p { margin: 0 0 1em; }
 @keyframes celebrate { 0% { } 30% { transform: rotateY(180deg) scale(1.06); } 60% { transform: rotateY(180deg) scale(.98); } 100% { transform: rotateY(180deg) scale(1); } }
 
 @media (min-width: 640px) {
-  .traits { max-height: 52px; }
   .card__body { padding: 12px 14px 14px; }
   .card__name { font-size: 1.3rem; }
 }
