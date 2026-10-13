@@ -194,6 +194,21 @@
     if (ct.viaListing) rows.push(`<li><span aria-hidden="true">💬</span> <a href="${esc(ct.listing)}" target="_blank" rel="noopener noreferrer nofollow" data-adopt>przez czat w ogłoszeniu${/olx\./i.test(ct.listing) ? " na OLX" : ""} ↗</a></li>`);
     return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul></div>`;
   }
+  // zdjęcia kotów: nigdy nie przycinamy kota. Domyślnie contain; cover tylko dla poziomych,
+  // gdy proporcje zdjęcia są bliskie proporcjom ramki (różnica do ok. 15%).
+  function fitCatPhoto(img) {
+    const w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) return;
+    const r = w / h, box = img.parentElement, bw = box ? box.clientWidth : 0, bh = box ? box.clientHeight : 0;
+    const land = r >= 1.1;
+    img.classList.toggle("is-landscape", land);
+    img.classList.toggle("is-portrait", !land);
+    const close = land && bw && bh ? Math.abs(r / (bw / bh) - 1) <= 0.15 : false;
+    img.classList.toggle("is-cover", close);
+  }
+  document.addEventListener("load", (e) => { const t = e.target; if (t && t.classList && t.classList.contains("cat-photo")) fitCatPhoto(t); }, true);
+  window.addEventListener("resize", () => { document.querySelectorAll("img.cat-photo").forEach((i) => { if (i.complete) fitCatPhoto(i); }); });
+  new MutationObserver(() => { document.querySelectorAll("img.cat-photo:not(.is-landscape):not(.is-portrait)").forEach((i) => { if (i.complete) fitCatPhoto(i); }); }).observe(document.documentElement, { childList: true, subtree: true });
   const isDemo = (cat) => !cat.listingUrl && !cat.contactPhone && !cat.contactEmail && isExampleEmail(contactOf(cat).email);
   const isExampleEmail = (e) => /@przyklad\.example$/i.test(String(e || ""));
 
