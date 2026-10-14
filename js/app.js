@@ -939,11 +939,13 @@
   /* ---------- hero ---------- */
   const heroCat = $("[data-hero-cat]");
   function renderHero() {
-    const c = CATS.find((x) => x.status !== "adopted") || CATS[0];
+    const c = CATS.find((x) => x.status !== "adopted" && x.photo) || CATS.find((x) => x.status !== "adopted") || CATS[0];
     if (!heroCat || !c) return;
-    const art = CatArt.catSvg(c, { title: false });
+    const art = c.photo ? `<img class="fan__photo" src="${esc(c.photo)}" alt="Zdjęcie: ${esc(c.name)}">` : CatArt.catSvg(c, { title: false });
     heroCat.innerHTML = `<div class="fan__art" style="--bg:${esc((c.look && c.look.bg) || "#2a2238")}">${art}</div>
       <div class="fan__label"><strong>${esc(c.name)}</strong><span>${esc(c.age || "")} · ${esc(c.sex || "")}</span></div>`;
+    const img = heroCat.querySelector(".fan__photo");
+    if (img) img.addEventListener("error", () => { img.outerHTML = CatArt.catSvg(c, { title: false }); }, { once: true });
   }
   renderHero();
   document.addEventListener("podejrzyjkota:cats", renderHero);
