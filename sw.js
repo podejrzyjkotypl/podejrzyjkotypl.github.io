@@ -1,5 +1,5 @@
 /* podejrzyjkota: service worker (offline). Po każdej zmianie plików podbij CACHE_VERSION. */
-const CACHE_VERSION = "v1.8.9";
+const CACHE_VERSION = "v1.9.0";
 const CACHE = "podejrzyjkota-" + CACHE_VERSION;
 const ASSETS = [
   "./",
@@ -9,6 +9,11 @@ const ASSETS = [
   "./jak-grac.html",
   "./faq.html",
   "./dokumenty.html",
+  "./gry.html",
+  "./kotek.html",
+  "./waz.html",
+  "./js/gry/wallet.js",
+  "./js/gry/catalog.js",
   "./adoptowalem.html",
   "./dla-ogloszeniodawcow.html",
   "./dodaj-kota.html",

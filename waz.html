@@ -1,0 +1,103 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Koci Wąż – podejrzyjkota.pl</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><meta name="theme-color" content="#1a1530">
+<style>
+:root{--bg:#1a1530;--card:#262043;--or:#ff8a3d;--tx:#f3eefc;--mu:#b9b0d6}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at 50% 0,#2d2452,var(--bg));color:var(--tx);min-height:100vh;touch-action:none}
+main{max-width:980px;margin:auto;padding:12px}h1{text-align:center;margin:.2em 0}h1 span{color:var(--or)}
+.wrap{display:grid;grid-template-columns:auto 300px;gap:16px;justify-content:center}@media(max-width:760px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 6px 24px #0006}
+.hud{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:700}.hud b{color:var(--or)}
+canvas{display:block;width:100%;max-width:520px;aspect-ratio:1;border-radius:14px;background:#14102a;margin:auto}
+.cv{position:relative;max-width:520px;margin:auto}.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#140f2bcc;border-radius:14px;text-align:center;padding:16px}
+button{background:var(--or);color:#1a1530;border:0;border-radius:14px;padding:11px 14px;font-weight:700;cursor:pointer;box-shadow:0 0 14px #ff8a3d88;font-size:.95em}button.off{background:#3a3260;color:var(--tx);box-shadow:none}
+.pad{display:none;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center;margin-top:10px}.pad button{height:56px;font-size:1.4em}@media(pointer:coarse),(max-width:760px){.pad{display:grid}}
+.row{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tabs button{padding:7px 10px;font-size:.85em}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:8px}.it{background:#3a3260;border-radius:12px;padding:8px;text-align:center;border:2px solid transparent}.it.on{border-color:var(--or)}.it .ic{font-size:26px}.it button{width:100%;padding:7px;margin-top:4px;font-size:.85em}
+.pts{color:var(--or);font-weight:700}small{color:var(--mu)}a{color:var(--or)}
+</style></head><body><main><p style="text-align:center;margin:4px 0 0;font-size:.9em"><a href="./">← podejrzyjkota.pl</a> · <a href="gry.html">🎮 Gry</a> · <a href="./#gra">🃏 Karty z kotami</a></p>
+<h1>Koci <span>Wąż</span> 🐍🐱</h1>
+<div class="wrap">
+<section class="card"><div class="hud"><span>Chrupki: <b id="sc">0</b></span><span>Rekord: <b id="hi">0</b></span></div>
+<div class="cv"><canvas id="c" width="520" height="520"></canvas><div class="ov" id="ov"></div></div>
+<div class="pad"><span></span><button data-d="0,-1">▲</button><span></span><button data-d="-1,0">◀</button><button id="pz2">⏸</button><button data-d="1,0">▶</button><span></span><button data-d="0,1">▼</button><span></span></div>
+<div class="row"><button id="pz">⏸ Pauza</button><button class="off" onclick="showShop()">🛍️ Skórki</button></div>
+<p style="text-align:center"><small>Strzałki / WASD, spacja = pauza. Na telefonie przesuwaj palcem.</small></p></section>
+<section class="card" id="shop"></section>
+</div></main>
+<script src="js/gry/wallet.js"></script><script src="js/gry/catalog.js"></script>
+<script>
+const N=15,C=document.getElementById('c'),X=C.getContext('2d'),S=C.width/N,G='snake';
+const q=new URLSearchParams(location.search).get('demo');
+if(q)Wallet.demo(250,['s-futro-rude','s-futro-bure','s-kokarda','s-slad-lapki','s-futro-tricolor','s-korona','s-slad-iskry'],q=='shop'?{snake:{futro:'s-futro-bure',glowa:'s-kokarda',slad:'s-slad-lapki'}}:{snake:{futro:'s-futro-tricolor',glowa:'s-korona',slad:'s-slad-iskry'}});
+let snake,dir,next,food,score,run=false,paused=false,over=false,trail=[],timer,tab='futro';
+let hi=+(localStorage.getItem('koci-waz-hi')||0);if(q)hi=37;
+function skin(){return (Wallet.item(Wallet.equipped(G,'futro')||'s-futro-rude')).v}
+function reset(){snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}];dir={x:1,y:0};next=dir;score=0;over=false;trail=[];place()}
+function place(){do food={x:Math.random()*N|0,y:Math.random()*N|0};while(snake.some(p=>p.x==food.x&&p.y==food.y))}
+function step(){dir=next;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+ if(h.x<0||h.y<0||h.x>=N||h.y>=N||snake.some(p=>p.x==h.x&&p.y==h.y))return end();
+ snake.unshift(h);const t=snake[snake.length-1];
+ if(h.x==food.x&&h.y==food.y){score++;place()}else{snake.pop();trail.push({x:t.x,y:t.y,a:1})}
+ draw();hud()}
+function end(){over=true;run=false;clearInterval(timer);if(score>hi){hi=score;localStorage.setItem('koci-waz-hi',hi)}hud();overlay('over')}
+function speed(){return Math.max(70,150-score*3)}
+function start(){reset();run=true;paused=false;ov.style.display='none';clearInterval(timer);timer=setInterval(()=>{if(!paused)step()},speed());draw();hud()}
+function hud(){sc.textContent=score;document.getElementById('hi').textContent=hi;if(run){clearInterval(timer);timer=setInterval(()=>{if(!paused)step()},speed())}}
+function kibble(x,y){const cx=x*S+S/2,cy=y*S+S/2;X.fillStyle='#ff8a3d55';X.beginPath();X.arc(cx,cy,S*.55,0,7);X.fill();
+ [[-.18,-.1,'#c8813f'],[.16,-.14,'#a8652e'],[0,.17,'#d99350']].forEach(([dx,dy,c])=>{X.fillStyle=c;X.beginPath();X.ellipse(cx+dx*S,cy+dy*S,S*.17,S*.13,dx*4,0,7);X.fill();X.fillStyle='#ffffff40';X.beginPath();X.arc(cx+dx*S-2,cy+dy*S-2,2,0,7);X.fill()})}
+function fur(cx,cy,r,col){X.fillStyle=col;X.beginPath();for(let i=0;i<14;i++){const a=i/14*Math.PI*2,rr=r*(i%2?1:.86);X.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}X.fill()}
+function drawTrail(){const t=Wallet.equipped(G,'slad');if(!t)return;trail=trail.filter(p=>(p.a-=.12)>0).slice(-14);
+ trail.forEach((p,i)=>{const cx=p.x*S+S/2,cy=p.y*S+S/2;X.globalAlpha=p.a*.8;
+  if(t=='s-slad-tecza'){X.fillStyle=`hsl(${(i*30+Date.now()/10)%360} 90% 65%)`;X.beginPath();X.arc(cx,cy,S*.3,0,7);X.fill()}
+  else{X.font=`${S*.55}px serif`;X.textAlign='center';X.textBaseline='middle';X.fillText({'s-slad-lapki':'🐾','s-slad-serca':'💖','s-slad-iskry':'✨'}[t],cx,cy)}});X.globalAlpha=1}
+function draw(){X.fillStyle='#14102a';X.fillRect(0,0,C.width,C.height);
+ X.fillStyle='#ffffff08';for(let i=0;i<N;i++)for(let j=0;j<N;j++)if((i+j)%2)X.fillRect(i*S,j*S,S,S);
+ drawTrail();kibble(food.x,food.y);const k=skin();
+ for(let i=snake.length-1;i>0;i--){const p=snake[i],cx=p.x*S+S/2,cy=p.y*S+S/2,last=i==snake.length-1;
+  fur(cx,cy,S*(last?.36:.5),k.b);if(k.p&&i%3==0){X.fillStyle=k.p[i%2];X.beginPath();X.arc(cx,cy,S*.25,0,7);X.fill()}
+  if(k.s&&i%2){X.strokeStyle=k.s;X.lineWidth=3;X.beginPath();X.moveTo(cx-S*.2,cy-S*.3);X.lineTo(cx+S*.2,cy+S*.3);X.stroke()}
+  if(last){X.fillStyle=k.p?k.p[1]:k.s||'#fff8';X.beginPath();X.arc(cx,cy,S*.2,0,7);X.fill()}}
+ head(snake[0],k)}
+function head(p,k){const cx=p.x*S+S/2,cy=p.y*S+S/2,r=S*.62,ang=Math.atan2(dir.y,dir.x)+Math.PI/2;
+ X.save();X.translate(cx,cy);X.rotate(ang);X.fillStyle=k.h;
+ X.beginPath();X.moveTo(-r*.9,-r*.2);X.lineTo(-r*.7,-r*1.15);X.lineTo(-r*.2,-r*.75);X.fill();X.beginPath();X.moveTo(r*.9,-r*.2);X.lineTo(r*.7,-r*1.15);X.lineTo(r*.2,-r*.75);X.fill();
+ X.fillStyle='#ffc9d1';X.beginPath();X.moveTo(-r*.72,-r*.45);X.lineTo(-r*.64,-r*.95);X.lineTo(-r*.35,-r*.7);X.fill();X.beginPath();X.moveTo(r*.72,-r*.45);X.lineTo(r*.64,-r*.95);X.lineTo(r*.35,-r*.7);X.fill();
+ X.fillStyle=k.h;X.beginPath();X.arc(0,0,r*.85,0,7);X.fill();
+ if(k.p){X.fillStyle=k.p[0];X.beginPath();X.arc(-r*.4,-r*.4,r*.3,0,7);X.fill()}
+ if(k.s){X.strokeStyle=k.s;X.lineWidth=3;[-.25,0,.25].forEach(d=>{X.beginPath();X.moveTo(d*r,-r*.8);X.lineTo(d*r,-r*.5);X.stroke()})}
+ const g=Wallet.equipped(G,'glowa'),dark=k.h=='#3d3848';
+ X.fillStyle='#5fd17a';[-1,1].forEach(s=>{X.beginPath();X.arc(s*r*.32,-r*.05,r*.17,0,7);X.fill()});X.fillStyle='#111';[-1,1].forEach(s=>{X.beginPath();X.ellipse(s*r*.32,-r*.05,r*.06,r*.14,0,0,7);X.fill()});
+ X.fillStyle='#e5577a';X.beginPath();X.moveTo(-r*.1,r*.22);X.lineTo(r*.1,r*.22);X.lineTo(0,r*.34);X.fill();
+ X.strokeStyle=dark?'#cfc6e6':'#1a1530';X.lineWidth=2;X.beginPath();X.arc(-r*.1,r*.38,r*.1,0,Math.PI);X.arc(r*.1,r*.38,r*.1,0,Math.PI);X.stroke();
+ X.strokeStyle='#fff9';X.lineWidth=1.5;[-1,1].forEach(s=>{[.28,.4].forEach(y=>{X.beginPath();X.moveTo(s*r*.45,r*y);X.lineTo(s*r*1.15,r*(y-.05));X.stroke()})});
+ if(g=='s-kokarda'){X.fillStyle='#ff5c8a';X.beginPath();X.moveTo(r*.45,-r*.8);X.lineTo(r*.15,-r*1);X.lineTo(r*.15,-r*.6);X.fill();X.beginPath();X.moveTo(r*.45,-r*.8);X.lineTo(r*.75,-r*1);X.lineTo(r*.75,-r*.6);X.fill()}
+ if(g=='s-czapka'){X.fillStyle='#e8434d';X.beginPath();X.moveTo(-r*.6,-r*.65);X.lineTo(r*.6,-r*.65);X.lineTo(r*.2,-r*1.5);X.fill();X.fillStyle='#fff';X.fillRect(-r*.65,-r*.75,r*1.3,r*.18);X.beginPath();X.arc(r*.2,-r*1.5,r*.13,0,7);X.fill()}
+ if(g=='s-okulary'){X.fillStyle='#111c';[-1,1].forEach(s=>{X.beginPath();X.arc(s*r*.32,-r*.05,r*.24,0,7);X.fill()});X.fillRect(-r*.1,-r*.1,r*.2,r*.06)}
+ if(g=='s-korona'){X.fillStyle='#ffcf33';X.beginPath();X.moveTo(-r*.5,-r*.65);X.lineTo(-r*.5,-r*1.2);X.lineTo(-r*.25,-r*.9);X.lineTo(0,-r*1.3);X.lineTo(r*.25,-r*.9);X.lineTo(r*.5,-r*1.2);X.lineTo(r*.5,-r*.65);X.fill();X.fillStyle='#ff5470';X.beginPath();X.arc(0,-r*.82,r*.08,0,7);X.fill()}
+ X.restore()}
+function overlay(m){ov.style.display='flex';
+ ov.innerHTML=m=='over'?`<div style="font-size:48px">😿</div><h2>Ups, kotek się zaplątał!</h2><p>Zebrane chrupki: <b class="pts">${score}</b>${score>=hi&&score?' 🏆 Nowy rekord!':''}<br>Rekord: <b class="pts">${hi}</b></p><button onclick="start()">Jeszcze raz 🐾</button><p><small>Prawdziwy kot też lubi chrupki, ale najbardziej dom. <a href="./#gra">Zobacz koty do adopcji →</a></small></p>`
+ :m=='pause'?`<h2>⏸ Pauza</h2><button onclick="pause()">Graj dalej</button>`:`<div style="font-size:48px">🐱</div><h2>Zbieraj chrupki kocie!</h2><p>Każda chrupka wydłuża kotka. Nie wpadnij na ścianę ani na własny ogon.</p><button onclick="start()">Start</button>`}
+function pause(){if(!run)return;paused=!paused;paused?overlay('pause'):ov.style.display='none'}
+function turn(x,y){if(x==-dir.x&&y==-dir.y)return;next={x,y}}
+addEventListener('keydown',e=>{const m={ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]}[e.key.length==1?e.key.toLowerCase():e.key];
+ if(m){e.preventDefault();if(!run&&!over)start();turn(...m)}if(e.key==' '){e.preventDefault();pause()}});
+document.querySelectorAll('[data-d]').forEach(b=>b.onpointerdown=e=>{e.preventDefault();turn(...b.dataset.d.split(',').map(Number))});
+pz.onclick=pz2.onclick=pause;let t0;C.addEventListener('touchstart',e=>t0=e.touches[0],{passive:true});
+C.addEventListener('touchend',e=>{if(!t0)return;const t=e.changedTouches[0],dx=t.clientX-t0.clientX,dy=t.clientY-t0.clientY;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;Math.abs(dx)>Math.abs(dy)?turn(Math.sign(dx),0):turn(0,Math.sign(dy))});
+const SLOTS={futro:'🎨 Futro',glowa:'🎩 Na głowę',slad:'✨ Ślad'};
+function showShop(){const p=Wallet.points(),eq=Wallet.equipped(G,tab)||(tab=='futro'?'s-futro-rude':null);
+ shop.innerHTML=`<h3>🛍️ Skórki</h3><div>Portfel: <span class="pts">🐾 ${p} pkt</span> </div>
+ <small>Te same punkty co w <a href="kotek.html">Moim Kotku</a>. Zdobywasz je, <a href="./#gra">odkrywając karty z kotami</a>.</small>
+ <div class="tabs">${Object.entries(SLOTS).map(([k,n])=>`<button class="${k==tab?'':'off'}" onclick="tab='${k}';showShop()">${n}</button>`).join('')}</div>
+ <div class="items">${Wallet.forGame(G,tab).map(i=>{const R=Wallet.RARITY[i.rarity],own=i.price==0||Wallet.owns(i.id),on=eq==i.id;
+ return `<div class="it ${on?'on':''}" style="box-shadow:inset 0 0 0 1px ${R.c}55"><div class="ic">${i.ic}</div><b style="font-size:.9em">${i.n}</b><div style="font-size:.72em;color:${R.c};font-weight:700">${R.n.toUpperCase()}</div>
+ ${own?`<button class="${on?'off':''}" onclick="eqp('${i.id}')">${on?'Zdejmij':'Załóż'}</button>`:`<button ${p<i.price?'disabled style="opacity:.45"':''} onclick="buy('${i.id}')">${i.price} pkt</button>`}</div>`}).join('')}</div>`}
+function eqp(id){Wallet.equip(G,tab,Wallet.equipped(G,tab)==id?null:id);showShop();draw()}
+function buy(id){if(Wallet.buy(id)){Wallet.equip(G,tab,id);showShop();draw()}}
+reset();
+if(q){snake=[{x:12,y:8},{x:11,y:8},{x:10,y:8},{x:9,y:8},{x:9,y:9},{x:9,y:10},{x:10,y:10},{x:11,y:10},{x:12,y:10},{x:13,y:10},{x:13,y:11},{x:13,y:12}];food={x:14,y:8};score=9;trail=[{x:13,y:13,a:.9},{x:13,y:14,a:.6},{x:12,y:14,a:.35}];
+ if(q=='shop')tab='futro';draw();hud();ov.style.display='none';if(q=='over'){score=14;over=true;overlay('over')}}
+else{draw();overlay('start')}hud();showShop();
+</script></body></html>

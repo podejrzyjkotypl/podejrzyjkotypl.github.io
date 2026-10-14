@@ -1,0 +1,132 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mój Kotek – podejrzyjkota.pl</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><meta name="theme-color" content="#1a1530">
+<style>
+:root{--bg:#1a1530;--card:#262043;--or:#ff8a3d;--tx:#f3eefc;--mu:#b9b0d6}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at 50% 0,#2d2452,var(--bg));color:var(--tx);min-height:100vh}
+main{max-width:900px;margin:auto;padding:16px}h1{text-align:center;margin:.3em 0}h1 span{color:var(--or)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 6px 24px #0006}
+.stage{text-align:center}.days{font-size:1.1em;color:var(--mu)}.days b{color:var(--or);font-size:1.4em}
+.bar{margin:8px 0}.bar label{display:flex;justify-content:space-between;font-size:.9em}.bar div{height:12px;background:#0004;border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;border-radius:8px;transition:width .4s}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+button{background:var(--or);color:#1a1530;border:0;border-radius:14px;padding:12px 6px;font-weight:700;font-size:.95em;cursor:pointer;box-shadow:0 0 14px #ff8a3d88}button:active{transform:scale(.96)}
+.mood{font-size:1.05em;min-height:1.4em}.tip{background:#ff8a3d1a;border-left:4px solid var(--or);padding:10px;border-radius:8px;font-size:.92em}
+ol{padding-left:22px}li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #fff1}li.me{color:var(--or);font-weight:700}
+a{color:var(--or)}.over{text-align:center}input{padding:10px;border-radius:10px;border:0;width:60%}
+svg .eye{animation:blink 4s infinite}@keyframes blink{0%,95%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.sick svg{filter:saturate(.4)}
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px}.tabs button{box-shadow:none;padding:8px 14px}.tabs .off{background:#3a3260;color:var(--tx)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}.opt{background:#3a3260;color:var(--tx);box-shadow:none;padding:8px 10px;font-weight:600}.opt.on{background:var(--or);color:#1a1530;box-shadow:0 0 12px #ff8a3d88}
+.sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid #fff5}
+.shop{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.item{background:#3a3260;border-radius:14px;padding:10px;text-align:center}.item .ic{font-size:30px}.item button{width:100%;margin-top:6px;padding:8px}
+.pts{color:var(--or);font-weight:700}.lbl{font-size:.9em;color:var(--mu);margin-top:8px}
+</style></head><body><main><p style="text-align:center;margin:4px 0 0;font-size:.9em"><a href="./">← podejrzyjkota.pl</a> · <a href="gry.html">🎮 Gry</a> · <a href="./#gra">🃏 Karty z kotami</a></p>
+<h1>Mój <span>Kotek</span> 🐾</h1>
+<div class="grid">
+<section class="card stage" id="stage"></section>
+<section class="card"><h3>🏆 Twoje najlepsze wyniki</h3><p style="font-size:.8em;color:var(--mu);margin-top:-8px">Zapisane tylko w tej przeglądarce.</p><ol id="rank"></ol>
+<div class="tip" id="tip"></div>
+<p style="font-size:.9em;color:var(--mu)">Prawdziwy kot potrzebuje Cię codziennie, nie tylko w grze. <a href="./#gra">Zobacz koty, które szukają domu →</a></p></section>
+</div></main>
+<script src="js/gry/wallet.js"></script><script src="js/gry/catalog.js"></script>
+<script>
+const K='kotek-gra-v1',H=3600e3;
+const DECAY={food:4,water:5,fun:3,litter:2.5,sleep:3};
+const NAMES={food:'🥣 Chrupki',water:'💧 Woda',fun:'🧶 Zabawa',litter:'🧻 Kuweta',sleep:'😴 Odpoczynek'};
+const TIPS=['Kot potrzebuje świeżej wody codziennie. Wiele kotów woli fontannę.','Kuwetę sprząta się codziennie, kot nie lubi brudnej i może załatwiać się obok.','Dorosły kot śpi nawet 12–16 godzin na dobę.','Codzienna zabawa wędką chroni kota przed nudą i otyłością.','Sterylizacja to zdrowie kota i mniej bezdomnych kociąt.','Kot to zobowiązanie na 15–20 lat. Zastanów się przed adopcją!','Raz w roku kot powinien odwiedzić weterynarza.'];
+// --- wygląd ---
+const COATS={ruda:{n:'Ruda',b:'#ffad70',d:'#ff9d5c',e:'#ffc9a8'},bura:{n:'Bura',b:'#a39684',d:'#8c7f6e',e:'#d6c9b8',str:'#5e5347'},czarna:{n:'Czarna',b:'#34303f',d:'#2a2633',e:'#5a4f66'},biala:{n:'Biała',b:'#f6f2ec',d:'#e7e1d8',e:'#ffd6dc'},tricolor:{n:'Tricolor',b:'#f6f2ec',d:'#e7e1d8',e:'#ffd6dc',p:['#ff9d5c','#2e2a35']},laciata:{n:'Łaciata',b:'#f6f2ec',d:'#e7e1d8',e:'#ffd6dc',p:['#2e2a35','#2e2a35']}};
+const EYES={zielone:'#5fd17a',zolte:'#ffd23f',niebieskie:'#5fb4ff',miodowe:'#d8913a'};
+const EYEN={zielone:'Zielone',zolte:'Żółte',niebieskie:'Niebieskie',miodowe:'Miodowe'};
+const FUR={krotka:'Krótka',dluga:'Długa (puszysta)'};
+// --- sklep ---
+const ITEMS=Object.fromEntries(Wallet.forGame('kotek').map(i=>[i.id,{n:i.n,ic:i.ic,c:i.price,slot:i.slot,r:i.rarity}]));
+const ITEMSVG={
+kokarda:'<g transform="translate(128 38) rotate(20)"><path d="M0 0 L-16 -10 L-16 10Z M0 0 L16 -10 L16 10Z" fill="#ff5c8a"/><circle r="5" fill="#ff86a8"/></g>',
+czapka:'<path d="M58 52 Q100 -5 142 52 Z" fill="#4b7bff"/><rect x="52" y="48" width="96" height="10" rx="5" fill="#2f56cc"/><circle cx="100" cy="16" r="8" fill="#fff"/>',
+korona:'<path d="M70 42 L74 14 L88 30 L100 8 L112 30 L126 14 L130 42Z" fill="#ffcf33" stroke="#e0a800" stroke-width="2"/><circle cx="100" cy="30" r="4" fill="#ff5470"/>',
+okulary:'<g fill="#1a1530cc" stroke="#111" stroke-width="2"><circle cx="80" cy="75" r="13"/><circle cx="120" cy="75" r="13"/></g><path d="M93 75 h14" stroke="#111" stroke-width="3"/>',
+szalik:'<path d="M58 112 Q100 135 142 112 L142 124 Q100 147 58 124Z" fill="#e8434d"/><rect x="118" y="120" width="14" height="34" rx="4" fill="#c7313a"/>',
+obroza:'<path d="M62 116 Q100 134 138 116" stroke="#ff5470" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="100" cy="132" r="7" fill="#ffd23f" stroke="#c99a00" stroke-width="2"/>',
+sweterek:'<path d="M50 130 Q100 112 150 130 L152 160 Q100 176 48 160Z" fill="#8a5cff"/><path d="M55 140 Q100 126 145 140" stroke="#fff6" stroke-width="3" fill="none" stroke-dasharray="6 5"/>'};
+const ORDER=['sweterek','szalik','obroza','okulary','kokarda','czapka','korona'];
+// --- punkty z gry w karty ---
+const getPts=()=>Wallet.points();
+
+let s=JSON.parse(localStorage.getItem(K)||'null'),view='game',draft={coat:'ruda',eyes:'zielone',fur:'krotka',name:'',player:''},demoPts=null;
+const q=new URLSearchParams(location.search).get('demo');
+function fresh(d){const t=Date.now();return{born:t,last:t,food:80,water:80,fun:80,litter:90,sleep:80,health:100,over:false,look:{coat:d.coat,eyes:d.eyes,fur:d.fur},name:d.name||'Kotek',player:d.player||'Ty',owned:Wallet.CATALOG.filter(i=>Wallet.owns(i.id)).map(i=>i.id),worn:[]}}
+if(q){s=null;const base={coat:'bura',eyes:'zolte',fur:'dluga',name:'Mruczek',player:'Sylwek'};
+ if(q=='start'){draft={coat:'tricolor',eyes:'zielone',fur:'dluga',name:'Łatka',player:'Sylwek'}}
+ else{s=fresh(base);s.owned=[];demoPts=250;
+  if(q=='hungry'){s.born-=4.3*24*H;Object.assign(s,{food:12,water:20,fun:35,litter:15,sleep:50,health:55})}
+  if(q=='over'){s.born-=11*24*H;s.over=true;s.overAt=Date.now()}
+  if(q=='shop'){view='shop';s.owned=['kokarda','obroza'];s.worn=['obroza']}
+  if(q=='dressed'){s.look={coat:'ruda',eyes:'niebieskie',fur:'krotka'};s.name='Rudzia';s.owned=['korona','szalik','okulary'];s.worn=['korona','szalik','okulary'];s.born-=6*24*H}}}
+if(!s)view='start';
+if(demoPts!=null)Wallet.demo(demoPts,s.owned.slice());
+if(s)s.owned=Wallet.CATALOG.filter(i=>Wallet.owns(i.id)).map(i=>i.id);
+function tick(){if(!s||s.over)return;const now=Date.now(),h=Math.min((now-s.last)/H,24*14);
+ let left=h;while(left>0){const d=Math.min(1,left);left-=d;
+  for(const k in DECAY)s[k]=Math.max(0,s[k]-DECAY[k]*d);
+  const low=Object.keys(DECAY).filter(k=>s[k]<20).length;
+  if(low)s.health=Math.max(0,s.health-low*3*d);else s.health=Math.min(100,s.health+2*d);
+  if(s.health<=0){s.over=true;s.overAt=s.last+(h-left)*H;break}}
+ s.last=now;save()}
+function save(){if(!q&&s)localStorage.setItem(K,JSON.stringify(s))}
+function days(){return Math.floor(((s.over?s.overAt:Date.now())-s.born)/(24*H))}
+function act(k){if(s.over)return;tick();if(k=='sleep'){s.sleep=100;s.fun=Math.max(0,s.fun-5)}else s[k]=Math.min(100,s[k]+35);
+ if(k=='fun')s.sleep=Math.max(0,s.sleep-8);render(['Mniam, chrupki!','Chlup chlup','Mrrr, jeszcze!','Dzięki za czystą kuwetę!','Zzz...'][Object.keys(DECAY).indexOf(k)])}
+function cat(m,look,worn=[],w=230){const c=COATS[look.coat],ey=EYES[look.eyes],long=look.fur=='dluga',sad=m=='sad'||m=='sick';
+ const pat=c.p?`<ellipse cx="72" cy="58" rx="20" ry="16" fill="${c.p[0]}"/><ellipse cx="128" cy="130" rx="22" ry="16" fill="${c.p[1]}"/><ellipse cx="78" cy="140" rx="14" ry="10" fill="${c.p[0]}"/>`:'';
+ const str=c.str?`<path d="M90 34 l3 14 M100 31 v16 M110 34 l-3 14 M60 120 q8 4 6 14 M140 120 q-8 4 -6 14" stroke="${c.str}" stroke-width="4" stroke-linecap="round" fill="none"/>`:'';
+ const fluff=long?`<path d="M52 92 l-12 6 l10 4 l-8 8 l14 -2 M148 92 l12 6 l-10 4 l8 8 l-14 -2" fill="${c.b}"/><path d="M48 150 q-6 -10 2 -20 M152 150 q6 -10 -2 -20" stroke="${c.d}" stroke-width="10" stroke-linecap="round" fill="none"/>`:'';
+ const eyes=m=='sleep'?`<path d="M72 78 q8 6 16 0 M112 78 q8 6 16 0" stroke="#1a1530" stroke-width="3" fill="none"/>`:
+  `<circle cx="80" cy="75" r="8" fill="${ey}"/><circle cx="120" cy="75" r="8" fill="${ey}"/><ellipse cx="80" cy="75" rx="3" ry="6" fill="#111"/><ellipse cx="120" cy="75" rx="3" ry="6" fill="#111"/><circle cx="82" cy="72" r="2" fill="#fff"/><circle cx="122" cy="72" r="2" fill="#fff"/>`;
+ // smutne brwi: uniesione do środka (nie gniewne)
+ const brows=sad?`<path d="M70 62 q8 -1 15 -6 M130 62 q-8 -1 -15 -6" stroke="#1a1530" stroke-width="2.5" fill="none" stroke-linecap="round"/>`:'';
+ const ln=look.coat=='czarna'?'#cfc6e6':'#1a1530';
+ return `<svg viewBox="0 0 200 180" width="${w}"><ellipse cx="100" cy="168" rx="60" ry="8" fill="#0005"/>
+<path d="M155 140 q35 -10 25 -45" stroke="${c.d}" stroke-width="${long?18:12}" fill="none" stroke-linecap="round"/>
+<path d="M50 70 L60 25 L85 55 Z M150 70 L140 25 L115 55 Z" fill="${c.d}"/><path d="M58 60 L63 38 L76 54Z M142 60 L137 38 L124 54Z" fill="${c.e}"/>
+<ellipse cx="100" cy="135" rx="55" ry="35" fill="${c.d}"/>${fluff}<circle cx="100" cy="80" r="50" fill="${c.b}"/>${pat}${str}
+<g class="eye" style="transform-origin:100px 75px">${eyes}</g>${brows.replace(/#1a1530/g,ln)}
+<path d="M95 92 L105 92 L100 98Z" fill="#e5577a"/><path d="M100 98 q-8 ${sad?-3:8} -14 2 M100 98 q8 ${sad?-3:8} 14 2" stroke="${ln}" stroke-width="2.5" fill="none"/>
+<path d="M60 90 h-25 M60 96 h-22 M140 90 h25 M140 96 h22" stroke="#fff8" stroke-width="2"/>
+${m=='sick'?'<circle cx="70" cy="86" r="4" fill="#7ec8ff"/>':''}${ORDER.filter(i=>worn.includes(i)).map(i=>ITEMSVG[i]).join('')}</svg>`}
+const opt=(grp,k,label,cur)=>`<button class="opt ${cur==k?'on':''}" onclick="draft.${grp}='${k}';render()">${label}</button>`;
+function tabs(){return `<div class="tabs"><button class="${view=='game'?'':'off'}" onclick="view='game';render()">🐱 Kotek</button><button class="${view=='shop'?'':'off'}" onclick="view='shop';render()">🛍️ Sklep</button></div>`}
+function render(msg){const st=document.getElementById('stage');st.className='card stage';
+ if(view=='start'){st.innerHTML=`<h2>Adoptuj wirtualnego kotka</h2>${cat('ok',draft,[],190)}
+ <div class="lbl">Umaszczenie</div><div class="opts">${Object.entries(COATS).map(([k,c])=>opt('coat',k,`<span class="sw" style="background:${c.p?`linear-gradient(90deg,${c.b} 50%,${c.p[0]} 50%)`:c.b}"></span>${c.n}`,draft.coat)).join('')}</div>
+ <div class="lbl">Kolor oczu</div><div class="opts">${Object.entries(EYES).map(([k,c])=>opt('eyes',k,`<span class="sw" style="background:${c}"></span>${EYEN[k]}`,draft.eyes)).join('')}</div>
+ <div class="lbl">Sierść</div><div class="opts">${Object.entries(FUR).map(([k,n])=>opt('fur',k,n,draft.fur)).join('')}</div>
+ <p><input id="cn" placeholder="Imię kotka" maxlength="16" value="${draft.name}" oninput="draft.name=this.value"></p>
+ <p><input id="pn" placeholder="Twój nick do rankingu" maxlength="20" value="${draft.player}" oninput="draft.player=this.value"></p>
+ <button onclick="s=fresh(draft);view='game';save();render()">Zaczynamy! 🐾</button>`;rank();return}
+ if(s.over){const d=days();st.innerHTML=`<div class="over">${cat('sad',s.look,s.worn,150)}<h2>${esc(s.name)} znalazł nowy dom 🏡</h2>
+ <p>Kotek czuł się samotny i głodny, więc trafił do schroniska, gdzie wolontariusze znaleźli mu kochającą rodzinę. Wszystko z nim dobrze!</p>
+ <p class="days">Opiekowałeś się nim <b>${d}</b> dni</p>
+ <p><button onclick="draft={...s.look,name:'',player:s.player};s.over=false;view='start';s=null;render()">Adoptuj nowego kotka 🐱</button></p>
+ <div class="tip">Twoje ubranka zostają na kolejnego kotka. Prawdziwe koty też czekają na opiekuna, który nie zapomni o nich ani jednego dnia. <a href="./#gra">Poznaj je →</a></div></div>`;rank(d);return}
+ if(view=='shop'){const p=getPts();st.innerHTML=tabs()+`<div>Twoje punkty: <span class="pts">🐾 ${p} pkt</span></div>${cat('ok',s.look,s.worn,160)}
+ <div class="shop">${Object.entries(ITEMS).map(([k,it])=>{const own=s.owned.includes(k),on=s.worn.includes(k);
+  return `<div class="item"><div class="ic">${it.ic}</div><b>${it.n}</b><div style="font-size:.75em;color:${Wallet.RARITY[it.r].c}">${Wallet.RARITY[it.r].n}</div><div class="pts">${own?'✔ masz':it.c+' pkt'}</div>${own?`<button onclick="wear('${k}')">${on?'Zdejmij':'Załóż'}</button>`:`<button ${p<it.c?'disabled style="opacity:.5"':''} onclick="buy('${k}')">Kup</button>`}</div>`}).join('')}</div>
+ <p style="font-size:.85em;color:var(--mu)">Punkty zdobywasz, odkrywając karty i obstawiając w <a href="./#gra">grze w karty</a>. Ubranka są tylko ozdobą.</p>`;rank();return}
+ const low=Object.keys(DECAY).filter(k=>s[k]<20),m=s.health<50?'sick':low.length?'sad':s.sleep<30?'sleep':'ok';
+ if(m=='sick')st.className+=' sick';
+ const col=v=>v<20?'#ff5470':v<50?'#ffc145':'#6ee7a8';
+ st.innerHTML=tabs()+`<div class="days"><b style="font-size:1em;color:var(--tx)">${esc(s.name)}</b> · dzień opieki: <b>${days()}</b></div>${cat(m,s.look,s.worn)}
+ <div class="mood">${msg||{ok:'Kotek mruczy z zadowolenia 😺',sad:'Kotek czegoś potrzebuje: '+low.map(k=>NAMES[k]).join(', '),sick:'🤒 Kotek źle się czuje! Zadbaj o niego szybko.',sleep:'Kotek jest śpiący...'}[m]}</div>
+ ${[...Object.keys(DECAY),'health'].map(k=>`<div class="bar"><label><span>${NAMES[k]||'❤️ Zdrowie'}</span><span>${Math.round(s[k])}%</span></label><div><i style="width:${s[k]}%;background:${col(s[k])}"></i></div></div>`).join('')}
+ <div class="btns"><button onclick="act('food')">🥣 Chrupki</button><button onclick="act('water')">💧 Woda</button><button onclick="act('fun')">🧶 Pobaw się</button><button onclick="act('litter')">🧻 Kuweta</button><button onclick="act('sleep')">😴 Uśpij</button><button onclick="view='shop';render()">🛍️ Sklep</button></div>`;rank()}
+function buy(k){if(!Wallet.buy(k))return;s.owned.push(k);wear(k)}
+function wear(k){if(s.worn.includes(k))s.worn=s.worn.filter(x=>x!=k);else{const sl=ITEMS[k].slot;s.worn=s.worn.filter(x=>ITEMS[x].slot!=sl);s.worn.push(k)}save();render()}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function rank(me){let r=JSON.parse(localStorage.getItem('kotek-gra-best')||'[]');
+ if(me!=null&&s&&!s.recorded&&!q){r.push([s.name+' ('+s.player+')',me]);s.recorded=true;save();localStorage.setItem('kotek-gra-best',JSON.stringify(r))}
+ if(q)r=[['Mruczek (Sylwek)',11]];r=r.sort((a,b)=>b[1]-a[1]).slice(0,10);
+ document.getElementById('rank').innerHTML=r.length?r.map(x=>`<li><span>${esc(x[0])}</span><span>${x[1]} dni</span></li>`).join(''):'<li><span style="color:var(--mu)">Jeszcze brak wyników. Zadbaj o kotka jak najdłużej!</span></li>'}
+document.getElementById('tip').textContent='💡 '+TIPS[Math.floor(Date.now()/864e5)%TIPS.length];
+tick();render();setInterval(()=>{tick();render()},60e3);
+</script></body></html>
