@@ -60,7 +60,7 @@
       <ul>
         <li>Konto jest <strong>opcjonalne</strong>. Bez niego punkty i zakłady zostają <strong>tylko w Twojej przeglądarce</strong> lub telefonie.</li>
         <li>Jeśli założysz konto, zapisujemy Twój e-mail i stan gry na serwerze (Supabase), dopóki go nie usuniesz. Konto usuniesz, a dane pobierzesz, jednym kliknięciem w menu konta. Publiczny jest tylko nick, awatar, poziom i wynik w rankingu.</li>
-        <li>Reklamy Google ładujemy <strong>dopiero po Twojej zgodzie</strong> na cookies marketingowe. Statystyk obecnie nie mamy.</li>
+        <li>Reklamy Google ładujemy <strong>dopiero po Twojej zgodzie</strong> na cookies marketingowe. Proste statystyki odwiedzin liczymy narzędziem GoatCounter (Arp Supertabs OÜ, Estonia) bez cookies i bez identyfikowania Ciebie (szczegóły w punkcie 4).</li>
         <li>Dane ogłoszeniodawców publikujemy tylko za ich zgodą, a zgodę można wycofać w każdej chwili. Kota dodanego przez formularz zdejmiesz sam jednym przyciskiem w „Moich zgłoszeniach”.</li>
         <li>Zgodę na cookies zmienisz w każdej chwili: <button type="button" class="link-btn link-btn--inline link-btn--light" data-cookie-settings>Ustawienia cookies</button>.</li>
       </ul>
@@ -101,7 +101,7 @@
             <tr><td>Konto gracza (opcjonalne): logowanie, zapis stanu gry, ranking globalny</td><td>szczegóły w <a href="#konta">punkcie 3</a></td><td>umowa o prowadzenie konta (art. 6 ust. 1 lit. b RODO); bezpieczeństwo i zapobieganie nadużyciom (art. 6 ust. 1 lit. f RODO)</td><td>do usunięcia konta (szczegóły w punkcie 3)</td></tr>
             <tr><td>Zapamiętanie Twojego wyboru dotyczącego cookies</td><td>wybór zgód i data jego dokonania (localStorage)</td><td>obowiązek wykazania zgody (art. 6 ust. 1 lit. c w zw. z art. 7 ust. 1 RODO)</td><td>12 miesięcy, potem zapytamy ponownie</td></tr>
             <tr><td>Reklamy Google AdSense, także spersonalizowane</td><td>identyfikatory z plików cookies, adres IP, informacje o urządzeniu i interakcjach z reklamami</td><td>Twoja zgoda (art. 6 ust. 1 lit. a RODO i art. 399 ustawy Prawo komunikacji elektronicznej)</td><td>do wycofania zgody; pliki cookies Google działają zwykle do 13 miesięcy</td></tr>
-            <tr><td>Statystyki odwiedzin</td><td>obecnie <strong>nie używamy</strong> żadnych narzędzi statystycznych</td><td>jeśli je dodamy: wyłącznie Twoja zgoda</td><td>zaktualizujemy tę politykę przed ich włączeniem</td></tr>
+            <tr><td>Statystyki odwiedzin i kliknięć (bez cookies): odwiedzona podstrona, adres strony odsyłającej, przybliżony kraj, typ przeglądarki i rozmiar ekranu; liczniki zdarzeń, np. „kontakt-&lt;id kota&gt;” (ile razy kliknięto kontakt do właściciela danego kota)</td><td>sprawdzanie, które koty i podstrony interesują odwiedzających, i ile osób trafia do ogłoszeniodawców</td><td>prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO) <mark>[do potwierdzenia]</mark></td><td>GoatCounter nie zapisuje adresu IP ani cookies; zbiorcze liczniki przechowujemy do <mark>[np. 2 lat]</mark></td></tr>
             <tr><td>Odpowiedź na wiadomość (e-mail, formularz kontaktowy)</td><td>imię, adres e-mail, treść wiadomości i inne dane, które sam podasz</td><td>prawnie uzasadniony interes, czyli odpowiedź na Twoją wiadomość (art. 6 ust. 1 lit. f RODO)</td><td>przez czas korespondencji, potem do <mark>[np. 12 miesięcy]</mark>, chyba że dłużej potrzebujemy danych do obrony przed roszczeniami</td></tr>
             <tr><td>Publikacja ogłoszenia kota</td><td>imię lub nazwa, telefon, e-mail, miejscowość, zdjęcia i opis kota, link do oryginalnego ogłoszenia</td><td>zgoda ogłoszeniodawcy (art. 6 ust. 1 lit. a RODO); dane kontaktowe pracowników schronisk: prawnie uzasadniony interes organizacji (art. 6 ust. 1 lit. f RODO)</td><td>do adopcji kota, wycofania zgody albo usunięcia ogłoszenia</td></tr>
             <tr><td>Przechowywanie dowodu zgody na publikację</td><td>korespondencja ze zgodą</td><td>obowiązek wykazania zgody i ochrona przed roszczeniami (art. 6 ust. 1 lit. c i f RODO)</td><td>do 3 lat od zakończenia publikacji (termin przedawnienia roszczeń)</td></tr>
@@ -147,7 +147,7 @@
       <p>Pliki cookies i pamięć lokalna (localStorage) to małe porcje danych zapisywane w Twoim urządzeniu. Używamy ich w trzech kategoriach:</p>
       <ul>
         <li><strong>Niezbędne</strong>, zawsze włączone. Dzięki nim działa gra, strona pamięta Twój wybór dotyczący cookies i działa offline jako aplikacja.</li>
-        <li><strong>Statystyki</strong>, tylko za zgodą. Obecnie z nich nie korzystamy.</li>
+        <li><strong>Statystyki.</strong> Używamy GoatCounter (Arp Supertabs OÜ, Estonia), które nie zapisuje cookies ani niczego w pamięci Twojej przeglądarki i nie śledzi Cię między stronami. Liczymy też kliknięcia w kontakt do właściciela kota (telefon, e-mail, link do ogłoszenia, przycisk „Chcę adoptować”) jako zdarzenie „kontakt-&lt;id kota&gt;”. Zapisujemy tylko liczbę kliknięć, bez informacji, kto kliknął i co napisał. Zliczanie zablokujesz dowolnym blokerem treści.</li>
         <li><strong>Marketing</strong>, tylko za zgodą. To reklamy Google AdSense. Bez tej zgody w ogóle nie ładujemy skryptu reklam Google.</li>
       </ul>
       <div class="tbl-wrap">
@@ -206,6 +206,18 @@
         <li><strong>Dobrowolność.</strong> Podanie danych jest dobrowolne, ale bez danych kontaktowych i zgody nie opublikujemy kota.</li>
       </ul>
       <p>Zgodę na publikację danych możesz wycofać w każdej chwili, pisząc na <a href="mailto:podlasie.studio.mail@gmail.com">podlasie.studio.mail@gmail.com</a>. Kota ukryjemy wtedy na stronie, a Twoje dane kontaktowe i link do ogłoszenia usuniemy z naszej bazy niezwłocznie, nie później niż w ciągu 7 dni. Wycofanie zgody nie wpływa na zgodność z prawem publikacji przed jej wycofaniem.</p>
+      <h3 id="adoptowalem">Formularz „Adoptowałem kota z podejrzyjkota.pl”</h3>
+      <p>Zalogowani użytkownicy mogą przez <a href="adoptowalem.html">ten formularz</a> dać nam znać, że adoptowali kota. Zgłoszenie trafia do niepublicznej części bazy i widzi je tylko autor i administrator. Samo zgłoszenie niczego nie zmienia na stronie: o oznaczeniu kota jako adoptowanego decyduje administrator po sprawdzeniu.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Jakie dane</th><th>Po co</th><th>Podstawa prawna</th><th>Jak długo</th></tr></thead>
+          <tbody>
+            <tr><td>wskazany kot (z listy albo wpisany), identyfikator konta, opcjonalnie: zdjęcie z nowego domu, krótka historia, adres e-mail do kontaktu, informacja o zgodzie na publikację</td><td>potwierdzenie adopcji, kontakt w sprawie zgłoszenia</td><td>zgoda (art. 6 ust. 1 lit. a RODO)</td><td>do <mark>[np. 12 miesięcy]</mark> od sprawdzenia albo do usunięcia na Twoją prośbę lub usunięcia konta</td></tr>
+            <tr><td><strong>publicznie, tylko gdy zaznaczysz zgodę:</strong> zdjęcie i historia, bez nazwiska i adresu e-mail</td><td>pokazanie szczęśliwych adopcji na stronie i w naszych mediach społecznościowych</td><td>zgoda (art. 6 ust. 1 lit. a RODO)</td><td>do wycofania zgody</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Wszystkie pola poza wskazaniem kota są dobrowolne. Zdjęcie jest zmniejszane w przeglądarce, co usuwa metadane (np. lokalizację GPS). Na zdjęciu nie powinno być osób, które nie zgodziły się na publikację. Zgodę wycofasz w każdej chwili, pisząc na <a href="mailto:podlasie.studio.mail@gmail.com">podlasie.studio.mail@gmail.com</a>. Usuniemy wtedy zdjęcie i historię niezwłocznie, najpóźniej w ciągu 7 dni.</p>
       <h3>Adoptujący</h3>
       <p>Przycisk „Chcę adoptować” otwiera Twój program pocztowy z wiadomością do schroniska lub autora ogłoszenia (albo połączenie telefoniczne, jeśli autor podał tylko numer telefonu). Taka wiadomość trafia bezpośrednio do niego, a my jej nie otrzymujemy ani nie przetwarzamy. Administratorem danych z tej korespondencji jest ogłoszeniodawca. Jeśli napiszesz do nas, traktujemy to jak zwykłą wiadomość (patrz tabela w punkcie 2).</p>
     </section>
@@ -220,6 +232,7 @@
       <p>Dane mogą otrzymać wyłącznie podmioty, które pomagają nam prowadzić serwis, i tylko w niezbędnym zakresie:</p>
       <ul>
         <li>dostawca hostingu: GitHub, Inc. (GitHub Pages),</li>
+        <li>dostawca statystyk: GoatCounter (Arp Supertabs OÜ, Estonia), jako podmiot przetwarzający,</li>
         <li>dostawca poczty e-mail: <mark>[DOSTAWCA POCZTY, np. Google Ireland Ltd. (Gmail)]</mark>,</li>
         <li>jeśli masz konto: Supabase, Inc. (logowanie, baza danych, przechowywanie zdjęć kotów i zgłoszeń) jako podmiot przetwarzający oraz wbudowany serwer pocztowy Supabase (wysyłka e-maili związanych z kontem),</li>
         <li>jeśli logujesz się kontem Google: Google Ireland Limited jako odrębny administrator danych Twojego konta Google,</li>

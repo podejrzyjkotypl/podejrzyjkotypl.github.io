@@ -189,10 +189,10 @@
     const ct = contactOf(cat);
     if (!ct.own) return "";
     const rows = [];
-    if (ct.phone) rows.push(`<li><span aria-hidden="true">📞</span> <a href="${esc(telHref(ct.phone))}" data-adopt>${esc(fmtPhone(ct.phone))}</a></li>`);
-    if (ct.email) rows.push(`<li><span aria-hidden="true">✉️</span> <a href="${esc(adoptMailto(cat))}" data-adopt>${esc(ct.email)}</a></li>`);
-    if (ct.viaListing) rows.push(`<li><span aria-hidden="true">💬</span> <a href="${esc(ct.listing)}" target="_blank" rel="noopener noreferrer nofollow" data-adopt>przez czat w ogłoszeniu${/olx\./i.test(ct.listing) ? " na OLX" : ""} ↗</a></li>`);
-    return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul><p class="contact-box__docs"><a href="dokumenty.html">📄 Adoptujesz? Pobierz gotowe dokumenty</a></p></div>`;
+    if (ct.phone) rows.push(`<li><span aria-hidden="true">📞</span> <a href="${esc(telHref(ct.phone))}" data-adopt data-cat="${esc(cat.id)}">${esc(fmtPhone(ct.phone))}</a></li>`);
+    if (ct.email) rows.push(`<li><span aria-hidden="true">✉️</span> <a href="${esc(adoptMailto(cat))}" data-adopt data-cat="${esc(cat.id)}">${esc(ct.email)}</a></li>`);
+    if (ct.viaListing) rows.push(`<li><span aria-hidden="true">💬</span> <a href="${esc(ct.listing)}" target="_blank" rel="noopener noreferrer nofollow" data-adopt data-cat="${esc(cat.id)}">przez czat w ogłoszeniu${/olx\./i.test(ct.listing) ? " na OLX" : ""} ↗</a></li>`);
+    return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul><p class="contact-box__docs"><a href="dokumenty.html">📄 Adoptujesz? Pobierz gotowe dokumenty</a> · <a href="adoptowalem.html?kot=${encodeURIComponent(cat.id)}">Adoptowałem tego kota 🎉</a></p></div>`;
   }
   // zdjęcia kotów: nigdy nie przycinamy kota. Domyślnie contain; cover tylko dla poziomych,
   // gdy proporcje zdjęcia są bliskie proporcjom ramki (różnica do ok. 15%).
@@ -498,7 +498,7 @@
         <p class="card__shelter" title="${esc(placeOf(sh))}"><span aria-hidden="true">📍</span> ${distLabel(cat.id) ? `<span class="card__km">${esc(distLabel(cat.id))}</span> · ` : ""}${esc(placeOf(sh, true))}</p>
         ${adopted ? "" : listingLink(cat, "card__listing")}
         <div class="card__actions">
-          <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt>${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
+          <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt data-cat="${esc(cat.id)}">${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
           <div class="card__row">
             ${adopted ? "" : `<button class="btn btn--soft btn--sm" type="button" data-open="bet">🎲 Obstaw</button>`}
             <button class="btn btn--soft btn--sm" type="button" data-open="info">Więcej</button>
@@ -737,7 +737,7 @@
           ${adopted && cat.adoptedNote ? `<p class="sheet__adopted">🏠 ${esc(cat.adoptedNote)}</p>` : ""}
           ${adopted && !cat.adoptedNote ? `<p class="sheet__adopted">🏠 Znalazł${g(cat, "", "a")} dom${state.adoptions[cat.id] ? ` w ${state.adoptions[cat.id]}. dniu symulacji` : cat.adoptedAt ? " " + fmtDate(cat.adoptedAt) : ""}</p>` : ""}
           ${adopted ? "" : contactBox(cat)}
-          <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
+          <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt data-cat="${esc(cat.id)}">${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
           ${adopted ? "" : listingLink(cat, "btn btn--soft btn--block sheet__listing")}
           ${adopted ? "" : `<button class="btn btn--soft btn--block sheet__share" type="button" data-share="${esc(cat.id)}"><span aria-hidden="true">📣</span> Udostępnij kota</button>`}
         </div>
@@ -1081,8 +1081,18 @@
 function gcEvent(id, what) {
   try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "kot/" + id + "/" + what, event: true }); } catch (_) {}
 }
+/* licznik kontaktów: ile osób kliknęło kontakt do właściciela (OLX, telefon, e-mail, „Chcę adoptować”).
+ * Zdarzenie „kontakt-<id kota>”: bez danych osobowych, tylko liczba kliknięć w GoatCounter. */
 document.addEventListener("click", function (e) {
   try {
+    const a = e.target.closest && e.target.closest("[data-adopt][data-cat]"); if (!a) return;
+    const id = a.dataset.cat, kind = /^tel:/.test(a.href) ? "telefon" : /^mailto:/.test(a.href) ? "email" : "ogloszenie";
+    if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "kontakt-" + id, title: "Kontakt do właściciela: " + id + " (" + kind + ")", event: true });
+  } catch (_) {}
+}, true);
+document.addEventListener("click", function (e) {
+  try {
+    if (e.target.closest && e.target.closest("[data-adopt][data-cat]")) return; // już policzone jako kontakt
     const a = e.target.closest && e.target.closest("a[href^='http']"); if (!a) return;
     const card = a.closest("[data-id]"); if (!card || new URL(a.href).origin === location.origin) return;
     gcEvent(card.dataset.id, "link");

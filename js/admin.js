@@ -13,7 +13,7 @@
   const EXTRAS = [["none", "brak"], ["collar", "obroża"], ["bow", "kokardka"]];
   const VOIVODESHIPS = ["dolnośląskie", "kujawsko-pomorskie", "lubelskie", "lubuskie", "łódzkie", "małopolskie", "mazowieckie", "opolskie", "podkarpackie", "podlaskie", "pomorskie", "śląskie", "świętokrzyskie", "warmińsko-mazurskie", "wielkopolskie", "zachodniopomorskie"];
   const MIME = { jpg: "image/jpeg", png: "image/png", webp: "image/webp" };
-  let sb = null, cats = [], shelters = [], stats = null, subs = [], subUrls = {}, maintained = false;
+  let sb = null, cats = [], shelters = [], stats = null, subs = [], subUrls = {}, maintained = false, areps = [];
   const fmt = (d) => d ? new Date(d).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" }) : "";
 
   function toast(html) {
@@ -111,6 +111,16 @@
         const r = await sb.storage.from("submissions").createSignedUrls(paths, 3600);
         (r.data || []).forEach((x) => { if (x.signedUrl) subUrls[x.path] = x.signedUrl; });
       }
+      // zgłoszenia adopcji (tabela może jeszcze nie istnieć: wtedy sekcja się nie pokazuje)
+      areps = [];
+      try {
+        const ar = await sb.from("adoption_reports").select("*").eq("status", "pending").order("id").limit(100);
+        if (!ar.error) {
+          areps = ar.data || [];
+          const ap = areps.map((x) => x.photo).filter(Boolean);
+          if (ap.length) { const r = await sb.storage.from("submissions").createSignedUrls(ap, 3600); (r.data || []).forEach((x) => { if (x.signedUrl) subUrls[x.path] = x.signedUrl; }); }
+        } else areps = null;
+      } catch (_) { areps = null; }
       renderDashboard();
     } catch (e) { card(`<h2>Błąd</h2><p>${esc(msg(e))}</p>`); }
   }
@@ -126,6 +136,7 @@
         <div class="stat"><span class="stat__label">Runda gry</span><span class="stat__value">${stats.round}</span></div>
       </div>
       ${subsSection()}
+      ${arepsSection()}
       <div class="admin-bar"><h2>Koty</h2><button class="btn btn--primary btn--sm" type="button" data-new>＋ Dodaj kota</button></div>
       <div class="admin-cats">${visible.map(catRow).join("") || `<p class="auth__hint">Brak widocznych kotów.</p>`}</div>
       ${hidden.length ? `<div class="admin-bar admin-bar--hidden"><h2>Ukryte koty <span class="chip chip--hidden">${hidden.length}</span></h2></div>
@@ -154,6 +165,27 @@
       ${pending.length ? `<p class="auth__hint">Najstarsze na górze. Zdjęcia i dane widzisz tylko Ty: nic nie jest publiczne, dopóki nie klikniesz „Akceptuj”.</p>
         <div class="admin-subs__list">${pending.map(subRow).join("")}</div>`
         : `<p class="auth__hint">Brak nowych zgłoszeń. 🎉</p>`}
+    </section>`;
+  }
+  function arepsSection() {
+    if (areps === null) return "";
+    const catName = (id) => { const c = cats.find((k) => k.id === id); return c ? c.name : id; };
+    return `<section class="admin-subs" id="adopcje">
+      <div class="admin-bar"><h2>Zgłoszenia adopcji 🎉 <span class="count-badge ${areps.length ? "" : "count-badge--zero"}">${areps.length}</span></h2></div>
+      <p class="auth__hint">Ktoś pisze, że adoptował kota. Status kota NIE zmienia się sam: jeśli wszystko się zgadza, oznacz adopcję jak zwykle przy kocie, a tu kliknij „Potwierdź”.</p>
+      ${areps.length ? `<div class="admin-subs__list">${areps.map((x) => `<article class="sub-card">
+        <div class="sub-card__photos">${x.photo ? (subUrls[x.photo] ? `<a href="${esc(subUrls[x.photo])}" target="_blank" rel="noopener"><img src="${esc(subUrls[x.photo])}" alt="Zdjęcie z nowego domu"></a>` : `<span class="sub-card__nophoto">brak pliku</span>`) : `<span class="sub-card__nophoto">bez zdjęcia</span>`}</div>
+        <div class="sub-card__info">
+          <h3>${esc(x.cat_id ? catName(x.cat_id) : x.cat_text)} <span class="chip chip--wait">czeka</span></h3>
+          ${x.cat_id && x.cat_text ? `<p>Dopisek: ${esc(x.cat_text)}</p>` : ""}
+          ${x.story ? `<p class="sub-card__story">${esc(x.story)}</p>` : ""}
+          <p>${x.contact_email ? `E-mail: ${esc(x.contact_email)} · ` : ""}Zgoda na publikację: <strong>${x.consent_publish ? "tak" : "nie"}</strong></p>
+          <p class="auth__hint">Zgłoszenie #${x.id} z ${fmt(x.created_at)} · konto ${esc(String(x.user_id).slice(0, 8))}…</p>
+        </div>
+        <div class="acat__act">
+          <button class="btn btn--primary btn--sm" type="button" data-arep-ok="${x.id}">✅ Potwierdź</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-arep-no="${x.id}">✗ Odrzuć</button>
+        </div></article>`).join("")}</div>` : `<p class="auth__hint">Brak nowych zgłoszeń adopcji.</p>`}
     </section>`;
   }
   function subRow(x) {
@@ -480,8 +512,15 @@
   }
 
   /* ---------- zdarzenia ---------- */
-  body.addEventListener("click", (e) => {
+  body.addEventListener("click", async (e) => {
     const t = e.target.closest("button"); if (!t) return;
+    if (t.dataset.arepOk || t.dataset.arepNo) {
+      const ok = !!t.dataset.arepOk, id = Number(t.dataset.arepOk || t.dataset.arepNo);
+      t.disabled = true;
+      const { error } = await sb.rpc("admin_review_adoption_report", { p_id: id, p_status: ok ? "approved" : "rejected", p_note: null });
+      if (error) { toast(esc(msg(error))); t.disabled = false; return; }
+      toast(ok ? "✅ Zgłoszenie potwierdzone. Pamiętaj oznaczyć adopcję przy kocie." : "Zgłoszenie odrzucone."); loadAll(); return;
+    }
     const find = (id) => cats.find((c) => c.id === id);
     if (t.dataset.new != null) catForm(null);
     else if (t.dataset.edit) catForm(find(t.dataset.edit));
