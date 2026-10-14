@@ -112,7 +112,7 @@ function render(msg){const st=document.getElementById('stage');st.className='car
  if(view=='shop'){const p=getPts();st.innerHTML=tabs()+`<div>Twoje punkty: <span class="pts">🐾 ${p} pkt</span></div>${cat('ok',s.look,s.worn,160)}
  <div class="shop">${Object.entries(ITEMS).map(([k,it])=>{const own=s.owned.includes(k),on=s.worn.includes(k);
   return `<div class="item"><div class="ic">${it.ic}</div><b>${it.n}</b><div style="font-size:.75em;color:${Wallet.RARITY[it.r].c}">${Wallet.RARITY[it.r].n}</div><div class="pts">${own?'✔ masz':it.c+' pkt'}</div>${own?`<button onclick="wear('${k}')">${on?'Zdejmij':'Załóż'}</button>`:`<button ${p<it.c?'disabled style="opacity:.5"':''} onclick="buy('${k}')">Kup</button>`}</div>`}).join('')}</div>
- <p style="font-size:.85em;color:var(--mu)">Punkty zdobywasz, odkrywając karty i obstawiając w <a href="./#gra">grze w karty</a>. Ubranka są tylko ozdobą.</p>`;rank();return}
+ <p style="font-size:.85em;color:var(--mu)">Punkty zdobywasz, odkrywając karty w <a href="./#gra">grze w karty</a>. Ubranka są tylko ozdobą.</p>`;rank();return}
  const low=Object.keys(DECAY).filter(k=>s[k]<20),m=s.health<50?'sick':low.length?'sad':s.sleep<30?'sleep':'ok';
  if(m=='sick')st.className+=' sick';
  const col=v=>v<20?'#ff5470':v<50?'#ffc145':'#6ee7a8';

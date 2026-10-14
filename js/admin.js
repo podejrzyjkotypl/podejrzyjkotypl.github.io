@@ -25,7 +25,7 @@
   }
   function msg(e) {
     const m = String((e && e.message) || e || "");
-    if (/violates foreign key constraint.*(bets|user_reveals)/i.test(m)) return "Nie można usunąć kota, który ma zakłady albo odkryte karty graczy. Zamiast usuwać, użyj „Ukryj kota”.";
+    if (/violates foreign key constraint.*(bets|user_reveals)/i.test(m)) return "Nie można usunąć kota, który ma historię w grze (archiwalne zakłady albo odkryte karty graczy). Zamiast usuwać, użyj „Ukryj kota”.";
     if (/cats_listing_url_check/.test(m)) return "Link do ogłoszenia musi zaczynać się od http:// albo https:// (max 500 znaków).";
     if (/cats_contact_phone_check/.test(m)) return "Telefon może mieć tylko cyfry, spacje, myślniki, nawiasy i + na początku (np. 500 100 200).";
     if (/cats_contact_email_check/.test(m)) return "Niepoprawny e-mail kontaktowy.";
@@ -131,7 +131,6 @@
     body.innerHTML = `
       <div class="admin-stats">
         <div class="stat"><span class="stat__label">Gracze</span><span class="stat__value">${stats.players}</span></div>
-        <div class="stat"><span class="stat__label">Aktywne zakłady</span><span class="stat__value">${stats.active_bets}</span></div>
         <div class="stat"><span class="stat__label">Koty czekające</span><span class="stat__value">${av}<small>/ ${visible.length}</small></span></div>
         <div class="stat"><span class="stat__label">Runda gry</span><span class="stat__value">${stats.round}</span></div>
       </div>
@@ -143,12 +142,6 @@
       <p class="auth__hint">Tych kotów nie widać na stronie ani w grze. Zostają w bazie, możesz je w każdej chwili pokazać z powrotem.</p>
       <div class="admin-cats">${hidden.map(catRow).join("")}</div>` : ""}
       <div class="admin-grid">
-        <section class="admin-card">
-          <h2>Ostatnie rozliczenia</h2>
-          ${stats.settlements.length ? `<table class="admin-table"><thead><tr><th>Kot</th><th>Runda</th><th>Zakłady</th><th>Wygrane</th><th>Wypłata</th><th>Kiedy</th></tr></thead><tbody>
-            ${stats.settlements.map((s) => `<tr><td>${esc((cats.find((c) => c.id === s.cat_id) || { name: s.cat_id }).name)}</td><td>${s.round}</td><td>${s.bets_settled}</td><td>${s.winners}</td><td>${s.payout_total} pkt</td><td>${new Date(s.created_at).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" })}</td></tr>`).join("")}
-          </tbody></table>` : `<p class="auth__hint">Jeszcze żadnej adopcji w trybie online.</p>`}
-        </section>
         <section class="admin-card">
           <div class="admin-bar"><h2>Schroniska</h2><button class="btn btn--soft btn--sm" type="button" data-new-shelter>＋ Dodaj</button></div>
           <ul class="admin-list">${shelters.map((s) => `<li><div><strong>${esc(s.name)}</strong><span>${esc(s.city)} · ${esc(s.email || "brak e-maila")}</span></div><button class="link-btn link-btn--inline" type="button" data-edit-shelter="${esc(s.id)}">Edytuj</button></li>`).join("")}</ul>
@@ -265,8 +258,8 @@
       <div class="acat__info">
         <h3>${esc(c.name)} ${adoptChip} ${status}</h3>
         <p>${esc(c.age)} · ${esc(c.sex)} · ${esc(shName(c.shelter_id))}</p>
-        <p class="acat__bets">${pc ? `🎲 ${pc.bets} ${pc.bets === 1 ? "aktywny zakład" : "aktywne zakłady"} · ${pc.stake} pkt` : "brak aktywnych zakładów"}${extras ? " · " + extras : ""}</p>
-        ${c.hidden ? `<p class="acat__bets">Ukryty ${c.hidden_at ? new Date(c.hidden_at).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" }) : ""}${c.hidden_note ? `: ${esc(c.hidden_note)}` : ""}${rf ? ` · zwrócono ${rf.bets} ${rf.bets === 1 ? "stawkę" : "stawki"} (${rf.points} pkt)` : ""}</p>` : ""}
+        ${extras ? `<p class="acat__bets">${extras}</p>` : ""}
+        ${c.hidden ? `<p class="acat__bets">Ukryty ${c.hidden_at ? new Date(c.hidden_at).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" }) : ""}${c.hidden_note ? `: ${esc(c.hidden_note)}` : ""}</p>` : ""}
       </div>
       <div class="acat__act">
         <button class="btn btn--soft btn--sm" type="button" data-edit="${esc(c.id)}">Edytuj</button>
@@ -306,7 +299,7 @@
             <label class="field"><span>Schronisko</span><select name="shelter_id"><option value="" ${!c.shelter_id ? "selected" : ""}>brak (ogłoszenie prywatne, pokaż kontakt i miejscowość)</option>${shelters.map((s) => `<option value="${esc(s.id)}" ${s.id === c.shelter_id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
             <label class="field"><span>Cechy (po przecinku, max 6)</span><input name="traits" value="${esc((c.traits || []).join(", "))}" placeholder="przytulas, gaduła"></label>
             <label class="field"><span>Historia</span><textarea name="story" maxlength="1000">${esc(c.story)}</textarea></label>
-            <label class="field"><span>Popularność 1–5 (niższa = wyższe kursy)</span><input type="number" name="popularity" min="1" max="5" value="${c.popularity}"></label>
+            <label class="field"><span>Popularność 1–5</span><input type="number" name="popularity" min="1" max="5" value="${c.popularity}"></label>
           </div>
         </div>
         <fieldset class="admin-look admin-contact"><legend>Ogłoszenie i kontakt do adopcji</legend>
@@ -421,7 +414,7 @@
     });
   }
 
-  /* ---------- adopcja (rozlicza zakłady) ---------- */
+  /* ---------- adopcja (bez rozliczania: obstawianie wyłączone) ---------- */
   function adoptDialog(c) {
     const pc = stats.per_cat[c.id];
     const fem = c.sex === "kotka";
@@ -430,8 +423,7 @@
       <form class="profile" data-adopt-form>
         <div class="admin-adopt__art">${art(c, "mini--lg")}</div>
         <h2>${esc(c.name)} ${fem ? "znalazła" : "znalazł"} dom? 🎉</h2>
-        <p>Oznaczenie adopcji <strong>od razu rozliczy zakłady</strong>: wszystkie aktywne „pierwszy w domu” (wygrywają ci, którzy obstawili ${esc(c.name_acc || c.name)}) oraz „w ciągu N dni” na tego kota. Przywrócenie statusu później <strong>nie cofa</strong> rozliczeń.</p>
-        <p class="auth__hint">${pc ? `Na tego kota: ${pc.bets} aktywnych zakładów (${pc.stake} pkt). ` : ""}Wszystkich aktywnych zakładów: ${stats.active_bets}.</p>
+        <p>Kot dostanie na stronie odznakę „Zaadoptowany” i notkę poniżej. Status możesz później cofnąć.</p>
         <label class="field"><span>Notka widoczna w grze (opcjonalnie)</span><input name="note" maxlength="120" value="${fem ? "Znalazła" : "Znalazł"} dom ${new Date().toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}"></label>
         <p class="auth__err" data-err role="alert" hidden></p>
         <div class="auth__row"><button class="btn btn--primary" type="submit">🏠 Tak, oznacz adopcję</button><button class="btn btn--ghost" type="button" data-close>Anuluj</button></div>
@@ -442,19 +434,18 @@
       const { data, error } = await sb.rpc("admin_set_cat_status", { p_cat_id: c.id, p_status: "adopted", p_note: e.target.elements.note.value });
       if (error) { $("[data-err]", d).textContent = msg(error); $("[data-err]", d).hidden = false; btn.disabled = false; return; }
       d.close();
-      const s = data.settlement;
-      toast(s ? `🏠 ${esc(c.name)}: rozliczono <strong>${s.bets_settled}</strong> zakładów, wygranych ${s.winners}, wypłacono ${s.payout_total} pkt.` : `🏠 ${esc(c.name)} oznaczony jako zaadoptowany.`);
+      toast(`🏠 ${esc(c.name)} oznaczony jako zaadoptowany.`);
       loadAll();
     });
   }
   async function unadopt(c) {
-    if (!confirm(`Przywrócić ${c.name} do adopcji? Rozliczone zakłady zostaną bez zmian.`)) return;
+    if (!confirm(`Przywrócić ${c.name} do adopcji?`)) return;
     const { error } = await sb.rpc("admin_set_cat_status", { p_cat_id: c.id, p_status: "available", p_note: null });
     if (error) return toast(esc(msg(error)));
     toast(`↩ ${esc(c.name)} znowu czeka na dom.`); loadAll();
   }
 
-  /* ---------- ukrywanie kota (zwraca stawki) ---------- */
+  /* ---------- ukrywanie kota ---------- */
   function hideDialog(c) {
     const pc = stats.per_cat[c.id];
     const d = dialog(`
@@ -462,8 +453,7 @@
       <form class="profile" data-hide-form>
         <div class="admin-adopt__art">${art(c, "mini--lg")}</div>
         <h2>Ukryć ${esc(c.name_acc || c.name)}?</h2>
-        <p>Kot <strong>zniknie ze strony i z gry</strong> (lista kotów, karty, zakłady), ale <strong>nie zostanie usunięty</strong>. Możesz go później pokazać z powrotem.</p>
-        <p>${pc ? `Na tego kota jest <strong>${pc.bets} ${pc.bets === 1 ? "aktywny zakład" : "aktywnych zakładów"} (${pc.stake} pkt)</strong>. Zakłady zostaną anulowane, a gracze <strong>dostaną zwrot stawek</strong>. Zwrotu nie da się cofnąć, także po ponownym pokazaniu kota.` : "Na tego kota nie ma aktywnych zakładów."}</p>
+        <p>Kot <strong>zniknie ze strony i z gry</strong> (lista kotów, karty), ale <strong>nie zostanie usunięty</strong>. Możesz go później pokazać z powrotem.</p>
         <p class="auth__hint">Jeśli ogłoszeniodawca wycofał zgodę, usuń też jego kontakt i link do ogłoszenia (Edytuj, wyczyść pola, Zapisz).</p>
         <label class="field"><span>Powód (widoczny tylko w panelu, opcjonalnie)</span><input name="note" maxlength="200" placeholder="np. prośba ogłoszeniodawcy o usunięcie"></label>
         <p class="auth__err" data-err role="alert" hidden></p>
@@ -475,12 +465,12 @@
       const { data, error } = await sb.rpc("admin_set_cat_hidden", { p_cat_id: c.id, p_hidden: true, p_note: e.target.elements.note.value });
       if (error) { $("[data-err]", d).textContent = msg(error); $("[data-err]", d).hidden = false; btn.disabled = false; return; }
       d.close();
-      toast(data.bets_refunded ? `🙈 Ukryto: <strong>${esc(c.name)}</strong>. Zwrócono ${data.bets_refunded} ${data.bets_refunded === 1 ? "stawkę" : "stawki"} (${data.points_refunded} pkt).` : `🙈 Ukryto: <strong>${esc(c.name)}</strong>.`);
+      toast(`🙈 Ukryto: <strong>${esc(c.name)}</strong>.`);
       loadAll();
     });
   }
   async function unhide(c) {
-    if (!confirm(`Pokazać ${c.name_acc || c.name} z powrotem na stronie? Kot wróci do gry. Zwrócone wcześniej stawki zostają u graczy.`)) return;
+    if (!confirm(`Pokazać ${c.name_acc || c.name} z powrotem na stronie? Kot wróci do gry.`)) return;
     const { error } = await sb.rpc("admin_set_cat_hidden", { p_cat_id: c.id, p_hidden: false, p_note: null });
     if (error) return toast(esc(msg(error)));
     toast(`👁 ${esc(c.name)} znowu jest widoczny na stronie.`); loadAll();

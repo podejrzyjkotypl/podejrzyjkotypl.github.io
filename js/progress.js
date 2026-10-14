@@ -28,13 +28,9 @@
     { id: "overlooked", g: "cats", icon: "🖤", name: "Serce dla pomijanych", desc: "Odkryj 3 karty czarnych kotów albo seniorów (7+ lat)." },
     { id: "reader", g: "cats", icon: "📖", name: "Czytelnik historii", desc: "Poznaj historie 5 różnych kotów (przycisk „Więcej”)." },
     { id: "sharer", g: "cats", icon: "📣", name: "Kocia poczta", desc: "Udostępnij kota znajomym przyciskiem „Udostępnij kota”." },
-    { id: "witness", g: "cats", icon: "🏡", name: "Świadek happy endu", desc: "Kibicuj kotu (odkryj albo obstaw), który potem znajdzie dom." },
-    { id: "senior_win", g: "cats", icon: "🧓", name: "Mądrość wąsów", desc: "Wygraj zakład na kota seniora." },
+    { id: "witness", g: "cats", icon: "🏡", name: "Świadek happy endu", desc: "Odkryj kartę kota, który potem znajdzie dom." },
     { id: "peek", g: "game", icon: "👀", name: "Podglądacz", desc: "Odkryj pierwszą kartę." },
     { id: "allcards", g: "game", icon: "🃏", name: "Kocie oko", desc: "Odkryj wszystkie karty (+20 pkt)." },
-    { id: "firstbet", g: "game", icon: "🎲", name: "Pierwszy zakład", desc: "Postaw punkty na kota." },
-    { id: "firstwin", g: "game", icon: "🍀", name: "Szczęśliwa łapa", desc: "Wygraj pierwszy zakład." },
-    { id: "streak3", g: "game", icon: "🔥", name: "Seria ×3", desc: "Wygraj 3 zakłady z rzędu." },
     { id: "quest1", g: "game", icon: "✅", name: "Pierwsze zadanie", desc: "Zrób dowolne zadanie dnia." },
     { id: "questall", g: "game", icon: "🏅", name: "Komplet dnia", desc: "Zrób wszystkie 3 zadania jednego dnia." },
     { id: "visit7", g: "habit", icon: "📅", name: "Tydzień z kotami", desc: "Zajrzyj 7 dni z rzędu." },
@@ -50,9 +46,9 @@
     flip2: { counter: "flip", target: 2, icon: "🃏", text: "Odkryj 2 karty" },
     read2: { counter: "details", target: 2, icon: "📖", text: "Poznaj historie 2 kotów (przycisk „Więcej”)" },
     flip4: { counter: "flip", target: 4, icon: "🃏", text: "Odkryj 4 karty" },
-    bet1: { counter: "bet", target: 1, icon: "🎲", text: "Postaw 1 zakład" },
-    betoverlooked: { counter: "bet_overlooked", target: 1, icon: "🖤", text: "Obstaw czarnego kota albo seniora" },
-    betdays: { counter: "bet_days", target: 1, icon: "📆", text: "Postaw zakład „w ciągu X dni”" },
+    read3: { counter: "details", target: 3, icon: "📖", text: "Poznaj historie 3 kotów" },
+    flip6: { counter: "flip", target: 6, icon: "🃏", text: "Odkryj 6 kart" },
+    flipoverlooked2: { counter: "flip_overlooked", target: 2, icon: "🖤", text: "Odkryj 2 karty czarnych kotów albo seniorów" },
     share1: { counter: "share", target: 1, icon: "📣", text: "Udostępnij dowolnego kota" },
     flipoverlooked: { counter: "flip_overlooked", target: 1, icon: "🖤", text: "Odkryj kartę czarnego kota albo seniora" },
     readoverlooked: { counter: "details_overlooked", target: 1, icon: "🖤", text: "Poznaj historię czarnego kota albo seniora" }
@@ -82,7 +78,7 @@
   function questsFor(d) {
     let n = dayNum(d) - dayNum("2026-01-05");
     if (n < 0) n = -n;
-    return [["flip2", "read2", "flip4"][n % 3], ["bet1", "betoverlooked", "betdays"][Math.floor(n / 3) % 3],
+    return [["flip2", "read2", "flip4"][n % 3], ["read3", "flip6", "flipoverlooked2"][Math.floor(n / 3) % 3],
       ["share1", "flipoverlooked", "readoverlooked"][(n + Math.floor(n / 9)) % 3]];
   }
   function isSenior(cat) {
@@ -525,8 +521,6 @@
           <ul class="ppstats">
             <li><strong>${st.reveals || 0}</strong><span>odkrytych kotów</span></li>
             <li><strong>${st.reads || 0}</strong><span>poznanych historii</span></li>
-            <li><strong>${st.bets || 0}</strong><span>zakładów</span></li>
-            <li><strong>${st.wins || 0}</strong><span>wygranych</span></li>
             <li><strong>${st.shares || 0}</strong><span>udostępnień</span></li>
             ${v.remote ? `<li><strong>${st.friends || 0}</strong><span>poleconych znajomych</span></li><li><strong>${v.weekXp}</strong><span>XP w tym tygodniu</span></li>` : ""}
           </ul></section>

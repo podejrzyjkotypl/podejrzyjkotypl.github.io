@@ -89,7 +89,7 @@
       '<div class="cc__in">' +
         '<button type="button" class="cc__close" data-cc="close" aria-label="Zamknij bez zmian" hidden>×</button>' +
         '<h2 class="cc__title" id="cc-title" tabindex="-1"><span aria-hidden="true">🍪</span> Ciasteczka? Tylko za Twoją zgodą</h2>' +
-        '<p class="cc__desc" id="cc-desc">Pamięć przeglądarki jest nam potrzebna, żeby działała gra (punkty, zakłady) i żeby zapamiętać ten wybór. ' +
+        '<p class="cc__desc" id="cc-desc">Pamięć przeglądarki jest nam potrzebna, żeby działała gra (punkty, postęp) i żeby zapamiętać ten wybór. ' +
         'Za Twoją zgodą użyjemy też plików cookies do statystyk i reklam (np. Google AdSense), dzięki którym strona może działać za darmo. ' +
         'Zdanie możesz zmienić w każdej chwili w stopce, w „Ustawieniach cookies”. <a href="' + POLICY_URL + '">Szczegóły w polityce prywatności</a>.</p>' +
         '<div class="cc__prefs" id="cc-prefs" hidden>' +

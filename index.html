@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>podejrzyjkota: odkryj karty, poznaj koty do adopcji</title>
-  <meta name="description" content="podejrzyjkota to gra, w której odkrywasz karty z kotami do adopcji i obstawiasz za wirtualne punkty (bez pieniędzy), który kot pierwszy znajdzie dom.">
+  <meta name="description" content="podejrzyjkota to gra, w której odkrywasz karty z kotami do adopcji, zbierasz wirtualne punkty (bez pieniędzy) i wydajesz je w kocich mini-grach.">
   <meta name="theme-color" content="#17121F">
   <link rel="canonical" href="https://podejrzyjkota.pl/">
   <meta property="og:type" content="website">
@@ -12,7 +12,7 @@
   <meta property="og:locale" content="pl_PL">
   <meta property="og:url" content="https://podejrzyjkota.pl/">
   <meta property="og:title" content="podejrzyjkota">
-  <meta property="og:description" content="Odkryj karty, poznaj koty, które szukają domu. Obstawiaj za punkty, bez pieniędzy.">
+  <meta property="og:description" content="Odkryj karty, poznaj koty, które szukają domu. Zbieraj punkty i graj w mini-gry, bez pieniędzy.">
   <meta property="og:image" content="https://podejrzyjkota.pl/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -59,10 +59,10 @@
         <div class="hero__copy">
           <p class="eyebrow">Gra adopcyjna dla kotów z całej Polski</p>
           <h1 class="hero__title">podejrzyj<span>kota</span></h1>
-          <p class="hero__lead">Odkrywaj karty, poznawaj koty, które szukają domu, i obstawiaj, który pierwszy zamieni schronisko na własną kanapę.</p>
+          <p class="hero__lead">Odkrywaj karty, poznawaj koty, które szukają domu, zbieraj punkty i wydawaj je w kocich mini-grach.</p>
           <div class="nomoney" role="note">
             <span class="nomoney__icon" aria-hidden="true">🪙<s></s></span>
-            <p><strong>Zakłady są tylko dla zabawy.</strong> Grasz wirtualnymi punktami, bez prawdziwych pieniędzy. Nic nie wpłacasz, niczego nie wypłacasz i nie da się kupić punktów.</p>
+            <p><strong>Punkty są tylko dla zabawy.</strong> Bez prawdziwych pieniędzy: nic nie wpłacasz, niczego nie wypłacasz i nie da się kupić punktów.</p>
           </div>
           <div class="hero__cta">
             <a class="btn btn--primary btn--lg" href="#gra">Odkrywaj karty</a>
@@ -99,20 +99,14 @@
           <div>
             <p class="eyebrow">Gra</p>
             <h2>Która karta skrywa Twojego kota?</h2>
-            <p class="section__lead">Kliknij kartę, żeby ją odkryć. Za każdą pierwszy raz odkrytą kartę dostajesz +2 pkt. Odkryj kota, a potem obstaw albo od razu napisz do schroniska.</p>
+            <p class="section__lead">Kliknij kartę, żeby ją odkryć. Za każdą pierwszy raz odkrytą kartę dostajesz +2 pkt. Odkryj kota, poznaj jego historię i, jeśli to ten jedyny, od razu napisz do opiekuna.</p>
           </div>
           <button class="btn btn--ghost" type="button" data-action="shuffle">🔀 Potasuj i zakryj</button>
         </div>
 
         <div class="stats" aria-label="Twoje statystyki">
           <div class="stat stat--points"><span class="stat__label">Punkty</span><span class="stat__value"><span data-points>100</span><small>pkt</small></span></div>
-          <div class="stat"><span class="stat__label">Seria wygranych</span><span class="stat__value"><span data-streak>0</span><small>🔥</small></span></div>
           <div class="stat"><span class="stat__label">Odkryte karty</span><span class="stat__value"><span data-revealed>0</span><small>/ <span data-total>0</span></small></span></div>
-          <div class="stat" data-stat-day><span class="stat__label">Dzień symulacji</span><span class="stat__value"><span data-day>1</span><small>runda <span data-round>1</span></small></span></div>
-        </div>
-        <div class="refill" data-refill hidden>
-          <p>Skończyły Ci się punkty? Spokojnie, to tylko zabawa.</p>
-          <button class="btn btn--primary btn--sm" type="button" data-action="refill">Odbierz kocią zapomogę (+30 pkt)</button>
         </div>
 
         <div class="game__layout">
@@ -123,28 +117,6 @@
 
           <aside class="table" id="stolik" aria-label="Twój stolik">
             <div class="panel panel--path" data-path aria-label="Kocia ścieżka: poziom, zadania dnia i odznaki"></div>
-
-            <div class="panel">
-              <h3 class="panel__title">Aktywne zakłady</h3>
-              <ul class="bets" data-bets></ul>
-            </div>
-
-            <div class="panel panel--demo">
-              <div class="panel__tag">Tryb demo</div>
-              <h3 class="panel__title">Przyspiesz czas</h3>
-              <p class="panel__text">Prawdziwe adopcje trwają dni lub tygodnie. Żeby przetestować grę, zasymuluj adopcję losowego kota (popularniejsze koty mają większą szansę) albo przewiń dzień.</p>
-              <div class="demo-actions">
-                <button class="btn btn--primary" type="button" data-action="simulate">🏠 Symuluj adopcję</button>
-                <button class="btn btn--ghost" type="button" data-action="nextday">+1 dzień</button>
-              </div>
-              <button class="link-btn" type="button" data-action="reset">Zresetuj grę (punkty, zakłady, karty)</button>
-            </div>
-
-            <div class="panel panel--live" data-live-panel hidden>
-              <div class="panel__tag panel__tag--live">Na żywo</div>
-              <h3 class="panel__title">Grasz na koncie</h3>
-              <p class="panel__text">Zakłady rozliczają się same, gdy schronisko oznaczy adopcję kota. Zakłady „w ciągu N dni” liczą prawdziwe dni od momentu postawienia. Punkty, odznaki i serie są zapisane na Twoim koncie.</p>
-            </div>
 
             <div class="panel">
               <h3 class="panel__title">Ranking</h3>
@@ -158,9 +130,8 @@
               <div class="ad-box"></div>
             </div>
 
-            <div class="panel" data-history-panel hidden>
-              <h3 class="panel__title">Rozliczone zakłady</h3>
-              <ul class="bets bets--history" data-history></ul>
+            <div class="panel panel--demo">
+              <button class="link-btn" type="button" data-action="reset">Zresetuj grę (punkty i karty)</button>
             </div>
           </aside>
         </div>
@@ -174,8 +145,8 @@
         <h2>Gra, w której wygrywają koty</h2>
         <ol class="steps">
           <li class="step"><span class="step__n">1</span><h3>Odkryj karty</h3><p>Każda karta skrywa kota, który czeka na dom. Kliknij, podejrzyj, poznaj imię, wiek i charakter.</p></li>
-          <li class="step"><span class="step__n">2</span><h3>Obstaw za punkty</h3><p>Na start masz 100 pkt. Postaw je na kota, który Twoim zdaniem pierwszy znajdzie dom albo trafi do domu w ciągu 3, 7 lub 14 dni.</p></li>
-          <li class="step"><span class="step__n">3</span><h3>Kibicuj i udostępniaj</h3><p>Im szybciej kot znajdzie dom, tym lepiej dla wszystkich. Pokaż go znajomym, może ktoś szuka właśnie takiego mruczka.</p></li>
+          <li class="step"><span class="step__n">2</span><h3>Zbieraj punkty</h3><p>Na start masz 100 pkt. Kolejne zdobywasz za odkrywanie kart, zadania dnia, codzienne wizyty i awanse. Ranking liczy wszystko, co zdobyłeś.</p></li>
+          <li class="step"><span class="step__n">3</span><h3>Wydawaj w mini-grach</h3><p>Punkty wydasz w <a href="gry.html">mini-grach</a> na ubranka dla kotka i skórki w Kocim Wężu. Wydawanie nie obniża wyniku w rankingu. Udostępniaj też koty znajomym, może ktoś szuka właśnie takiego mruczka.</p></li>
           <li class="step"><span class="step__n">4</span><h3>Adoptuj!</h3><p>Najlepsza wygrana to kot na kanapie. Każda karta ma przycisk „Chcę adoptować”, który prowadzi prosto do schroniska.</p></li>
         </ol>
 
@@ -183,22 +154,22 @@
           <div class="rules__box">
             <h3>Zasady punktów</h3>
             <table class="odds">
-              <thead><tr><th>Zakład</th><th>Kiedy wygrywasz</th><th>Mnożnik</th></tr></thead>
+              <thead><tr><th>Za co</th><th>Punkty</th></tr></thead>
               <tbody>
-                <tr><td>„Pierwszy w&nbsp;domu”</td><td>Twój kot zostanie zaadoptowany jako pierwszy z kotów czekających w danej rundzie (mnożnik zależy od popularności kota)</td><td>×1,2–12</td></tr>
-                <tr><td>„W&nbsp;ciągu 3&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 3 dni po zakładzie</td><td>ok. ×3,2–4,8</td></tr>
-                <tr><td>„W&nbsp;ciągu 7&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 7 dni po zakładzie</td><td>ok. ×2–3</td></tr>
-                <tr><td>„W&nbsp;ciągu 14&nbsp;dni”</td><td>kot znajdzie dom najpóźniej 14 dni po zakładzie</td><td>ok. ×1,3–1,9</td></tr>
+                <tr><td>Nowa odkryta karta</td><td>+2</td></tr>
+                <tr><td>Odkrycie wszystkich kart</td><td>+20</td></tr>
+                <tr><td>Zadanie dnia</td><td>+15</td></tr>
+                <tr><td>Codzienna wizyta</td><td>+5 do +35</td></tr>
               </tbody>
             </table>
-            <p class="rules__small">Wygrana = stawka × mnożnik (zaokrąglone). Mniej znane koty, np. seniorzy, mają wyższe mnożniki, żeby warto było o nich mówić. Bonusy: +2 pkt za każdą nową odkrytą kartę, +20 pkt za odkrycie wszystkich.</p>
+            <p class="rules__small">Do tego premie za awans na kolejny poziom. Punkty wydajesz w <a href="gry.html">mini-grach</a>, a wynik w rankingu zostaje bez zmian. Więcej na stronie <a href="jak-grac.html">Jak grać</a>.</p>
           </div>
           <div class="rules__box rules__box--warm">
             <h3>Czy to hazard?</h3>
-            <p><strong>Nie.</strong> Punkty nie mają żadnej wartości. Nie można ich kupić, wymienić ani wypłacić. Nikt niczego nie wpłaca, a wygrana to tylko liczba w grze i odznaka.</p>
+            <p><strong>Nie.</strong> Punkty nie mają żadnej wartości. Nie można ich kupić, wymienić ani wypłacić. Nikt niczego nie wpłaca, a punkty to tylko liczba w grze.</p>
             <h3>Gdzie są moje dane?</h3>
-            <p>Bez logowania punkty, zakłady i odkryte karty zapisują się tylko w Twojej przeglądarce (localStorage) i nic nie trafia na serwer.</p>
-            <p data-accounts-only hidden>Konto jest opcjonalne. Jeśli się zalogujesz, punkty, zakłady i odznaki zapiszemy na serwerze, żeby działały na każdym urządzeniu i w rankingu globalnym. Szczegóły: <a href="polityka-prywatnosci.html#konta">polityka prywatności</a>. Konto usuniesz jednym kliknięciem.</p>
+            <p>Bez logowania punkty i odkryte karty zapisują się tylko w Twojej przeglądarce (localStorage) i nic nie trafia na serwer.</p>
+            <p data-accounts-only hidden>Konto jest opcjonalne. Jeśli się zalogujesz, punkty, poziom i odznaki zapiszemy na serwerze, żeby działały na każdym urządzeniu i w rankingu globalnym. Szczegóły: <a href="polityka-prywatnosci.html#konta">polityka prywatności</a>. Konto usuniesz jednym kliknięciem.</p>
           </div>
         </div>
       </div>
@@ -211,7 +182,7 @@
           <div class="app__copy">
             <p class="eyebrow">Aplikacja na Androida</p>
             <h2>Pobierz aplikację</h2>
-            <p class="section__lead">Miej koty zawsze pod ręką. Aplikacja działa bez internetu, a punkty i zakłady zostają w telefonie.</p>
+            <p class="section__lead">Miej koty zawsze pod ręką. Aplikacja działa bez internetu, a punkty zostają w telefonie.</p>
 
             <div class="app__native-note" role="status">🎉 Korzystasz już z aplikacji podejrzyjkota. Dzięki!</div>
 
@@ -264,7 +235,7 @@
               <strong>Dlaczego Play Protect ostrzega?</strong>
               <p>Aplikacja nie pochodzi jeszcze ze sklepu Google Play i jest nowa, więc Google jej „nie zna”. Takie ostrzeżenie pojawia się przy każdej aplikacji instalowanej spoza sklepu i nie oznacza, że jest szkodliwa. podejrzyjkota <span data-perm-note>nie prosi o kontakty, zdjęcia, lokalizację, aparat ani SMS-y. Jedyne uprawnienie to standardowy dostęp do internetu, który nie wymaga Twojej zgody</span>. Instaluj tylko plik pobrany z tej strony.</p>
             </div>
-            <p class="guide__small">Aktualizacja: pobierz nowszy plik APK i zainstaluj go „na” starą wersję. Punkty i zakłady zostaną.</p>
+            <p class="guide__small">Aktualizacja: pobierz nowszy plik APK i zainstaluj go „na” starą wersję. Punkty zostaną.</p>
             <p class="guide__small guide__cert">Odcisk certyfikatu (SHA-256): <code style="word-break:break-all;overflow-wrap:anywhere">64:D6:2F:27:05:9A:E5:85:E2:DE:38:02:DC:DE:20:FB:CA:63:A6:2E:94:23:54:80:2C:7D:EC:7A:D7:D2:98:1E</code></p>
           </div>
 
@@ -293,7 +264,7 @@
           <ol class="checklist">
             <li><strong>Prześlij dane kota:</strong> imię, wiek, płeć, 2–3 cechy charakteru, krótki opis i kontakt.</li>
             <li><strong>Dodaj zdjęcie</strong>, do którego macie prawa (albo zostawimy ilustrację).</li>
-            <li><strong>Dajcie znać po adopcji</strong>, a karta dostanie odznakę „Zaadoptowany” i zakłady się rozliczą.</li>
+            <li><strong>Dajcie znać po adopcji</strong>, a karta dostanie odznakę „Zaadoptowany”.</li>
           </ol>
           <div class="hero__cta">
             <a class="btn btn--primary" href="mailto:podlasie.studio.mail@gmail.com?subject=Chcemy%20dołączyć%20do%20podejrzyjkota">Zgłoś schronisko</a>
@@ -344,14 +315,14 @@
         </nav>
       </div>
       <div class="footer__fine">
-        <p><strong>Zakłady bez pieniędzy.</strong> Punkty są wirtualne, nie można ich kupić ani wypłacić.</p>
+        <p><strong>Gra bez pieniędzy.</strong> Punkty są wirtualne, nie można ich kupić ani wypłacić.</p>
         <p>Ilustracje kotów są generowane w kodzie (SVG). Fonty: Fraunces i Nunito (SIL Open Font License).</p>
         <p>© 2026 podejrzyjkota · Łomża</p>
       </div>
     </div>
   </footer>
 
-  <!-- Karta kota / zakład -->
+  <!-- Karta kota -->
   <dialog class="sheet" data-sheet aria-labelledby="sheet-title">
     <div class="sheet__in" data-sheet-body></div>
   </dialog>

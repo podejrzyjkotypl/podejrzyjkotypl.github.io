@@ -172,7 +172,7 @@
       <div class="auth" data-auth>
         <div class="auth__cats" aria-hidden="true">${["latka", "pierniczek", "mgielka"].map((id) => avatarHtml(id)).join("")}</div>
         <h2 id="auth-title">Zaloguj się</h2>
-        <p class="auth__lead">Zapisz punkty, odznaki i zakłady na koncie, graj na kilku urządzeniach i powalcz w <strong>rankingu globalnym</strong>. Konto jest opcjonalne: bez niego gra działa jak dotąd.</p>
+        <p class="auth__lead">Zapisz punkty, poziom i odznaki na koncie, graj na kilku urządzeniach i powalcz w <strong>rankingu globalnym</strong>. Konto jest opcjonalne: bez niego gra działa jak dotąd.</p>
         <div class="auth__view" data-view="main">
           ${AUTH.google ? `<button class="btn btn--google btn--block" type="button" data-google>
               <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
@@ -333,7 +333,7 @@
       <button class="sheet__close" type="button" data-close aria-label="Zamknij">×</button>
       <form class="profile" data-del>
         <h2>Usunąć konto?</h2>
-        <p>Usuniemy <strong>na zawsze</strong>: konto logowania (e-mail), profil (nick, awatar), punkty, zakłady, odznaki, odkryte karty, historię punktów i Twoje zgłoszenia kotów razem ze zdjęciami (koty dodane z Twoich zgłoszeń znikną ze strony). Znikniesz z rankingu. Tego nie da się cofnąć.</p>
+        <p>Usuniemy <strong>na zawsze</strong>: konto logowania (e-mail), profil (nick, awatar), punkty, odznaki, odkryte karty, historię punktów i Twoje zgłoszenia kotów razem ze zdjęciami (koty dodane z Twoich zgłoszeń znikną ze strony). Znikniesz z rankingu. Tego nie da się cofnąć.</p>
         <p class="auth__hint">Chcesz zachować kopię? <button class="link-btn link-btn--inline" type="button" data-export>Pobierz najpierw swoje dane (JSON)</button>.</p>
         <label class="field"><span>Wpisz <strong>USUŃ</strong>, żeby potwierdzić</span><input name="confirm" autocomplete="off" spellcheck="false"></label>
         <p class="auth__err" data-err role="alert" hidden></p>
@@ -378,7 +378,7 @@
           ? { p_points: gp.points, p_badges: gp.badges, p_seen: gp.seen, p_best_streak: gp.bestStreak, p_xp: gp.xp || 0, p_best_visit: gp.bestVisit || 0 }
           : { p_points: 0, p_badges: [], p_seen: [], p_best_streak: 0, p_xp: 0, p_best_visit: 0 });
         if (gp && r.imported) {
-          toast(`📦 Przenieśliśmy postęp z tej przeglądarki${r.points_added ? `: <strong>+${r.points_added} pkt</strong>` : ""}${r.xp_added ? `, ${r.xp_added} XP` : ""}, odznaki i odkryte karty.${gp.bets ? " Zakłady demo zostają w trybie gościa." : ""}`);
+          toast(`📦 Przenieśliśmy postęp z tej przeglądarki${r.points_added ? `: <strong>+${r.points_added} pkt</strong>` : ""}${r.xp_added ? `, ${r.xp_added} XP` : ""}, odznaki i odkryte karty.`);
         }
         snap = await rpc("get_my_state");
       }

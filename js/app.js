@@ -26,9 +26,6 @@
   const BADGES = [
     { id: "peek", icon: "👀", name: "Podglądacz", desc: "Odkryj pierwszą kartę" },
     { id: "allcards", icon: "🃏", name: "Kocie oko", desc: "Odkryj wszystkie karty (+20 pkt)" },
-    { id: "firstbet", icon: "🎲", name: "Pierwszy zakład", desc: "Postaw pierwsze punkty" },
-    { id: "firstwin", icon: "🍀", name: "Szczęśliwa łapa", desc: "Wygraj zakład" },
-    { id: "streak3", icon: "🔥", name: "Seria ×3", desc: "Wygraj 3 zakłady z rzędu" },
     { id: "ambassador", icon: "💌", name: "Ambasador adopcji", desc: "Kliknij „Chcę adoptować”" }
   ];
 
@@ -96,6 +93,8 @@
     s.revealed = s.revealed.filter((id) => byId[id]);
     s.seen = s.seen.filter((id) => byId[id]);
     s.bets = s.bets.filter((b) => byId[b.catId]);
+    // obstawianie wyłączone (2026-10-14): aktywne zakłady gościa wracają jako punkty
+    s.bets.forEach((b) => { if (b.status === "active") { s.points += b.stake; b.status = "void"; b.payout = b.stake; } });
     return s;
   }
   let state = loadState();
@@ -480,7 +479,6 @@
   function fillFront(el, cat) {
     const sh = shelterOf(cat);
     const adopted = isAdopted(cat);
-    const myBet = activeBets().filter((b) => b.catId === cat.id).reduce((s, b) => s + b.stake, 0);
     const art = cat.photo
       ? `<img class="cat-photo-bg" src="${esc(cat.photo)}" alt="" aria-hidden="true" loading="lazy"><img class="cat-photo" src="${esc(cat.photo)}" alt="Zdjęcie: ${esc(cat.name)}" loading="lazy">`
       : CatArt.catSvg(cat);
@@ -488,7 +486,6 @@
     front.innerHTML = `
       <div class="card__art" style="--bg:${esc((cat.look && cat.look.bg) || "#F3E9DC")}">
         ${art}
-        ${myBet ? `<span class="chip chip--bet" title="Twoja stawka na tego kota">🎲 ${myBet}</span>` : ""}
         ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
       </div>
       <div class="card__body">
@@ -500,8 +497,7 @@
         <div class="card__actions">
           <a class="btn btn--primary btn--sm btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt data-cat="${esc(cat.id)}">${adopted ? "Adoptuj kumpla" : "Chcę adoptować"}</a>
           <div class="card__row">
-            ${adopted ? "" : `<button class="btn btn--soft btn--sm" type="button" data-open="bet">🎲 Obstaw</button>`}
-            <button class="btn btn--soft btn--sm" type="button" data-open="info">Więcej</button>
+            <button class="btn btn--soft btn--sm" type="button" data-open="info">Więcej o kocie</button>
           </div>
         </div>
       </div>`;
@@ -537,14 +533,13 @@
     const id = card.dataset.id;
     if (e.target.closest(".card__back")) { reveal(id); return; }
     const open = e.target.closest("[data-open]");
-    if (open) { openSheet(id, open.dataset.open === "bet"); return; }
+    if (open) { openSheet(id); return; }
     if (e.target.closest("[data-adopt]")) ambassador();
   });
 
   /* ---------- render: panel ---------- */
   function renderStats() {
     $$("[data-points]").forEach((n) => (n.textContent = state.points));
-    $$("[data-streak]").forEach((n) => (n.textContent = state.streak));
     $$("[data-revealed]").forEach((n) => (n.textContent = state.revealed.length));
     $$("[data-total]").forEach((n) => (n.textContent = CATS.length));
     const ds = $("[data-stat-day]");
@@ -559,7 +554,7 @@
     }
     $$("[data-day]").forEach((n) => (n.textContent = state.day));
     $$("[data-round]").forEach((n) => (n.textContent = state.round));
-    $("[data-refill]").hidden = remote ? !state.canRefill : !(state.points < MIN_STAKE && activeBets().length === 0);
+    { const rf = $("[data-refill]"); if (rf) rf.hidden = true; } // bez zakładów punkty się nie kończą
     const demo = $(".panel--demo"), live = $("[data-live-panel]");
     if (demo) demo.hidden = !!remote;
     if (live) live.hidden = !remote;
@@ -571,6 +566,7 @@
   }
 
   function renderBets() {
+    return; // obstawianie wyłączone (2026-10-14)
     const list = $("[data-bets]");
     const act = activeBets();
     if (!act.length) {
@@ -645,7 +641,7 @@
     el.innerHTML = rowsHtml(b, weekly, 10) || `<li class="empty">${weekly ? "W tym tygodniu nikt jeszcze nie zdobył XP. Możesz być pierwszy!" : "Jeszcze nikt nie gra. Bądź pierwszy!"}</li>`;
     if (note) note.innerHTML = (weekly
       ? `Ranking tygodnia: XP zdobyte od poniedziałku (reset w poniedziałek o 00:00). Top 3 dostaje odznakę „Podium tygodnia”.${lastWeekLine(b)}`
-      : `Ranking globalny: ${b.players} ${plural(b.players, "gracz", "graczy", "graczy")}. Wynik = punkty + stawki w grze.`) +
+      : `Ranking globalny: ${b.players} ${plural(b.players, "gracz", "graczy", "graczy")}. Wynik = wszystkie zdobyte punkty (zakupy w sklepie ich nie zmniejszają).`) +
       ` <button class="link-btn link-btn--inline" type="button" data-action="leaderboard">Pokaż top 50</button>`;
   }
   function openLeaderboard() {
@@ -657,7 +653,7 @@
         <p class="eyebrow">${weekly ? "Ranking tygodnia" : "Ranking globalny"}</p>
         <h2 id="sheet-title">Top ${b.top.length} graczy</h2>
         ${lbTabs()}
-        <p class="lb__sub">${b.players} ${plural(b.players, "gracz", "graczy", "graczy")} · ${weekly ? "XP zdobyte od poniedziałku, reset w poniedziałek o 00:00" : "wynik = punkty + stawki w aktywnych zakładach"}</p>
+        <p class="lb__sub">${b.players} ${plural(b.players, "gracz", "graczy", "graczy")} · ${weekly ? "XP zdobyte od poniedziałku, reset w poniedziałek o 00:00" : "wynik = wszystkie zdobyte punkty"}</p>
         ${weekly ? lastWeekLine(b) : ""}
         <ol class="ranking ranking--full">${rowsHtml(b, weekly)}</ol>
         <p class="panel__note">Publicznie widać tylko nick, awatar, poziom i wynik. Nick zmienisz w menu konta.</p>
@@ -681,12 +677,12 @@
     if (note) note.innerHTML = "Rywale są przykładowi. Ranking jest lokalny, liczony tylko w Twojej przeglądarce." +
       (accountsAvailable ? ` <button class="link-btn link-btn--inline" type="button" data-action="login">Zaloguj się</button>, żeby grać w rankingu globalnym.` : "");
     const rows = state.rivals.map((r) => ({ name: r.name, points: r.points, me: false }))
-      .concat([{ name: "Ty", points: state.points + activeBets().reduce((s, b) => s + b.stake, 0), me: true }])
+      .concat([{ name: "Ty", points: state.points, me: true }])
       .sort((a, b) => b.points - a.points);
     $("[data-ranking]").innerHTML = rows.map((r, i) => `
       <li class="${r.me ? "is-me" : ""}">
         <span class="rank">${medals[i] || i + 1}</span>
-        <span class="who">${esc(r.name)}${r.me ? " <em>(punkty + stawki w grze)</em>" : ""}</span>
+        <span class="who">${esc(r.name)}</span>
         <span class="score">${r.points}</span>
       </li>`).join("");
   }
@@ -742,33 +738,7 @@
           ${adopted ? "" : `<button class="btn btn--soft btn--block sheet__share" type="button" data-share="${esc(cat.id)}"><span aria-hidden="true">📣</span> Udostępnij kota</button>`}
         </div>
       </div>
-      ${adopted ? `<div class="betbox betbox--closed"><p>Ten kot ma już dom, więc zakłady są zamknięte. Najlepsza możliwa wygrana! 🎉</p></div>` : `
-      <form class="betbox" data-betform>
-        <h3>Obstaw za punkty <span class="betbox__nomoney">bez pieniędzy</span></h3>
-        <fieldset class="bet-types">
-          <legend class="sr-only">Rodzaj zakładu</legend>
-          <label class="bt"><input type="radio" name="kind" value="first" checked>
-            <span><strong>${g(cat, "Pierwszy", "Pierwsza")} w domu</strong><small>z ${available().length} czekających kotów</small><em>${fmtOdds(oddsFirst(cat))}</em></span></label>
-          ${DAY_OPTIONS.map((o) => `
-          <label class="bt"><input type="radio" name="kind" value="d${o.days}">
-            <span><strong>W ciągu ${daysTxt(o.days)}</strong><small>${remote ? "do " + fmtDate(Date.now() + o.days * 864e5) : "do dnia " + (state.day + o.days)}</small><em>${fmtOdds(oddsDays(cat, o.days))}</em></span></label>`).join("")}
-        </fieldset>
-        <div class="stake">
-          <label for="stake">Stawka</label>
-          <div class="stake__row">
-            <input type="range" id="stake-range" min="${MIN_STAKE}" max="${Math.max(MIN_STAKE, state.points)}" step="1" value="${Math.max(MIN_STAKE, defStake)}" ${state.points < MIN_STAKE ? "disabled" : ""} aria-label="Stawka (suwak)">
-            <input type="number" id="stake" min="${MIN_STAKE}" max="${state.points}" value="${Math.max(MIN_STAKE, defStake)}" inputmode="numeric" ${state.points < MIN_STAKE ? "disabled" : ""}>
-          </div>
-          <div class="stake__quick">
-            ${[10, 25, 50].map((v) => `<button type="button" class="qs" data-stake="${v}" ${v > state.points ? "disabled" : ""}>${v}</button>`).join("")}
-            <button type="button" class="qs" data-stake="all" ${state.points < MIN_STAKE ? "disabled" : ""}>Wszystko</button>
-          </div>
-        </div>
-        <div class="betbox__foot">
-          <p class="betbox__win">Możliwa wygrana: <strong data-win>0 pkt</strong><br><small>Masz ${pts(state.points)} · min. stawka ${pts(MIN_STAKE)}</small></p>
-          <button class="btn btn--primary" type="submit" ${state.points < MIN_STAKE ? "disabled" : ""}>Postaw punkty</button>
-        </div>
-      </form>`}`;
+      `;
     if (!sheet.open) sheet.showModal();
     sheetBody.scrollTop = 0;
     progress("details", cat);
@@ -875,7 +845,7 @@
         if (state.points < MIN_STAKE && !activeBets().length) { addPoints(REFILL); save(); renderAll(); toast(`🐾 +${REFILL} pkt kociej zapomogi. Powodzenia!`); }
         break;
       case "reset":
-        if (confirm("Zresetować grę? Punkty, zakłady i odkryte karty wrócą do stanu początkowego. Poziom, XP i odznaki zostają.")) {
+        if (confirm("Zresetować grę? Punkty i odkryte karty wrócą do stanu początkowego. Poziom, XP i odznaki zostają.")) {
           state = freshState(); save(); buildBoard(); renderAll(); toast("Gra zresetowana. Masz 100 pkt na start, poziom i odznaki zostały.");
         }
         break;
@@ -971,6 +941,7 @@
   }
   // nowe rozliczenia od ostatniej wizyty (znacznik czasu per konto w localStorage)
   function showFreshSettlements() {
+    return; // obstawianie wyłączone: nie pokazujemy rozliczeń zakładów
     const key = "podejrzyjkota:acct-seen:" + state.userId;
     let marker = Number(localStorage.getItem(key) || 0);
     const resolved = state.bets.filter((b) => b.status !== "active" && b.resolvedAt);
