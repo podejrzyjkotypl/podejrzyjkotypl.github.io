@@ -36,7 +36,7 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const byId = Object.fromEntries(CATS.map((c) => [c.id, c]));
   // awatary graczy = 9 ilustracji kotów z js/cats.js (niezależnie od kotów w bazie)
-  const AVATAR_CATS = Object.fromEntries(DATA.cats.map((c) => [c.id, { ...c }]));
+  const AVATAR_CATS = Object.fromEntries((DATA.avatars || []).map((c) => [c.id, { ...c }]));
   function reindex() {
     Object.keys(byId).forEach((k) => delete byId[k]);
     CATS.forEach((c) => { byId[c.id] = c; });
@@ -209,8 +209,6 @@
   document.addEventListener("load", (e) => { const t = e.target; if (t && t.classList && t.classList.contains("cat-photo")) fitCatPhoto(t); }, true);
   window.addEventListener("resize", () => { document.querySelectorAll("img.cat-photo").forEach((i) => { if (i.complete) fitCatPhoto(i); }); });
   new MutationObserver(() => { document.querySelectorAll("img.cat-photo:not(.is-landscape):not(.is-portrait)").forEach((i) => { if (i.complete) fitCatPhoto(i); }); }).observe(document.documentElement, { childList: true, subtree: true });
-  const isDemo = (cat) => !cat.listingUrl && !cat.contactPhone && !cat.contactEmail && isExampleEmail(contactOf(cat).email);
-  const isExampleEmail = (e) => /@przyklad\.example$/i.test(String(e || ""));
 
   const Progress = () => window.PodejrzyjkotaProgress;
   const progress = (type, cat, extra) => { const P = Progress(); if (P) P.event(type, cat, extra); };
@@ -236,7 +234,7 @@
       addPoints(REVEAL_BONUS);
       award("peek");
       progress("reveal_new", byId[catId]);
-      if (state.seen.length === CATS.length && award("allcards")) {
+      if (CATS.length && state.seen.length === CATS.length && award("allcards")) {
         addPoints(ALL_CARDS_BONUS);
         confetti(90);
       }
@@ -490,7 +488,6 @@
     front.innerHTML = `
       <div class="card__art" style="--bg:${esc((cat.look && cat.look.bg) || "#F3E9DC")}">
         ${art}
-        ${isDemo(cat) ? `<span class="chip chip--demo">przykład</span>` : ""}
         ${myBet ? `<span class="chip chip--bet" title="Twoja stawka na tego kota">🎲 ${myBet}</span>` : ""}
         ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
       </div>
@@ -730,8 +727,7 @@
       <div class="sheet__grid">
         <div class="sheet__art" style="--bg:${esc((cat.look && cat.look.bg) || "#F3E9DC")}">
           ${cat.photo ? `<img class="cat-photo-bg" src="${esc(cat.photo)}" alt="" aria-hidden="true"><img class="cat-photo" src="${esc(cat.photo)}" alt="Zdjęcie: ${esc(cat.name)}">` : CatArt.catSvg(cat)}
-          ${isDemo(cat) ? `<span class="chip chip--demo">przykład</span>` : ""}
-          ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
+            ${adopted ? `<span class="ribbon">🎉 Zaadoptowan${g(cat, "y", "a")}!</span>` : ""}
         </div>
         <div class="sheet__info">
           <h2 id="sheet-title">${esc(cat.name)} <span class="sex sex--${isFemale(cat) ? "f" : "m"}">${isFemale(cat) ? "♀" : "♂"}</span></h2>
@@ -744,7 +740,6 @@
           <a class="btn btn--primary btn--block" href="${esc(adoptHref(cat))}"${contactOf(cat).viaListing ? ' target="_blank" rel="noopener noreferrer nofollow"' : ""} data-adopt>${adopted ? "Zapytaj o podobne koty" : (cat.nameAcc ? `Chcę adoptować ${esc(cat.nameAcc)}` : "Chcę adoptować")}</a>
           ${adopted ? "" : listingLink(cat, "btn btn--soft btn--block sheet__listing")}
           ${adopted ? "" : `<button class="btn btn--soft btn--block sheet__share" type="button" data-share="${esc(cat.id)}"><span aria-hidden="true">📣</span> Udostępnij kota</button>`}
-          ${isDemo(cat) ? `<p class="placeholder-note">Kontakt przykładowy (${esc(contactOf(cat).email)}). W kontakcie wpisujemy to, co jest dostępne: telefon, e-mail albo link do ogłoszenia.</p>` : ""}
         </div>
       </div>
       ${adopted ? `<div class="betbox betbox--closed"><p>Ten kot ma już dom, więc zakłady są zamknięte. Najlepsza możliwa wygrana! 🎉</p></div>` : `
@@ -943,11 +938,15 @@
 
   /* ---------- hero ---------- */
   const heroCat = $("[data-hero-cat]");
-  if (heroCat) {
+  function renderHero() {
     const c = CATS.find((x) => x.status !== "adopted") || CATS[0];
-    heroCat.innerHTML = `<div class="fan__art" style="--bg:${esc(c.look.bg)}">${CatArt.catSvg(c, { title: false })}</div>
-      <div class="fan__label"><strong>${esc(c.name)}</strong><span>${esc(c.age)} · ${esc(c.sex)}</span></div>`;
+    if (!heroCat || !c) return;
+    const art = CatArt.catSvg(c, { title: false });
+    heroCat.innerHTML = `<div class="fan__art" style="--bg:${esc((c.look && c.look.bg) || "#2a2238")}">${art}</div>
+      <div class="fan__label"><strong>${esc(c.name)}</strong><span>${esc(c.age || "")} · ${esc(c.sex || "")}</span></div>`;
   }
+  renderHero();
+  document.addEventListener("podejrzyjkota:cats", renderHero);
 
   /* ---------- API dla js/account.js (konta Supabase) ---------- */
   function normalizeOrder(order) {
@@ -993,7 +992,7 @@
     toast,
     errMsg,
     setAccountsAvailable(v) { accountsAvailable = !!v; renderRanking(); },
-    // koty z bazy (Supabase) zamiast przykładowych z js/cats.js
+    // koty z bazy (Supabase)
     setCats(cats, shelters) {
       if (!cats || !cats.length) return;
       if (shelters && shelters.length) {

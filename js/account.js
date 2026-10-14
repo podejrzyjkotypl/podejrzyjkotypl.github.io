@@ -70,7 +70,7 @@
   function avatarHtml(id, cls) {
     const g = Game();
     const svg = g ? g.avatarSvg(id) : (window.PODEJRZYJKOTA_DATA && window.CatArt ? (() => {
-      const c = window.PODEJRZYJKOTA_DATA.cats.find((x) => x.id === id); return c ? window.CatArt.catSvg(c, { title: false }) : "";
+      const c = (window.PODEJRZYJKOTA_DATA.avatars || []).find((x) => x.id === id); return c ? window.CatArt.catSvg(c, { title: false }) : "";
     })() : "");
     const bg = g ? g.avatarBg(id) : "#F3E9DC";
     return `<span class="mini ${cls || ""}" style="--bg:${esc(bg)}">${svg}</span>`;

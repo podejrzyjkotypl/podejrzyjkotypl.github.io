@@ -1,8 +1,8 @@
 /*
  * podejrzyjkota: DANE KOTÓW
  * ------------------------------------------------------------
- * UWAGA: to są PRZYKŁADOWE koty i FIKCYJNE schroniska (dane demonstracyjne).
- * Żeby podpiąć prawdziwe koty, podmień tablicę `cats` poniżej.
+ * Koty na stronie pochodzą z bazy (Supabase). Tablica `cats` jest pusta;
+ * `avatars` to wyłącznie ilustracje SVG używane jako awatary graczy.
  *
  * Pola kota:
  *   id          unikalny identyfikator (krótki tekst bez spacji)
@@ -32,28 +32,14 @@
  *               extra                "bow" | "collar" | "none"
  */
 window.PODEJRZYJKOTA_DATA = {
-  // DO PODMIANY: domyślny adres kontaktowy do adopcji (to adres fikcyjny!)
-  contactEmail: "adopcje@przyklad.example",
+  contactEmail: "",
 
-  shelters: {
-    "koci-wasik": {
-      name: "Schronisko „Pod Kocim Wąsem”",
-      city: "Łomża",
-      email: "adopcje@przyklad.example" // DO PODMIANY
-    },
-    "mruczacy-dom": {
-      name: "Fundacja „Mruczący Dom”",
-      city: "Zambrów",
-      email: "adopcje@przyklad.example" // DO PODMIANY
-    },
-    "narwianska-lapa": {
-      name: "Kociarnia „Narwiańska Łapa”",
-      city: "Piątnica",
-      email: "adopcje@przyklad.example" // DO PODMIANY
-    }
-  },
+  shelters: {},
 
-  cats: [
+  cats: [],
+
+  // ilustracje awatarów graczy (nie są kotami do adopcji)
+  avatars: [
     {
       id: "pierniczek",
       name: "Pierniczek",
