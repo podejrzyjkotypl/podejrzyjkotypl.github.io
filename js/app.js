@@ -192,7 +192,7 @@
     if (ct.phone) rows.push(`<li><span aria-hidden="true">📞</span> <a href="${esc(telHref(ct.phone))}" data-adopt>${esc(fmtPhone(ct.phone))}</a></li>`);
     if (ct.email) rows.push(`<li><span aria-hidden="true">✉️</span> <a href="${esc(adoptMailto(cat))}" data-adopt>${esc(ct.email)}</a></li>`);
     if (ct.viaListing) rows.push(`<li><span aria-hidden="true">💬</span> <a href="${esc(ct.listing)}" target="_blank" rel="noopener noreferrer nofollow" data-adopt>przez czat w ogłoszeniu${/olx\./i.test(ct.listing) ? " na OLX" : ""} ↗</a></li>`);
-    return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul></div>`;
+    return `<div class="contact-box"><p class="contact-box__title">Kontakt w sprawie adopcji${ct.name ? `: <strong>${esc(ct.name)}</strong>` : ""}</p><ul>${rows.join("")}</ul><p class="contact-box__docs"><a href="dokumenty.html">📄 Adoptujesz? Pobierz gotowe dokumenty</a></p></div>`;
   }
   // zdjęcia kotów: nigdy nie przycinamy kota. Domyślnie contain; cover tylko dla poziomych,
   // gdy proporcje zdjęcia są bliskie proporcjom ramki (różnica do ok. 15%).

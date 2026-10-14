@@ -1184,3 +1184,21 @@ pre { max-width: 100%; }
 }
 @media (min-width: 760px) and (max-width: 1059px) { .topbar__in { gap: 10px; } .nav { gap: 0; } .nav a { padding: 8px 9px; font-size: .88rem; } }
 @media (min-width: 760px) and (max-width: 879px) { .nav a { padding: 8px 6px; font-size: .84rem; } .brand { font-size: 1.15rem; } .brand img { width: 30px; height: 30px; } }
+
+/* Dokumenty do adopcji */
+.docs-cta { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 18px; border-radius: 18px; background: linear-gradient(135deg, var(--plum), var(--plum-2)); border: 2px dashed var(--mustard); color: var(--ink); text-decoration: none; max-width: 520px; transition: transform .15s ease; }
+.docs-cta:hover { transform: translateY(-2px); }
+.docs-cta strong { display: block; color: var(--mustard); font-size: 1.05rem; }
+.docs-cta small { display: block; color: var(--ink-soft); font-size: .88rem; margin-top: 2px; }
+.docs-cta__ic { font-size: 1.9rem; }
+.docs-cta__arr { margin-left: auto; font-size: 1.4rem; color: var(--mustard); }
+.doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.doc-card { background: var(--paper); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.doc-card h2 { font-size: 1.25rem; margin: 6px 0 0; }
+.doc-card p { color: var(--ink-soft); margin: 0; }
+.doc-card__ic { font-size: 2.2rem; }
+.doc-card__meta { font-size: .85rem; margin-bottom: 10px !important; }
+.doc-card .btn { margin-top: auto; }
+.doc-tips { margin-top: 34px; background: var(--paper); border-radius: 20px; padding: 24px; }
+.doc-note { color: var(--ink-soft); font-size: .9rem; }
+.contact-box__docs { margin: 8px 0 0; font-size: .9rem; }
