@@ -28,7 +28,7 @@ svg .eye{animation:blink 4s infinite}@keyframes blink{0%,95%,100%{transform:scal
 <div class="tip" id="tip"></div>
 <p style="font-size:.9em;color:var(--mu)">Prawdziwy kot potrzebuje Cię codziennie, nie tylko w grze. <a href="./#gra">Zobacz koty, które szukają domu →</a></p></section>
 </div></main>
-<script src="js/gry/wallet.js"></script><script src="js/gry/catalog.js"></script>
+<script src="js/config.js"></script><script src="js/gry/wallet.js"></script><script src="js/gry/catalog.js"></script>
 <script>
 const K='kotek-gra-v1',H=3600e3;
 const DECAY={food:4,water:5,fun:3,litter:2.5,sleep:3};
@@ -120,7 +120,7 @@ function render(msg){const st=document.getElementById('stage');st.className='car
  <div class="mood">${msg||{ok:'Kotek mruczy z zadowolenia 😺',sad:'Kotek czegoś potrzebuje: '+low.map(k=>NAMES[k]).join(', '),sick:'🤒 Kotek źle się czuje! Zadbaj o niego szybko.',sleep:'Kotek jest śpiący...'}[m]}</div>
  ${[...Object.keys(DECAY),'health'].map(k=>`<div class="bar"><label><span>${NAMES[k]||'❤️ Zdrowie'}</span><span>${Math.round(s[k])}%</span></label><div><i style="width:${s[k]}%;background:${col(s[k])}"></i></div></div>`).join('')}
  <div class="btns"><button onclick="act('food')">🥣 Chrupki</button><button onclick="act('water')">💧 Woda</button><button onclick="act('fun')">🧶 Pobaw się</button><button onclick="act('litter')">🧻 Kuweta</button><button onclick="act('sleep')">😴 Uśpij</button><button onclick="view='shop';render()">🛍️ Sklep</button></div>`;rank()}
-function buy(k){if(!Wallet.buy(k))return;s.owned.push(k);wear(k)}
+function buy(k){Wallet.buy(k).then(ok=>{if(ok){if(!s.owned.includes(k))s.owned.push(k);wear(k)}else if(Wallet.lastError)alert(Wallet.lastError)})}
 function wear(k){if(s.worn.includes(k))s.worn=s.worn.filter(x=>x!=k);else{const sl=ITEMS[k].slot;s.worn=s.worn.filter(x=>ITEMS[x].slot!=sl);s.worn.push(k)}save();render()}
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function rank(me){let r=JSON.parse(localStorage.getItem('kotek-gra-best')||'[]');
@@ -129,4 +129,5 @@ function rank(me){let r=JSON.parse(localStorage.getItem('kotek-gra-best')||'[]')
  document.getElementById('rank').innerHTML=r.length?r.map(x=>`<li><span>${esc(x[0])}</span><span>${x[1]} dni</span></li>`).join(''):'<li><span style="color:var(--mu)">Jeszcze brak wyników. Zadbaj o kotka jak najdłużej!</span></li>'}
 document.getElementById('tip').textContent='💡 '+TIPS[Math.floor(Date.now()/864e5)%TIPS.length];
 tick();render();setInterval(()=>{tick();render()},60e3);
+Wallet.onChange(()=>{if(s){s.owned=Wallet.CATALOG.filter(i=>Wallet.owns(i.id)).map(i=>i.id);save()}render()});
 </script></body></html>
