@@ -1205,3 +1205,73 @@ pre { max-width: 100%; }
 .adopted-link { margin: 10px 0 0; font-size: .92rem; color: var(--ink-soft); }
 .adopt-bonus { background: var(--paper-2); border-radius: 12px; padding: 10px 12px; font-size: .9rem; color: var(--ink-soft); }
 .adopt-bonus strong { color: var(--mustard); }
+
+/* ==========================================================
+   ANIMACJE+ (js/fx.js) — wszystko tylko przy klasie .fx (brak „ogranicz ruch”)
+   ========================================================== */
+/* płynne przejścia między podstronami (View Transitions; starsze przeglądarki po prostu przeładują) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: vtOut .22s ease both; }
+::view-transition-new(root) { animation: vtIn .32s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes vtOut { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes vtIn { from { opacity: 0; transform: translateY(10px); } }
+
+/* wejście hero: tekst kaskadowo, karty „rozkładają się” w wachlarz */
+.fx .hero__copy > * { animation: fxRise .7s cubic-bezier(.2,.8,.2,1) both; }
+.fx .hero__copy > :nth-child(2) { animation-delay: .08s; }
+.fx .hero__copy > :nth-child(3) { animation-delay: .16s; }
+.fx .hero__copy > :nth-child(4) { animation-delay: .24s; }
+.fx .hero__copy > :nth-child(5) { animation-delay: .32s; }
+.fx .hero__copy > :nth-child(n+6) { animation-delay: .4s; }
+@keyframes fxRise { from { opacity: 0; transform: translateY(18px); } }
+.fx .fan__card--1 { animation: fxFan1 .9s cubic-bezier(.2,.9,.3,1.15) .2s both; }
+.fx .fan__card--2 { animation: fxFan2 .9s cubic-bezier(.2,.9,.3,1.15) .3s both; }
+@keyframes fxFan1 { from { opacity: 0; transform: translateX(0) rotate(0) scale(.9); } }
+@keyframes fxFan2 { from { opacity: 0; transform: translateX(0) rotate(0) scale(.9); } }
+.fx .fan__card--3 { animation: fxPop .8s cubic-bezier(.2,.9,.3,1.3) .45s both, floaty 6s ease-in-out 1.3s infinite; }
+@keyframes fxPop { from { opacity: 0; scale: .7; } }
+.fx .hero__bubble { animation: fxPop .6s cubic-bezier(.2,.9,.3,1.4) 1s both, floaty 5s ease-in-out 1.6s infinite reverse; transform-origin: 0 100%; }
+
+/* główne CTA delikatnie „oddycha” i ma przebłysk światła */
+.fx .hero__cta .btn--primary, .fx .card__actions .btn--primary { position: relative; overflow: hidden; isolation: isolate; }
+.fx .hero__cta .btn--primary { animation: fxRise .7s cubic-bezier(.2,.8,.2,1) .3s both, fxBreath 2.8s ease-in-out 1.4s infinite; }
+@keyframes fxBreath { 50% { box-shadow: 0 4px 0 var(--terra-d), 0 0 0 8px rgba(255,138,92,.16), 0 10px 24px -6px rgba(255,138,92,.55); } }
+.fx .hero__cta .btn--primary::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%); transform: translateX(-120%); animation: fxShine 4.5s ease-in-out 2s infinite; pointer-events: none; }
+@keyframes fxShine { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+/* mikro-interakcje przycisków */
+.fx .btn { position: relative; overflow: hidden; transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease; }
+@media (hover: hover) { .fx .btn:hover { transform: translateY(-2px); } }
+.fx .btn:active { transform: translateY(1px) scale(.97); }
+.fx-ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .22; transform: scale(0); animation: fxRipple .6s ease-out forwards; pointer-events: none; }
+@keyframes fxRipple { to { transform: scale(1); opacity: 0; } }
+.fx .docs-cta { transition: transform .2s ease, box-shadow .2s ease; }
+.fx .docs-cta:hover { transform: translateY(-2px); }
+.fx .docs-cta:hover .docs-cta__arr { animation: fxNudge .6s ease infinite alternate; }
+@keyframes fxNudge { to { transform: translateX(4px); } }
+.fx .nav a { background: linear-gradient(currentColor, currentColor) 50% 100% / 0 2px no-repeat; transition: background-size .25s ease; }
+.fx .nav a:hover { background-size: 70% 2px; }
+
+/* karty: kaskada przy przewijaniu, zachęcające „kiwnięcie” zakrytych */
+.fx .card.fx-wait { opacity: 0; transform: translateY(26px) scale(.96); }
+.fx .card.fx-wait.fx-in { opacity: 1; transform: none; transition: opacity .55s ease, transform .6s cubic-bezier(.2,.9,.3,1.2); transition-delay: calc(var(--cd, 0) * 80ms); }
+.fx .card:not(.is-flipped):nth-child(5n+2) .card__cta { animation: fxWiggle 6s ease-in-out 3s infinite; display: inline-block; }
+@keyframes fxWiggle { 0%, 88%, 100% { transform: rotate(0); } 91% { transform: rotate(-4deg) scale(1.05); } 94% { transform: rotate(4deg) scale(1.05); } 97% { transform: rotate(-2deg); } }
+.fx .card__back { background-size: 160% 160%; }
+.fx .card.fx-glow .card__front { box-shadow: 0 0 0 3px var(--mustard, #F4C84A), 0 0 36px 4px rgba(244,200,74,.45); transition: box-shadow .3s ease; }
+
+/* iskierki i łapki */
+.fx-burst { position: fixed; width: 0; height: 0; z-index: 60; pointer-events: none; }
+.fx-burst > span { position: absolute; left: 0; top: 0; animation: fxFly 1s cubic-bezier(.15,.7,.3,1) both; }
+.fx-spark { width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: radial-gradient(circle, #fff 0 30%, #F4C84A 60%, transparent 70%); box-shadow: 0 0 10px #F4C84A; }
+.fx-paw { font-size: 18px; margin: -10px; line-height: 1; }
+@keyframes fxFly { 0% { transform: translate(0, 0) scale(.3) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); opacity: 0; } }
+
+/* liczniki */
+.fx .fx-pop { display: inline-block; animation: fxCount .5s cubic-bezier(.2,.9,.3,1.5); }
+@keyframes fxCount { 40% { transform: scale(1.3); color: var(--mustard, #F4C84A); } }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  .fx-burst, .fx-ripple { display: none; }
+}
