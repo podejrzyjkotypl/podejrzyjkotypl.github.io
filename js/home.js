@@ -257,7 +257,7 @@
     if (h && h[0] !== "/" && h in OLD) history.replaceState(null, "", u.pathname + u.search + "#/" + OLD[h]);
   })();
   addEventListener("resize", navInd);
-  addEventListener("hashchange", () => route());
+  addEventListener("hashchange", () => { document.querySelectorAll("dialog[open]").forEach((d) => d.close()); route(); });
   // klik w kontakt: licznik GoatCounter „kontakt-<id>” + odznaka Ambasador (jak dotąd)
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-adopt][data-cat]"); if (!a) return;

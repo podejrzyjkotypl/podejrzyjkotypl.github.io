@@ -125,7 +125,7 @@ details{border-bottom:1px solid var(--line);padding:14px 0}summary{font-weight:6
 /* ---- dodatki wersji na żywo ---- */
 .skip{position:absolute;left:-9999px;top:0;z-index:99;background:var(--ink);color:#fff;padding:8px 14px;border-radius:0 0 10px 0}.skip:focus{left:0}
 a.xp{text-decoration:none;color:var(--ink)}
-.top .account{display:flex;align-items:center;margin-left:-12px}.top .account[hidden]{display:none}
+.top .account{display:flex;align-items:center;margin-left:-12px}.top .account[hidden]{display:none!important}
 .top .account .account__login{display:inline-flex;align-items:center;gap:6px;background:var(--ter);color:#fff;border:0;border-radius:99px;padding:7px 14px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;white-space:nowrap;box-shadow:none;min-height:0}
 .top .account .account__btn{background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:3px 10px 3px 3px;font:600 13px Inter,system-ui,sans-serif;color:var(--ink);min-height:0}
 @media(max-width:520px){.top{gap:12px}.top .account .account__login-txt,.top .account .account__nick{display:none}.top .account .account__login{padding:7px 10px}}
@@ -143,3 +143,4 @@ main:focus{outline:none}
 :focus-visible{outline:3px solid var(--ter);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}::view-transition-old(root),::view-transition-new(root){animation:none!important}}
 .stackwrap>*{min-width:0}.foot div{flex-wrap:wrap}@media(max-width:520px){.foot .social{margin-left:0}}
+[hidden]{display:none!important}

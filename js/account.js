@@ -154,7 +154,7 @@
       if (open) { const f = m.querySelector("[role=menuitem]"); if (f) f.focus(); }
       return;
     }
-    if (!e.target.closest("[data-account-menu]")) closeMenu();
+    if (!e.target.closest("[data-account-menu]") || e.target.closest("[data-account-menu] a[href]")) closeMenu();
     const a = e.target.closest("[data-acc]");
     if (a) {
       closeMenu();
@@ -163,7 +163,10 @@
     }
     if (e.target.closest('[data-action="login"]')) { e.preventDefault(); openLogin(); }
   });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { const t = $("[data-account-toggle]"), m = $("[data-account-menu]"); const was = m && !m.hidden; closeMenu(); if (was && t) t.focus(); } });
+  // zamknij menu przy zmianie trasy/strony
+  ["hashchange", "popstate", "pageshow"].forEach((ev) => addEventListener(ev, closeMenu));
+  document.addEventListener("focusin", (e) => { const m = $("[data-account-menu]"); if (m && !m.hidden && !e.target.closest("[data-account]")) closeMenu(); });
 
   /* ---------- okno logowania ---------- */
   function openLogin(view) {
