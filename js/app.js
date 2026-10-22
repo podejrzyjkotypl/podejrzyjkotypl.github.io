@@ -76,7 +76,7 @@
       streak: 0,
       bestStreak: 0,
       badges: [],
-      rivals: RIVALS.map((r) => ({ ...r })),
+      rivals: [],
       order: shuffle(CATS.map((c) => c.id)),
       nextBetId: 1
     };
@@ -361,7 +361,7 @@
   }
 
   function driftRivals() {
-    state.rivals.forEach((r) => { r.points = Math.max(0, r.points + randInt(-12, 22)); });
+
   }
 
   function simulateAdoption() {
@@ -669,22 +669,29 @@
     if (sheet.open && t.closest(".lb")) openLeaderboard();
   });
 
+  // Ranking gościa: prawdziwy ranking globalny (tylko odczyt, publiczne RPC), bez przykładowych graczy.
+  let guestBoard = null, guestBoardLoading = false;
+  function loadGuestBoard() {
+    const C = window.PODEJRZYJKOTA_CONFIG || {};
+    if (guestBoardLoading || !C.supabaseUrl || !C.supabaseAnonKey) return;
+    guestBoardLoading = true;
+    fetch(C.supabaseUrl + "/rest/v1/rpc/get_leaderboard", { method: "POST",
+      headers: { apikey: C.supabaseAnonKey, "Content-Type": "application/json" }, body: JSON.stringify({ p_limit: 10 }) })
+      .then((r) => r.ok ? r.json() : null).then((d) => { guestBoard = d || { top: [] }; if (!remote) renderRanking(); })
+      .catch(() => { guestBoard = { top: [] }; if (!remote) renderRanking(); });
+  }
   function renderRanking() {
     if (remote) return renderGlobalRanking();
     const tabsHost = $("[data-ranking-tabs]");
     if (tabsHost) tabsHost.hidden = true;
     const note = $("[data-ranking-note]");
-    if (note) note.innerHTML = "Rywale są przykładowi. Ranking jest lokalny, liczony tylko w Twojej przeglądarce." +
-      (accountsAvailable ? ` <button class="link-btn link-btn--inline" type="button" data-action="login">Zaloguj się</button>, żeby grać w rankingu globalnym.` : "");
-    const rows = state.rivals.map((r) => ({ name: r.name, points: r.points, me: false }))
-      .concat([{ name: "Ty", points: state.points, me: true }])
-      .sort((a, b) => b.points - a.points);
-    $("[data-ranking]").innerHTML = rows.map((r, i) => `
-      <li class="${r.me ? "is-me" : ""}">
-        <span class="rank">${medals[i] || i + 1}</span>
-        <span class="who">${esc(r.name)}</span>
-        <span class="score">${r.points}</span>
-      </li>`).join("");
+    if (note) note.innerHTML = "Ranking globalny liczy wszystkie punkty zdobyte od początku (wydawanie ich nie obniża wyniku)." +
+      (accountsAvailable ? ` <button class="link-btn link-btn--inline" type="button" data-action="login">Zaloguj się</button>, żeby się w nim znaleźć.` : "") +
+      ` Jako gość masz teraz <strong>${state.points}</strong> pkt.`;
+    const el = $("[data-ranking]");
+    if (!guestBoard) { el.innerHTML = `<li class="empty">Ładuję ranking…</li>`; loadGuestBoard(); return; }
+    el.innerHTML = (guestBoard.top || []).length ? guestBoard.top.map((r) => lbRow(r, false)).join("")
+      : `<li class="empty">Ranking jest jeszcze pusty. Zaloguj się i bądź pierwszy!</li>`;
   }
 
   function renderBadges() {

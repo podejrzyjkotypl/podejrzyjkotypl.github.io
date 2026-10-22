@@ -1,0 +1,62 @@
+/* podejrzyjkota: nowy wygląd „Kocia Gazeta” (jasny, ciepły). Ładowany PO style.css, nadpisuje tylko tokeny i wygląd. */
+:root{
+  color-scheme: light;
+  --cream:#FBF5EC; --paper:#FFFDF8; --paper-2:#F5ECDF; --paper-3:#EFE2D0;
+  --ink:#2B211B; --ink-soft:#6E5E51; --on-ink:#FFFDF8;
+  --plum:#3A2B22; --plum-2:#5A4334; --back-1:#E0672B; --back-2:#B9501E;
+  --footer-bg:#2B211B; --terra:#E0672B; --terra-d:#B9501E; --terra-h:#EA7A42; --on-primary:#FFFFFF;
+  --link:#B4501C; --mustard:#E9A23B; --on-accent:#2B211B; --sage:#7C9A7E; --sage-d:#4E6E51;
+  --ok:#2F7A43; --ok-bg:rgba(47,122,67,.1); --warn:#9A6400; --warn-bg:rgba(233,162,59,.14); --warn-line:rgba(233,162,59,.55);
+  --bad:#B3261E; --bad-bg:rgba(179,38,30,.08); --bad-line:rgba(179,38,30,.35);
+  --rose:#E89AAA; --line:#EADFCE; --line-2:#DCCBB4; --field-line:#A8957F; --placeholder:#8A7A6C;
+  --glow-1:#FCE7D3; --glow-2:#F6EEDF; --topbar-bg:rgba(251,245,236,.9);
+  --shadow-sm:0 1px 2px rgba(43,33,27,.06),0 2px 8px rgba(43,33,27,.06);
+  --shadow:0 2px 4px rgba(43,33,27,.05),0 14px 32px -10px rgba(43,33,27,.18);
+  --shadow-lg:0 30px 60px -24px rgba(43,33,27,.3);
+  --card-tone:#F3E9DC;
+}
+body{background-color:var(--cream)}
+.topbar{border-bottom:1px solid var(--line)}
+.brand img{border-radius:8px}
+.brand span b,.hero__title span{color:var(--terra);font-style:italic;font-weight:500}
+.btn--primary{box-shadow:0 6px 18px -8px rgba(224,103,43,.7)}
+.footer,.footer a,.footer p,.footer__h{color:#FBEBD9}
+.footer a:hover{color:#fff}
+/* (1) wszystkie karty kotów w jednej kolorystyce, niezależnie od kota */
+.card__art{--bg:var(--card-tone)!important;background:var(--card-tone)!important}
+.card__back{background:linear-gradient(155deg,var(--back-1),var(--back-2))!important;color:#fff}
+.card__front{background:var(--paper)}
+/* nowy hero */
+.nhero{padding:clamp(28px,6vw,72px) 0 24px}
+.nhero__in{display:grid;gap:32px;align-items:center}
+@media(min-width:900px){.nhero__in{grid-template-columns:1.1fr .9fr}}
+.nhero h1{font-size:clamp(2.6rem,8vw,5.6rem);font-weight:850;line-height:1.02;letter-spacing:-.02em;margin:.1em 0 .3em}
+.nhero h1 i{color:var(--terra);font-weight:400}
+.nhero .lead{font-size:1.15rem;color:var(--ink-soft);max-width:34em}
+.nhero__stats{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+.nhero__stats b{display:block;font:800 2rem/1 var(--font-display)}
+.nhero__stats span{font-size:.85rem;color:var(--ink-soft)}
+.nhero .hero__art{justify-self:center}
+.social{display:flex;gap:10px;flex-wrap:wrap}
+.social a{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:99px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);text-decoration:none;font-weight:700;font-size:.9rem}
+.social a:hover{border-color:var(--terra);color:var(--terra)}
+.footer .social a{background:transparent;color:#FBEBD9;border-color:rgba(251,235,217,.35)}
+.social svg{width:18px;height:18px;fill:currentColor}
+.top-social{display:none}@media(min-width:1100px){.top-social{display:flex;gap:6px}.top-social a{padding:6px;border:0;background:none}}
+.rv{transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .6s}
+.js .rv:not(.in){transform:translateY(18px);opacity:.01}
+@media (prefers-reduced-motion: reduce){.rv,.js .rv:not(.in){transform:none!important;opacity:1!important;transition:none}}
+.btn--ghost{border-color:var(--line-2);background:var(--paper)}
+.btn--ghost:hover{border-color:var(--ink);background:var(--paper)}
+.nav a:hover,.nav a[aria-current="page"]{background:var(--paper-2)}
+.xpbar,.quest__bar{background:var(--paper-3);box-shadow:none}
+.pp__box{background:var(--paper-2)}
+.toast{border-color:transparent}
+.nav a[href="#aplikacja"],.nav a[href="jak-grac.html"],.nav a[href="#jak-to-dziala"]{display:none}
+.nav{gap:2px}.nav a{white-space:nowrap}
+.nhero h1{font-size:clamp(2.6rem,7vw,4.8rem)}
+.topbar__in{gap:12px}
+.panel--path{background:linear-gradient(160deg,rgba(224,103,43,.12),var(--paper) 55%)}
+.docs-cta{background:var(--paper)!important;border-color:var(--line-2)!important;color:var(--ink)!important}
+.docs-cta strong{color:var(--ink)!important}.docs-cta small{color:var(--ink-soft)!important}
+.tag,.card__tags span{color:var(--ink-soft)}
