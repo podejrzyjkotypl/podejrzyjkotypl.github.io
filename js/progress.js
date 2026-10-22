@@ -474,6 +474,7 @@
   function render() {
     const v = vm();
     renderChip(v);
+    try { document.dispatchEvent(new CustomEvent("podejrzyjkota:progress", { detail: { level: v.level, xp: v.xp } })); } catch (e) { /* ignore */ }
     const el = $("[data-path]");
     if (el) {
       const L = LEVELS[v.level - 1];
@@ -592,6 +593,7 @@
     hasBadge: (id) => vm().badges.has(id),
     share,
     render,
+    view: () => vm(),
     openProfile,
     sync: () => { if (api) sync(false); },
     guestExport() {
